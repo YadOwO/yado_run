@@ -2,13 +2,14 @@ import React from 'react';
 import { motion, useTransform, MotionValue } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { contentData, MenuItem } from '../types';
+import { contentData, MenuItem, ViewState } from '../types';
 
 interface MenuSectionProps {
   scrollYProgress: MotionValue<number>;
+  onNavigate: (view: ViewState) => void;
 }
 
-const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress }) => {
+const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress, onNavigate }) => {
   const { language } = useLanguage();
   
   // Phase 2 transforms: Stagger in from bottom as intro fades out
@@ -30,6 +31,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress }) => {
               item={item} 
               index={index}
               scrollYProgress={scrollYProgress}
+              onNavigate={onNavigate}
             />
           ))}
         </ul>
@@ -38,7 +40,12 @@ const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress }) => {
   );
 };
 
-const MenuRow: React.FC<{ item: MenuItem; index: number; scrollYProgress: MotionValue<number> }> = ({ item, index, scrollYProgress }) => {
+const MenuRow: React.FC<{ 
+  item: MenuItem; 
+  index: number; 
+  scrollYProgress: MotionValue<number>;
+  onNavigate: (view: ViewState) => void;
+}> = ({ item, index, scrollYProgress, onNavigate }) => {
     // Individual parallax/stagger effect for each row based on scroll
     // Each item enters slightly later than the previous
     const startOffset = 0.3 + (index * 0.1);
@@ -51,6 +58,7 @@ const MenuRow: React.FC<{ item: MenuItem; index: number; scrollYProgress: Motion
         <motion.li 
             style={{ y, opacity }}
             className="group relative cursor-pointer"
+            onClick={() => onNavigate(item.id as ViewState)}
         >
             <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 border-b border-black/5 dark:border-white/10 pb-6 transition-colors duration-500 hover:border-black/20 dark:hover:border-white/30">
                 {/* Number */}

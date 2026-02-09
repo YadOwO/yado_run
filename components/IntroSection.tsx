@@ -22,9 +22,17 @@ const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
       className="absolute inset-0 flex flex-col items-center justify-center p-8 pointer-events-none"
     >
       <div className="max-w-4xl text-center">
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight text-black dark:text-white">
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: 2, 
+            ease: [0.22, 1, 0.36, 1] 
+          }}
+          className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight text-black dark:text-white"
+        >
           {contentData[language].quote}
-        </h1>
+        </motion.h1>
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

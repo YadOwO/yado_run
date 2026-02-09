@@ -1,19 +1,30 @@
-import React, { useRef } from 'react';
-import { useScroll } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { useScroll, AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import PersistentPill from './components/PersistentPill';
 import IntroSection from './components/IntroSection';
 import MenuSection from './components/MenuSection';
+import ProfileSection from './components/ProfileSection';
+import { ViewState } from './types';
 
 const MainLayout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [currentView, setCurrentView] = useState<ViewState>('home');
 
   // Hook into the scroll progress of the main container
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
+
+  const handleNavigate = (view: ViewState) => {
+    setCurrentView(view);
+  };
+
+  const handleBack = () => {
+    setCurrentView('home');
+  };
 
   return (
     // This container defines the total scrollable height. 
@@ -27,10 +38,17 @@ const MainLayout: React.FC = () => {
         <IntroSection scrollYProgress={scrollYProgress} />
 
         {/* Phase 2: Menu List */}
-        <MenuSection scrollYProgress={scrollYProgress} />
+        <MenuSection scrollYProgress={scrollYProgress} onNavigate={handleNavigate} />
         
         {/* Phase 3: Persistent UI (Always on top) */}
         <PersistentPill />
+
+        {/* Overlays / Sub-pages */}
+        <AnimatePresence>
+          {currentView === 'profile' && (
+            <ProfileSection onBack={handleBack} />
+          )}
+        </AnimatePresence>
         
       </div>
       
