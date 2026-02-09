@@ -64,7 +64,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
             variants={itemVariants}
             className="text-xs md:text-sm font-mono text-black/40 dark:text-white/40 tracking-[0.3em] uppercase mb-4 block"
           >
-            01 Profile
+            01 {profile.labels.profile}
           </motion.span>
           <motion.h2 
             variants={itemVariants}
@@ -88,15 +88,15 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
 
           <motion.div variants={itemVariants} className="pt-8 border-t border-black/5 dark:border-white/5 space-y-4">
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">Role</span>
+              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">{profile.labels.role}</span>
               <span className="text-sm md:text-base text-black/60 dark:text-white/60">— {profile.role}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">Identity</span>
+              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">{profile.labels.identity}</span>
               <span className="text-sm md:text-base text-black/60 dark:text-white/60">— {profile.identity}</span>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">Contact</span>
+              <span className="text-[10px] uppercase tracking-widest text-black/40 dark:text-white/40">{profile.labels.contact}</span>
               <a 
                 href={`mailto:${profile.email}`}
                 className="text-sm md:text-base text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white transition-colors underline decoration-black/10 dark:decoration-white/10 underline-offset-4"

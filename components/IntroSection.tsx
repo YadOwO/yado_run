@@ -26,7 +26,8 @@ const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ 
-            duration: 2, 
+            delay: 1,
+            duration: 1.2, 
             ease: [0.22, 1, 0.36, 1] 
           }}
           className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight text-black dark:text-white"
@@ -36,10 +37,10 @@ const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2, duration: 1 }}
+          transition={{ delay: 2.5, duration: 1 }}
           className="mt-8 text-sm uppercase tracking-widest text-black/40 dark:text-white/40"
         >
-           {language === 'EN' ? 'Scroll to explore' : '滑动探索'}
+           {contentData[language].scrollLabel}
         </motion.div>
       </div>
     </motion.div>

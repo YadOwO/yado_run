@@ -22,6 +22,7 @@ export interface MenuItem {
 export const contentData = {
   EN: {
     quote: "Code is Poetry.",
+    scrollLabel: "Scroll to explore",
     menu: [
       {
         id: "profile" as ViewState,
@@ -47,11 +48,18 @@ export const contentData = {
       role: "Senior Front-End Architect",
       email: "yado.async@gmail.com",
       description: "I am an architect of the digital realm. I believe that code, when written with intent, transcends mere function to become a form of structural poetry. My work is defined by a relentless pursuit of order, performance, and aesthetic clarity.",
-      identity: "Front-end developer, Proletarian worker"
+      identity: "Front-end developer, Proletarian worker",
+      labels: {
+        role: "Role",
+        identity: "Identity",
+        contact: "Contact",
+        profile: "Profile"
+      }
     }
   },
   CN: {
     quote: "代码即诗。",
+    scrollLabel: "滑动探索",
     menu: [
       {
         id: "profile" as ViewState,
@@ -77,7 +85,13 @@ export const contentData = {
       role: "资深前端架构师",
       email: "yado.async@gmail.com",
       description: "我是数字领域的架构师。我相信，当代码带着意图编写时，它便超越了纯粹的功能，成为一种结构化的诗歌。我的工作被对秩序、性能和审美清晰度的不懈追求所定义。",
-      identity: "前端开发，无产阶级劳动者"
+      identity: "前端开发，无产阶级劳动者",
+      labels: {
+        role: "角色",
+        identity: "身份",
+        contact: "联系方式",
+        profile: "个人简介"
+      }
     }
   },
 };

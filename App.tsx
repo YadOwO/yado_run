@@ -40,15 +40,17 @@ const MainLayout: React.FC = () => {
         {/* Phase 2: Menu List */}
         <MenuSection scrollYProgress={scrollYProgress} onNavigate={handleNavigate} />
         
-        {/* Phase 3: Persistent UI (Always on top) */}
-        <PersistentPill />
-
         {/* Overlays / Sub-pages */}
         <AnimatePresence>
           {currentView === 'profile' && (
             <ProfileSection onBack={handleBack} />
           )}
         </AnimatePresence>
+
+        {/* Phase 3: Persistent UI (Always on top) */}
+        <div className="relative z-[100]">
+          <PersistentPill />
+        </div>
         
       </div>
       
