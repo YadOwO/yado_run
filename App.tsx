@@ -6,6 +6,7 @@ import PersistentPill from './components/PersistentPill';
 import IntroSection from './components/IntroSection';
 import MenuSection from './components/MenuSection';
 import ProfileSection from './components/ProfileSection';
+import ArchitectureSection from './components/ArchitectureSection';
 import { ViewState } from './types';
 
 const MainLayout: React.FC = () => {
@@ -44,6 +45,9 @@ const MainLayout: React.FC = () => {
         <AnimatePresence>
           {currentView === 'profile' && (
             <ProfileSection onBack={handleBack} />
+          )}
+          {currentView === 'arch' && (
+            <ArchitectureSection onBack={handleBack} />
           )}
         </AnimatePresence>
 

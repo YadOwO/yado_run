@@ -55,6 +55,18 @@ export const contentData = {
         contact: "Contact",
         profile: "Profile"
       }
+    },
+    architecture: {
+      title: "System Design",
+      subtitle: "02 ARCHITECTURE",
+      items: [
+        { title: "Micro-Frontends", description: "Scalable architecture for modern web apps." },
+        { title: "Design Systems", description: "Consistent visual language across platforms." },
+        { title: "Server-Side Rendering", description: "Optimizing for speed and SEO." },
+        { title: "State Management", description: "Predictable data flow in complex systems." },
+        { title: "Performance Optimization", description: "Fluid experiences at 60fps." },
+        { title: "CI/CD Pipelines", description: "Automated excellence in delivery." }
+      ]
     }
   },
   CN: {
@@ -92,6 +104,18 @@ export const contentData = {
         contact: "联系方式",
         profile: "个人简介"
       }
+    },
+    architecture: {
+      title: "系统设计",
+      subtitle: "02 架构设计",
+      items: [
+        { title: "微前端", description: "现代 Web 应用的可扩展架构。" },
+        { title: "设计系统", description: "跨平台的一致性视觉语言。" },
+        { title: "服务端渲染", description: "优化速度与 SEO。" },
+        { title: "状态管理", description: "复杂系统中可预测的数据流。" },
+        { title: "性能优化", description: "60fps 的流畅体验。" },
+        { title: "CI/CD 流水线", description: "自动化的交付卓越性。" }
+      ]
     }
   },
 };
