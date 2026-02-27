@@ -1,16 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { useLanguage } from '../contexts/LanguageContext';
-import { contentData } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface ArchitectureSectionProps {
   onBack: () => void;
 }
 
 const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => {
-  const { language } = useLanguage();
-  const data = contentData[language].architecture;
+  const { t } = useTranslation();
+  
+  const items = t('architecture.items', { returnObjects: true }) as Array<{ title: string; description: string }>;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -65,13 +65,13 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
             variants={itemVariants}
             className="text-xs md:text-sm tracking-widest uppercase text-[#1D1D1F]/40 dark:text-[#F5F5F7]/40 mb-4"
           >
-            {data.subtitle}
+            {t('architecture.subtitle')}
           </motion.p>
           <motion.h1
             variants={itemVariants}
             className="text-6xl md:text-8xl font-bold tracking-tighter text-[#1D1D1F] dark:text-[#F5F5F7]"
           >
-            {data.title}
+            {t('architecture.title')}
           </motion.h1>
         </header>
 
@@ -80,7 +80,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
           variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16"
         >
-          {data.items.map((item, index) => (
+          {items.map((item, index) => (
             <motion.div
               key={index}
               variants={itemVariants}

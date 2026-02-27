@@ -7,7 +7,12 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Package Manager
 node_modules
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
 dist
 dist-ssr
 *.local

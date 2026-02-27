@@ -1,14 +1,13 @@
 import React from 'react';
 import { motion, useTransform, MotionValue } from 'framer-motion';
-import { useLanguage } from '../contexts/LanguageContext';
-import { contentData } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface IntroSectionProps {
   scrollYProgress: MotionValue<number>;
 }
 
 const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
-  const { language } = useLanguage();
+  const { t } = useTranslation();
   
   // Phase 1 transforms: Fade out and move up as user scrolls
   const opacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
@@ -32,7 +31,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
           }}
           className="text-4xl md:text-6xl lg:text-7xl font-medium tracking-tight text-black dark:text-white"
         >
-          {contentData[language].quote}
+          {t('quote')}
         </motion.h1>
         <motion.div 
           initial={{ opacity: 0 }}
@@ -40,7 +39,7 @@ const IntroSection: React.FC<IntroSectionProps> = ({ scrollYProgress }) => {
           transition={{ delay: 2.5, duration: 1 }}
           className="mt-8 text-sm uppercase tracking-widest text-black/40 dark:text-white/40"
         >
-           {contentData[language].scrollLabel}
+           {t('scrollLabel')}
         </motion.div>
       </div>
     </motion.div>
