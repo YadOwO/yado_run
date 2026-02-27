@@ -50,6 +50,15 @@ const resources = {
           { title: "CI/CD Pipelines", description: "Automated excellence in delivery." }
         ]
       },
+      playground: {
+        title: "Interests",
+        subtitle: "03 PLAYGROUND",
+        items: [
+          { category: "CYCLING", title: "Weekly 100km+" },
+          { category: "CS2", title: "AWP Specialist" },
+          { category: "MUSIC", title: "Post-Rock /\nElectronic" }
+        ]
+      },
       common: {
         back: "Back"
       }
@@ -99,6 +108,15 @@ const resources = {
           { title: "状态管理", description: "复杂系统中可预测的数据流。" },
           { title: "性能优化", description: "60fps 的流畅体验。" },
           { title: "CI/CD 流水线", description: "自动化的交付卓越性。" }
+        ]
+      },
+      playground: {
+        title: "个人兴趣",
+        subtitle: "03 游乐场",
+        items: [
+          { category: "骑行", title: "公路车 CAMP\nRADON" },
+          { category: "CS2", title: "3000+ 小时\nAWP 专家" },
+          { category: "音乐", title: "R&B /\n后摇" }
         ]
       },
       common: {

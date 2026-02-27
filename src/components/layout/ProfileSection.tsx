@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import BackButton from '@/components/ui/BackButton';
 
 /**
  * 个人简介组件参数接口
@@ -57,16 +57,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
       exit="exit"
       className="fixed inset-0 z-50 flex flex-col items-center justify-center p-8 bg-white dark:bg-[#1D1D1F]"
     >
-      {/* 返回按钮：绝对定位与淡入动画 */}
-      <motion.button
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        onClick={onBack}
-        className="absolute top-12 left-8 md:left-12 flex items-center gap-2 group transition-opacity hover:opacity-70"
-      >
-        <ArrowLeft className="w-6 h-6 text-black dark:text-white" />
-      </motion.button>
+      <BackButton onClick={onBack} />
 
       <div className="w-full max-w-3xl">
         <header className="mb-12">

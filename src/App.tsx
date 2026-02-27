@@ -7,6 +7,7 @@ import IntroSection from '@/components/layout/IntroSection';
 import MenuSection from '@/components/layout/MenuSection';
 import ProfileSection from '@/components/layout/ProfileSection';
 import ArchitectureSection from '@/components/layout/ArchitectureSection';
+import PlaygroundSection from '@/components/layout/PlaygroundSection';
 import { ViewState } from '@/types';
 
 /**
@@ -44,6 +45,9 @@ const MainLayout: React.FC = () => {
         )}
         {currentView === 'arch' && (
           <ArchitectureSection onBack={handleBack} />
+        )}
+        {currentView === 'play' && (
+          <PlaygroundSection onBack={handleBack} />
         )}
       </AnimatePresence>
 
