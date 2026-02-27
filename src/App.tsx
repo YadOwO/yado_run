@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { useScroll, AnimatePresence } from 'framer-motion';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { LanguageProvider } from './contexts/LanguageContext';
-import PersistentPill from './components/PersistentPill';
-import IntroSection from './components/IntroSection';
-import MenuSection from './components/MenuSection';
-import ProfileSection from './components/ProfileSection';
-import ArchitectureSection from './components/ArchitectureSection';
-import { ViewState } from './types';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { LanguageProvider } from '@/contexts/LanguageContext';
+import PersistentPill from '@/components/ui/PersistentPill';
+import IntroSection from '@/components/layout/IntroSection';
+import MenuSection from '@/components/layout/MenuSection';
+import ProfileSection from '@/components/layout/ProfileSection';
+import ArchitectureSection from '@/components/layout/ArchitectureSection';
+import { ViewState } from '@/types';
 
 const MainLayout: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);

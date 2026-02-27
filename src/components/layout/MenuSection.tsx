@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, useTransform, MotionValue } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { ViewState } from '../types';
+import { ViewState } from '@/types';
 
 interface MenuSectionProps {
   scrollYProgress: MotionValue<number>;
