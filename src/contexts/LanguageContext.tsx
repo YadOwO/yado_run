@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Language, LanguageContextType } from '@/types';
-import '@/i18n';
+import '@/lib/i18n';
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
