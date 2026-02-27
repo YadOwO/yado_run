@@ -91,7 +91,10 @@ const PlaygroundSection: React.FC<PlaygroundSectionProps> = ({ onBack }) => {
             <motion.div
               key={index}
               variants={itemVariants}
-              className="group relative flex flex-col items-center justify-center p-12 md:p-16 rounded-3xl bg-[#F5F5F7]/50 dark:bg-[#111111] border border-black/5 dark:border-white/5 transition-all duration-500 hover:bg-[#F5F5F7] dark:hover:bg-[#1A1A1A] hover:scale-[1.02]"
+              whileHover={{ scale: 1.02, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
+              whileTap={{ scale: 0.98, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
+              className="group relative flex flex-col items-center justify-center p-12 md:p-16 rounded-3xl bg-[#F5F5F7]/50 dark:bg-[#111111] border border-black/5 dark:border-white/5 transition-colors duration-500 hover:bg-[#F5F5F7] dark:hover:bg-[#1A1A1A]"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               <h3 className="text-xs md:text-sm tracking-[0.2em] uppercase text-black/40 dark:text-white/40 mb-6">
                 {item.category}

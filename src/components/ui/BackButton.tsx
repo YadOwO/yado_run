@@ -21,12 +21,15 @@ const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
     <motion.button
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
+      whileHover={{ scale: 1.05, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
+      whileTap={{ scale: 0.95, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
       transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       onClick={onClick}
-      className="absolute top-12 left-8 md:left-12 z-[60] flex items-center justify-center w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md group transition-all duration-300 hover:scale-105 hover:bg-black/10 dark:hover:bg-white/20"
+      className="absolute top-12 left-8 md:left-12 z-[60] flex items-center justify-center w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md group transition-colors duration-300 hover:bg-black/10 dark:hover:bg-white/20"
       aria-label="Back"
+      style={{ WebkitTapHighlightColor: 'transparent' }}
     >
-      <ArrowLeft className="w-5 h-5 text-black dark:text-white opacity-70 group-hover:opacity-100 transition-opacity" />
+      <ArrowLeft className="w-5 h-5 text-black dark:text-white opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
     </motion.button>
   );
 };
