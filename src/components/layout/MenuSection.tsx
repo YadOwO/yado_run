@@ -1,30 +1,18 @@
 import React from 'react';
-import { motion, useTransform, MotionValue } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ViewState } from '@/types';
 
 interface MenuSectionProps {
-  scrollYProgress: MotionValue<number>;
   onNavigate: (view: ViewState) => void;
 }
 
-const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress, onNavigate }) => {
-  const { t } = useTranslation();
-  
+const MenuSection: React.FC<MenuSectionProps> = ({ onNavigate }) => {
   const menuKeys: ViewState[] = ['profile', 'arch', 'play'];
   
-  // Phase 2 transforms: Stagger in from bottom as intro fades out
-  // Starts appearing around 0.25 progress, fully visible by 0.6
-  const containerOpacity = useTransform(scrollYProgress, [0.25, 0.5], [0, 1]);
-  const containerY = useTransform(scrollYProgress, [0.2, 0.6], ["20%", "0%"]);
-  const pointerEvents = useTransform(scrollYProgress, (pos: number) => pos > 0.4 ? 'auto' : 'none');
-
   return (
-    <motion.div 
-      style={{ opacity: containerOpacity, y: containerY, pointerEvents }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-8 z-10"
-    >
+    <div className="absolute inset-0 flex flex-col items-center justify-center p-8 z-10 w-full h-full">
       <div className="w-full max-w-5xl">
         <ul className="flex flex-col space-y-12 md:space-y-16">
           {menuKeys.map((key, index) => (
@@ -32,30 +20,21 @@ const MenuSection: React.FC<MenuSectionProps> = ({ scrollYProgress, onNavigate }
               key={key} 
               id={key}
               index={index}
-              scrollYProgress={scrollYProgress}
               onNavigate={onNavigate}
             />
           ))}
         </ul>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const MenuRow: React.FC<{ 
   id: ViewState; 
   index: number; 
-  scrollYProgress: MotionValue<number>;
   onNavigate: (view: ViewState) => void;
-}> = ({ id, index, scrollYProgress, onNavigate }) => {
+}> = ({ id, index, onNavigate }) => {
     const { t } = useTranslation();
-    // Individual parallax/stagger effect for each row based on scroll
-    // Each item enters slightly later than the previous
-    const startOffset = 0.3 + (index * 0.1);
-    const endOffset = 0.6 + (index * 0.1);
-    
-    const y = useTransform(scrollYProgress, [startOffset, endOffset], [100, 0]);
-    const opacity = useTransform(scrollYProgress, [startOffset, endOffset], [0, 1]);
 
     const number = t(`menu.${id}.number`);
     const title = t(`menu.${id}.title`);
@@ -63,7 +42,10 @@ const MenuRow: React.FC<{
 
     return (
         <motion.li 
-            style={{ y, opacity }}
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: "-100px" }}
+            transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
             className="group relative cursor-pointer"
             onClick={() => onNavigate(id)}
         >

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { useScroll, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import PersistentPill from '@/components/ui/PersistentPill';
@@ -10,14 +10,7 @@ import ArchitectureSection from '@/components/layout/ArchitectureSection';
 import { ViewState } from '@/types';
 
 const MainLayout: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [currentView, setCurrentView] = useState<ViewState>('home');
-
-  // Hook into the scroll progress of the main container
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
 
   const handleNavigate = (view: ViewState) => {
     setCurrentView(view);
@@ -28,35 +21,33 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    // This container defines the total scrollable height. 
-    // 250vh allows for a comfortable scroll distance to transition between phases.
-    <div ref={containerRef} className="relative h-[250vh] w-full">
+    // The main container becomes the scrollable snapping element
+    <div className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar">
       
-      {/* Sticky Viewport: The content stays fixed while we scroll through the empty height */}
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
-        
-        {/* Phase 1: Intro Quote */}
-        <IntroSection scrollYProgress={scrollYProgress} />
+      {/* Overlays / Sub-pages */}
+      <AnimatePresence>
+        {currentView === 'profile' && (
+          <ProfileSection onBack={handleBack} />
+        )}
+        {currentView === 'arch' && (
+          <ArchitectureSection onBack={handleBack} />
+        )}
+      </AnimatePresence>
 
-        {/* Phase 2: Menu List */}
-        <MenuSection scrollYProgress={scrollYProgress} onNavigate={handleNavigate} />
-        
-        {/* Overlays / Sub-pages */}
-        <AnimatePresence>
-          {currentView === 'profile' && (
-            <ProfileSection onBack={handleBack} />
-          )}
-          {currentView === 'arch' && (
-            <ArchitectureSection onBack={handleBack} />
-          )}
-        </AnimatePresence>
-
-        {/* Phase 3: Persistent UI (Always on top) */}
-        <div className="relative z-[100]">
-          <PersistentPill />
-        </div>
-        
+      {/* Phase 3: Persistent UI (Always on top) */}
+      <div className="fixed z-[100] bottom-0 right-0">
+        <PersistentPill />
       </div>
+
+      {/* Phase 1: Intro Section */}
+      <section className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative">
+        <IntroSection />
+      </section>
+
+      {/* Phase 2: Menu Section */}
+      <section className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative bg-off-white dark:bg-black">
+        <MenuSection onNavigate={handleNavigate} />
+      </section>
       
     </div>
   );
