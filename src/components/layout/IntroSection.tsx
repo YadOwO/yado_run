@@ -2,12 +2,20 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+/**
+ * 引导区域组件
+ * 展示项目的核心标语和探索提示
+ * 
+ * @description IntroSection 组件负责展示项目的核心标语和探索提示。
+ * @returns {JSX.Element} IntroSection 组件的 JSX 元素。
+ */
 const IntroSection: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
       <div className="max-w-4xl text-center">
+        {/* 核心标语：使用淡入位移动画 */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -20,6 +28,8 @@ const IntroSection: React.FC = () => {
         >
           {t("quote")}
         </motion.h1>
+        
+        {/* 探索提示：支持悬浮缩放效果 */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

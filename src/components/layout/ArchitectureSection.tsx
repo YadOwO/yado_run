@@ -3,15 +3,27 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * 架构部分组件参数接口
+ * @property {Function} onBack - 处理返回上一级的回调函数
+ */
 interface ArchitectureSectionProps {
   onBack: () => void;
 }
 
+/**
+ * 架构展示组件
+ * 展示项目的整体架构和核心理念
+ * 
+ * @param {ArchitectureSectionProps} props - 组件属性
+ */
 const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => {
   const { t } = useTranslation();
   
+  /** 从翻译文件中获取架构项列表配置 */
   const items = t('architecture.items', { returnObjects: true }) as Array<{ title: string; description: string }>;
 
+  /** 容器动画变体配置：控制整体的淡入淡出及子元素的交错动画 */
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -27,6 +39,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
     },
   };
 
+  /** 子元素动画变体配置：使用 Apple 风格的弹簧物理动画 */
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -49,17 +62,19 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
       variants={containerVariants}
       className="fixed inset-0 z-50 flex flex-col bg-[#F5F5F7] dark:bg-[#1D1D1F] p-8 md:p-24 overflow-y-auto"
     >
-      {/* Back Button */}
+      {/* 返回按钮：统一的 Apple 风格绝对定位 */}
       <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         onClick={onBack}
-        variants={itemVariants}
-        className="fixed top-8 left-8 p-2 rounded-full bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/5 dark:border-white/10 hover:scale-110 transition-transform"
+        className="absolute top-12 left-8 md:left-12 flex items-center gap-2 group transition-opacity hover:opacity-70"
       >
-        <ArrowLeft className="w-6 h-6 text-[#1D1D1F] dark:text-[#F5F5F7]" />
+        <ArrowLeft className="w-6 h-6 text-black dark:text-white" />
       </motion.button>
 
       <div className="max-w-6xl mx-auto w-full pt-20">
-        {/* Header Section */}
+        {/* 页面头部区域 */}
         <header className="mb-20">
           <motion.p
             variants={itemVariants}
@@ -75,7 +90,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
           </motion.h1>
         </header>
 
-        {/* Grid Section */}
+        {/* 架构列表网格展示 */}
         <motion.div
           variants={containerVariants}
           className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16"
@@ -93,7 +108,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ onBack }) => 
                 {item.description}
               </p>
               
-              {/* Subtle underline hover effect */}
+              {/* 悬浮下划线效果 */}
               <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-[#1D1D1F] dark:bg-[#F5F5F7] group-hover:w-full transition-all duration-500 ease-in-out opacity-20" />
             </motion.div>
           ))}

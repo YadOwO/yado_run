@@ -4,6 +4,13 @@ import { Moon, Sun, Globe } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+/**
+ * 常驻功能胶囊组件
+ * 包含语言切换与主题切换功能，采用毛玻璃质感设计
+ * 
+ * @description PersistentPill组件，提供语言切换和主题切换功能
+ * @returns {JSX.Element} PersistentPill组件
+ */
 const PersistentPill: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage } = useLanguage();
@@ -17,7 +24,7 @@ const PersistentPill: React.FC = () => {
     >
       <div className="flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-xl bg-white/10 dark:bg-white/5 border border-black/5 dark:border-white/10 shadow-lg hover:shadow-xl transition-shadow duration-300">
         
-        {/* Language Toggle */}
+        {/* 语言切换按钮 */}
         <button 
           onClick={toggleLanguage}
           className="flex items-center gap-2 text-xs font-medium tracking-wider text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors"
@@ -29,7 +36,7 @@ const PersistentPill: React.FC = () => {
 
         <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
 
-        {/* Theme Toggle */}
+        {/* 主题切换按钮 */}
         <button 
           onClick={toggleTheme}
           className="flex items-center justify-center w-6 h-6 rounded-full text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors"

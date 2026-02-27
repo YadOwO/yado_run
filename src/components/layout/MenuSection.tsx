@@ -4,11 +4,22 @@ import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ViewState } from '@/types';
 
+/**
+ * 菜单部分组件参数接口
+ * @property {Function} onNavigate - 处理导航到不同视图的回调函数
+ */
 interface MenuSectionProps {
   onNavigate: (view: ViewState) => void;
 }
 
+/**
+ * 菜单展示组件
+ * 展示主页的导航菜单，包含各个主要功能区块的入口
+ * 
+ * @param {MenuSectionProps} props - 组件属性
+ */
 const MenuSection: React.FC<MenuSectionProps> = ({ onNavigate }) => {
+  /** 定义所有可用的菜单视图键值 */
   const menuKeys: ViewState[] = ['profile', 'arch', 'play'];
   
   return (
@@ -29,13 +40,28 @@ const MenuSection: React.FC<MenuSectionProps> = ({ onNavigate }) => {
   );
 };
 
-const MenuRow: React.FC<{ 
-  id: ViewState; 
-  index: number; 
+/**
+ * 菜单行组件参数接口
+ * @property {ViewState} id - 视图标识符
+ * @property {number} index - 菜单项的索引，用于交错动画
+ * @property {Function} onNavigate - 导航回调函数
+ */
+interface MenuRowProps {
+  id: ViewState;
+  index: number;
   onNavigate: (view: ViewState) => void;
-}> = ({ id, index, onNavigate }) => {
+}
+
+/**
+ * 单个菜单行组件
+ * 包含编号、主标题、副标题和悬浮箭头效果
+ * 
+ * @param {MenuRowProps} props - 组件属性
+ */
+const MenuRow: React.FC<MenuRowProps> = ({ id, index, onNavigate }) => {
     const { t } = useTranslation();
 
+    /** 从翻译文件中获取当前项对应的文本信息 */
     const number = t(`menu.${id}.number`);
     const title = t(`menu.${id}.title`);
     const subtitle = t(`menu.${id}.subtitle`);
@@ -50,12 +76,12 @@ const MenuRow: React.FC<{
             onClick={() => onNavigate(id)}
         >
             <div className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8 border-b border-black/5 dark:border-white/10 pb-6 transition-colors duration-500 hover:border-black/20 dark:hover:border-white/30">
-                {/* Number */}
+                {/* 编号区域 */}
                 <span className="text-xs md:text-sm font-mono text-black/40 dark:text-white/40 tracking-widest">
                     {number}
                 </span>
 
-                {/* Main Title & Subtitle Container */}
+                {/* 主标题与副标题容器 */}
                 <div className="flex-1 flex flex-col md:flex-row md:items-baseline md:justify-between gap-2">
                     <h2 className="text-4xl md:text-6xl font-semibold tracking-tighter text-black dark:text-white transition-all duration-300 group-hover:pl-4 group-hover:text-black/80 dark:group-hover:text-white/90">
                         {title}
@@ -66,7 +92,7 @@ const MenuRow: React.FC<{
                             {subtitle}
                         </span>
                         
-                        {/* Hover Arrow */}
+                        {/* 悬浮箭头 */}
                         <motion.div 
                             initial={{ opacity: 0, x: -10 }}
                             whileHover={{ opacity: 1, x: 0 }}
@@ -78,7 +104,7 @@ const MenuRow: React.FC<{
                 </div>
             </div>
             
-            {/* Hover Glow/Background effect - subtle glass */}
+            {/* 悬浮发光背景 */}
             <div className="absolute -inset-4 -z-10 rounded-xl bg-black/0 dark:bg-white/0 transition-colors duration-500 group-hover:bg-black/[0.02] dark:group-hover:bg-white/[0.02] backdrop-blur-[1px]" />
         </motion.li>
     );

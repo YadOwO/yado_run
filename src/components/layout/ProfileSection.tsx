@@ -3,13 +3,24 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+/**
+ * 个人简介组件参数接口
+ * @property {Function} onBack - 处理返回上一级的回调函数
+ */
 interface ProfileSectionProps {
   onBack: () => void;
 }
 
+/**
+ * 个人简介展示组件
+ * 展示用户的个人信息、角色及联系方式
+ * 
+ * @param {ProfileSectionProps} props - 组件属性
+ */
 const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
   const { t } = useTranslation();
 
+  /** 容器动画变体配置：控制整体的淡入淡出及子元素的交错动画 */
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -25,6 +36,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
     }
   };
 
+  /** 子元素动画变体配置：定义元素的初始和出现状态及过渡动画 */
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -45,7 +57,7 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({ onBack }) => {
       exit="exit"
       className="fixed inset-0 z-50 flex flex-col items-center justify-center p-8 bg-white dark:bg-[#1D1D1F]"
     >
-      {/* Back Button */}
+      {/* 返回按钮：绝对定位与淡入动画 */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}

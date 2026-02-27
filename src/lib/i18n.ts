@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+/** 定义支持多语言的翻译资源字典 */
 const resources = {
   EN: {
     translation: {
@@ -107,15 +108,16 @@ const resources = {
   }
 };
 
+/** 初始化和配置 i18next 实例 */
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'EN', // Default to EN as requested "目前只支持英语和中文，和现在保持一致"
-    fallbackLng: 'EN',
+    lng: 'EN', // 默认语言设置为英语
+    fallbackLng: 'EN', // 备用语言
     interpolation: {
-      escapeValue: false
+      escapeValue: false // React 已经处理了 XSS，无需在此处转义
     }
   });
 

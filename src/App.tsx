@@ -9,13 +9,26 @@ import ProfileSection from '@/components/layout/ProfileSection';
 import ArchitectureSection from '@/components/layout/ArchitectureSection';
 import { ViewState } from '@/types';
 
+/**
+ * 主应用布局组件
+ * 负责管理页面的整体布局、视图状态和滚动捕捉效果
+ */
 const MainLayout: React.FC = () => {
+  /** 当前展示的视图状态：默认为主页 ('home') */
   const [currentView, setCurrentView] = useState<ViewState>('home');
 
+  /**
+   * 处理导航跳转
+   * @param {ViewState} view - 目标视图状态
+   */
   const handleNavigate = (view: ViewState) => {
     setCurrentView(view);
   };
 
+  /**
+   * 处理返回操作
+   * 将视图状态重置为主页
+   */
   const handleBack = () => {
     setCurrentView('home');
   };
@@ -24,7 +37,7 @@ const MainLayout: React.FC = () => {
     // The main container becomes the scrollable snapping element
     <div className="h-screen w-full overflow-y-auto snap-y snap-mandatory scroll-smooth no-scrollbar">
       
-      {/* Overlays / Sub-pages */}
+      {/* 覆盖层/子页面：通过动画过渡切换 */}
       <AnimatePresence>
         {currentView === 'profile' && (
           <ProfileSection onBack={handleBack} />
@@ -34,17 +47,17 @@ const MainLayout: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Phase 3: Persistent UI (Always on top) */}
+      {/* 常驻 UI：主题/语言切换胶囊 */}
       <div className="fixed z-[100] bottom-0 right-0">
         <PersistentPill />
       </div>
 
-      {/* Phase 1: Intro Section */}
+      {/* 介绍区域：首屏滚动捕捉 */}
       <section className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative">
         <IntroSection />
       </section>
 
-      {/* Phase 2: Menu Section */}
+      {/* 菜单区域：次屏滚动捕捉 */}
       <section className="min-h-screen w-full snap-start flex flex-col items-center justify-center relative bg-off-white dark:bg-black">
         <MenuSection onNavigate={handleNavigate} />
       </section>
@@ -53,6 +66,10 @@ const MainLayout: React.FC = () => {
   );
 };
 
+/**
+ * 应用程序根组件
+ * 封装所有全局上下文提供者
+ */
 const App: React.FC = () => {
   return (
     <ThemeProvider>
