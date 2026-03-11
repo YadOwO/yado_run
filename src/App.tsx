@@ -3,11 +3,13 @@ import { AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import PersistentPill from '@/components/ui/PersistentPill';
+import CursorGlow from '@/components/ui/CursorGlow';
 import IntroSection from '@/components/layout/IntroSection';
 import MenuSection from '@/components/layout/MenuSection';
 import ProfileSection from '@/components/layout/ProfileSection';
 import ArchitectureSection from '@/components/layout/ArchitectureSection';
 import PlaygroundSection from '@/components/layout/PlaygroundSection';
+import { playNavigate, playBack } from '@/lib/sound';
 import { ViewState } from '@/types';
 
 /**
@@ -23,6 +25,7 @@ const MainLayout: React.FC = () => {
    * @param {ViewState} view - 目标视图状态
    */
   const handleNavigate = (view: ViewState) => {
+    playNavigate();
     setCurrentView(view);
   };
 
@@ -31,6 +34,7 @@ const MainLayout: React.FC = () => {
    * 将视图状态重置为主页
    */
   const handleBack = () => {
+    playBack();
     setCurrentView('home');
   };
 
@@ -78,6 +82,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <LanguageProvider>
+        <CursorGlow />
         <MainLayout />
       </LanguageProvider>
     </ThemeProvider>
