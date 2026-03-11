@@ -67,7 +67,7 @@ const PlaygroundSection: React.FC<PlaygroundSectionProps> = ({ onBack }) => {
 
       <div className="w-full max-w-5xl flex flex-col items-center text-center">
         {/* 页面头部区域 */}
-        <header className="mb-16 md:mb-24 flex flex-col items-center">
+        <header className="mb-10 md:mb-24 flex flex-col items-center">
           <motion.p
             variants={itemVariants}
             className="text-xs md:text-sm font-mono tracking-[0.3em] uppercase text-black/40 dark:text-white/40 mb-6"
@@ -93,13 +93,13 @@ const PlaygroundSection: React.FC<PlaygroundSectionProps> = ({ onBack }) => {
               variants={itemVariants}
               whileHover={{ scale: 1.02, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
               whileTap={{ scale: 0.98, transition: { type: 'spring', stiffness: 150, damping: 20, mass: 1.2 } }}
-              className="group relative flex flex-col items-center justify-center p-12 md:p-16 rounded-3xl bg-[#F5F5F7]/50 dark:bg-[#111111] border border-black/5 dark:border-white/5 transition-colors duration-500 hover:bg-[#F5F5F7] dark:hover:bg-[#1A1A1A]"
+              className="group relative flex flex-col items-center justify-center p-8 md:p-12 lg:p-16 rounded-2xl md:rounded-3xl bg-[#F5F5F7]/50 dark:bg-[#111111] border border-black/5 dark:border-white/5 transition-colors duration-500 hover:bg-[#F5F5F7] dark:hover:bg-[#1A1A1A]"
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <h3 className="text-xs md:text-sm tracking-[0.2em] uppercase text-black/40 dark:text-white/40 mb-6">
+              <h3 className="text-xs md:text-sm tracking-[0.2em] uppercase text-black/40 dark:text-white/40 mb-3 md:mb-6">
                 {item.category}
               </h3>
-              <p className="text-xl md:text-2xl font-medium tracking-tight text-black dark:text-white text-center whitespace-pre-line leading-relaxed">
+              <p className="text-lg md:text-2xl font-medium tracking-tight text-black dark:text-white text-center whitespace-pre-line leading-relaxed">
                 {item.title}
               </p>
             </motion.div>
