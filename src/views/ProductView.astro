@@ -8,7 +8,7 @@ import Credits from '@/components/Credits.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import VoiceStill from '@/components/product/VoiceStill.astro';
-import type { Product, ProductPage } from '@/data/products';
+import { productPath, type Product, type ProductPage } from '@/data/products';
 import { href, strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -33,7 +33,7 @@ const specs = [
 
 <Base
   lang={lang}
-  path={`/${product.slug}/`}
+  path={productPath(product)}
   title={`${product.name[lang]} — ${t.site.title}`}
   description={product.logline?.[lang]}
   firstScene={`01 — ${t.scenes.keyArt}`}
@@ -109,7 +109,7 @@ const specs = [
         </ul>
       </div>
 
-      <a class="next" href={href(lang, '/#slate')} data-reveal style="--i:3">
+      <a class="next" href={href(lang, '/works/#slate')} data-reveal style="--i:3">
         <span class="meta">{t.product.next}</span>
         <span class="display next__title">{t.product.nextTba}</span>
         <span class="arrow" aria-hidden="true">→</span>

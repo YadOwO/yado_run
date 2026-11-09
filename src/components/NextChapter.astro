@@ -1,0 +1,89 @@
+---
+/**
+ * 每一章的结尾：「下一章」。像片尾接下一集的预告，一整条可点；
+ * 已经是最后一章时，改成「回到目录」。
+ */
+import { chapterNo, chapterPath, nextChapter } from '@/data/chapters';
+import { href, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  /** 当前章的 slug */
+  slug: string;
+  scene: string;
+}
+
+const { lang, slug, scene } = Astro.props;
+const t = strings[lang];
+const next = nextChapter(slug);
+const link = next ? href(lang, chapterPath(next)) : href(lang, '/#chapters');
+const kicker = next ? `${t.chapters.next} — ${t.chapters.chapter}${chapterNo(next.slug)}` : t.chapters.back;
+const title = next ? next.title[lang] : t.hud.prologue;
+---
+
+<section class="next" data-scene={scene} data-scene-label={t.scenes.next}>
+  <a class="band" href={link} data-reveal>
+    <span class="meta kicker">{kicker}</span>
+    <span class="display title">{title}</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </a>
+</section>
+
+<style>
+  .next {
+    padding: clamp(64px, 12svh, 140px) var(--gutter) 0;
+  }
+
+  .band {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    row-gap: 18px;
+    padding: clamp(28px, 5svh, 48px) 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  /* 悬停时一道很淡的光从左扫到右 */
+  .band::after {
+    content: '';
+    position: absolute;
+    inset: 0 -40%;
+    background: linear-gradient(100deg, transparent 40%, rgb(236 232 225 / 0.04) 50%, transparent 60%);
+    transform: translateX(-60%);
+    transition: transform 1.6s var(--ease-film);
+    pointer-events: none;
+  }
+
+  .kicker {
+    grid-column: 1 / -1;
+  }
+
+  .title {
+    font-size: var(--fs-title);
+    transition: transform 1s var(--ease-film);
+  }
+
+  .arrow {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    color: var(--ink-2);
+    padding-bottom: 0.3em;
+    transition: transform 1s var(--ease-film);
+  }
+
+  @media (hover: hover) {
+    .band:hover::after {
+      transform: translateX(60%);
+    }
+
+    .band:hover .title {
+      transform: translateX(12px);
+    }
+
+    .band:hover .arrow {
+      transform: translateX(8px);
+    }
+  }
+</style>

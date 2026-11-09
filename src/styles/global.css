@@ -92,6 +92,11 @@ img {
   color: var(--ink-2);
 }
 
+/* 中文没有真正的斜体，强调只靠颜色 */
+:lang(zh) .display em {
+  font-style: normal;
+}
+
 .meta {
   font-family: var(--font-mono);
   font-size: var(--fs-meta);

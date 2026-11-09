@@ -1,15 +1,15 @@
 ---
 /**
  * 产品主视觉：暗场 + 产品色的地灯 + 品牌标志。
- * 首页是一块 2.39:1 的画幅（panel），产品页是整屏（full）；
- * 两处共用同一个 view-transition-name，点击后画幅会直接放大成产品页首屏。
+ * 首页目录里是一帧小缩略（thumb），作品章是一块 2.39:1 的画幅（panel），产品页是整屏（full）；
+ * 三处共用同一个 view-transition-name，一路点进去，画面会从缩略放大到画幅、再放大成产品页首屏。
  */
 import type { Product } from '@/data/products';
 import yadoaMark from '@/assets/yadoa-mark.svg?raw';
 
 interface Props {
   product: Product;
-  variant: 'panel' | 'full';
+  variant: 'thumb' | 'panel' | 'full';
 }
 
 const { product, variant } = Astro.props;
@@ -72,7 +72,8 @@ const mark = marks[product.slug];
     contain: paint;
   }
 
-  .keyart--panel {
+  .keyart--panel,
+  .keyart--thumb {
     aspect-ratio: 2.39 / 1;
   }
 
@@ -183,16 +184,39 @@ const mark = marks[product.slug];
   .label--br { bottom: 40px; right: 40px; }
 
   .keyart--full .crop,
-  .keyart--full .label {
+  .keyart--full .label,
+  .keyart--thumb .label {
     display: none;
   }
 
+  .keyart--thumb .crop {
+    width: 10px;
+    height: 10px;
+  }
+
+  .keyart--thumb .crop--tl { top: 12px; left: 12px; }
+  .keyart--thumb .crop--tr { top: 12px; right: 12px; }
+  .keyart--thumb .crop--bl { bottom: 12px; left: 12px; }
+  .keyart--thumb .crop--br { bottom: 12px; right: 12px; }
+
   /* 滚动推镜：支持滚动时间线的浏览器里，标志随滚动缓慢放大 */
   @supports (animation-timeline: view()) {
+    /*
+     * 时间线挂在画幅本身：.keyart 是 overflow:hidden，自己就是滚动容器，
+     * 里面的 .mark 用 view() 会去看这个不会滚的盒子，进度永远卡在一半。
+     * 范围用默认的 cover（进画到出画）。
+     */
+    .keyart--panel {
+      view-timeline: --keyart block;
+    }
+
     .keyart--panel .mark {
       animation: push-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% exit 100%;
+    }
+
+    /* animation-timeline 必须单独一条规则：CSS 压缩会把它并进 animation 简写，Chrome 不认，整条丢掉 */
+    .keyart--panel > .mark {
+      animation-timeline: --keyart;
     }
 
     @keyframes push-in {

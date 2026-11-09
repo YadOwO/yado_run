@@ -149,6 +149,11 @@ export const PRODUCTS: Product[] = [
 
 export const featuredProduct = PRODUCTS.find((p) => p.featured);
 
+/** 产品页挂在作品章下面：/works/yadoa/ */
+export function productPath(product: Product): string {
+  return `/works/${product.slug}/`;
+}
+
 /** 还没公开的作品：海报墙不公开时只计数 */
 export const unannounced = PRODUCTS.filter((p) => !p.featured && p.status !== 'now-showing');
 

@@ -24,13 +24,16 @@ const en = {
   site: {
     title: 'Yado — A Yado Production',
     description:
-      'Yado is an AI front-end engineer and the maker of the yado series of apps. This is where they premiere.',
+      'Yado, AI front-end engineer. A personal site told in chapters: the person, the yado series of apps, and more to come.',
   },
   hud: {
     home: 'Yado — home',
     language: 'Language',
     scene: 'Scene',
     timecode: 'Timecode',
+    index: 'Index',
+    close: 'Close',
+    prologue: 'Prologue',
   },
   opening: {
     credit: 'A Yado Production',
@@ -38,6 +41,11 @@ const en = {
   },
   scenes: {
     manifesto: 'Manifesto',
+    contents: 'Contents',
+    statement: 'In my words',
+    principles: 'How I work',
+    offscreen: 'Off-screen',
+    next: 'Next chapter',
     comingSoon: 'Coming soon',
     slate: 'The slate',
     credits: 'End credits',
@@ -48,10 +56,31 @@ const en = {
     release: 'Release',
   },
   hero: {
-    lines: ['One person.', 'A few <em>quiet</em>,', 'useful things.'],
-    lede: "I'm Yado, an AI front-end engineer. Every app in the yado series is made here — and premieres here first.",
+    lines: ['Hard problems,', 'solved with', '<em>restraint</em>.'],
+    lede: "I'm Yado, an AI front-end engineer. I'd rather get every interaction right than change the world. Here's the person, the work, and whatever comes next.",
     scroll: 'Scroll',
   },
+  chapters: {
+    heading: 'Contents',
+    chapter: 'CH.',
+    enter: 'Enter',
+    reservedTitle: 'Untitled',
+    reserved: 'In development',
+    reservedNote: 'The next chapter is still being written.',
+    next: 'Next chapter',
+    back: 'Back to contents',
+  },
+  about: {
+    labels: { role: 'Role', identity: 'Identity', contact: 'Contact' },
+    principles: 'How I work.',
+    offscreen: 'When the screen is off.',
+    still: 'Still',
+  },
+  works: {
+    title: 'The yado series',
+    lede: 'Small apps for everyday things, made one at a time. Every one of them premieres here first.',
+  },
+  statusCount: (n: number, label: string) => `${n} ${label}`,
   feature: {
     enter: 'Enter',
   },
@@ -109,13 +138,16 @@ const en = {
 const zh: typeof en = {
   site: {
     title: 'Yado — 芽豆出品',
-    description: 'Yado，AI 前端工程师，芽豆系列 App 的作者。芽豆系列在这里首映。',
+    description: 'Yado，AI 前端工程师。一个分章节的个人站：人物、芽豆系列作品，以及之后的更多。',
   },
   hud: {
     home: 'Yado — 首页',
     language: '语言',
     scene: '场景',
     timecode: '时间码',
+    index: '目录',
+    close: '关闭',
+    prologue: '序',
   },
   opening: {
     credit: '芽豆出品 · A Yado Production',
@@ -123,6 +155,11 @@ const zh: typeof en = {
   },
   scenes: {
     manifesto: '主张',
+    contents: '目录',
+    statement: '自述',
+    principles: '做事的方式',
+    offscreen: '屏幕之外',
+    next: '下一章',
     comingSoon: '即将上映',
     slate: '片单',
     credits: '片尾',
@@ -133,10 +170,31 @@ const zh: typeof en = {
     release: '上映信息',
   },
   hero: {
-    lines: ['一个人，', '做几件安静、', '好用的小东西。'],
-    lede: '我是 Yado，AI 前端工程师。芽豆系列的每一个 App 都出自这里，也先在这里首映。',
+    lines: ['用最<em>克制</em>的方式，', '解决最复杂的问题。'],
+    lede: '我是 Yado，AI 前端工程师。比起改变世界，我更在乎把每一个交互打磨到位。这里有我这个人、我做的东西，以及之后的更多。',
     scroll: '向下',
   },
+  chapters: {
+    heading: '目录',
+    chapter: 'CH.',
+    enter: '进入',
+    reservedTitle: '暂未命名',
+    reserved: '筹备中',
+    reservedNote: '下一章还在写。',
+    next: '下一章',
+    back: '回到目录',
+  },
+  about: {
+    labels: { role: '角色', identity: '身份', contact: '联系' },
+    principles: '做事的方式。',
+    offscreen: '关掉屏幕之后。',
+    still: '剧照',
+  },
+  works: {
+    title: '芽豆系列',
+    lede: '为日常小事做的小 App，一次只做一个。每一部都先在这里首映。',
+  },
+  statusCount: (n: number, label: string) => `${n} 部${label}`,
   feature: {
     enter: '进入',
   },

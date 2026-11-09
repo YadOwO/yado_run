@@ -1,8 +1,9 @@
 ---
 /**
- * 第一幕「主张」：宽银幕画幅里的一句话。
- * 入场跟着片头走（--intro-delay），不依赖滚动；遮幅和片头黑幕停在同一高度，衔接无缝。
+ * 序「主张」：宽银幕标题卡里的一句话，说的是这个人，不是某个产品。
+ * 入场跟着片头走（--intro-delay），不依赖滚动。
  */
+import TitleCard from '@/components/TitleCard.astro';
 import { strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -13,91 +14,20 @@ const { lang } = Astro.props;
 const t = strings[lang];
 ---
 
-<section class="hero" data-scene="01" data-scene-label={t.scenes.manifesto}>
-  <div class="beam" aria-hidden="true"></div>
-
-  <div class="frame">
-    <h1 class="display title">
-      {
-        t.hero.lines.map((line, i) => (
-          <span class="mask-line">
-            <span style={`--i:${i}`} set:html={line} />
-          </span>
-        ))
-      }
-    </h1>
-    <p class="lede">{t.hero.lede}</p>
-  </div>
-
-  <div class="letterbox letterbox--top" aria-hidden="true"></div>
-  <div class="letterbox letterbox--bottom">
-    <a class="cue meta" href="#coming-soon">
-      {t.hero.scroll}
-      <i aria-hidden="true"></i>
-    </a>
-  </div>
-</section>
+<TitleCard scene="01" label={t.scenes.manifesto} cue={{ href: '#chapters', label: t.hero.scroll }}>
+  <h1 class="display title">
+    {
+      t.hero.lines.map((line, i) => (
+        <span class="mask-line">
+          <span style={`--i:${i}`} set:html={line} />
+        </span>
+      ))
+    }
+  </h1>
+  <p class="lede">{t.hero.lede}</p>
+</TitleCard>
 
 <style>
-  .hero {
-    position: relative;
-    height: 100svh;
-    min-height: 520px;
-    overflow: hidden;
-  }
-
-  .letterbox {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: var(--lb);
-    background: var(--bg-deep);
-    z-index: 2;
-  }
-
-  .letterbox--top {
-    top: 0;
-  }
-
-  .letterbox--bottom {
-    bottom: 0;
-    display: grid;
-    place-items: center;
-  }
-
-  /* 放映机的光：从画幅顶部斜斜落下，极慢地漂移 */
-  .beam {
-    position: absolute;
-    inset: var(--lb) 0;
-    background:
-      radial-gradient(ellipse 46% 70% at 72% 0%, rgb(236 232 225 / 0.075), transparent 70%),
-      radial-gradient(ellipse 30% 40% at 18% 100%, rgb(236 232 225 / 0.03), transparent 70%);
-    animation:
-      beam-in 2.4s var(--ease-film) calc(var(--intro-delay) + 0.2s) both,
-      drift 22s ease-in-out infinite alternate;
-  }
-
-  @keyframes beam-in {
-    from {
-      opacity: 0;
-    }
-  }
-
-  @keyframes drift {
-    to {
-      transform: translate3d(-4%, 2%, 0) scale(1.05);
-    }
-  }
-
-  .frame {
-    position: absolute;
-    inset: var(--lb) var(--gutter);
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    align-content: center;
-    row-gap: clamp(28px, 5svh, 56px);
-  }
-
   .title {
     grid-column: 1 / span 10;
     font-size: var(--fs-hero);
@@ -109,46 +39,7 @@ const t = strings[lang];
 
   .lede {
     grid-column: 8 / span 5;
-    animation: fade-up 1.6s var(--ease-film) calc(var(--intro-delay) + 0.7s) both;
-  }
-
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 16px, 0);
-    }
-  }
-
-  .cue {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    color: var(--ink-3);
-    animation: fade-up 1.2s var(--ease-film) calc(var(--intro-delay) + 1.2s) both;
-  }
-
-  .cue i {
-    position: relative;
-    width: 40px;
-    height: 1px;
-    background: var(--ink-4);
-    overflow: hidden;
-  }
-
-  .cue i::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--ink);
-    transform: translateX(-100%);
-    animation: scan 2.6s var(--ease-pen) infinite;
-  }
-
-  @keyframes scan {
-    60%,
-    100% {
-      transform: translateX(100%);
-    }
+    animation: enter-up 1.6s var(--ease-film) calc(var(--intro-delay) + 0.7s) both;
   }
 
   @media (max-width: 900px) {

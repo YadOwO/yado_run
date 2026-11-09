@@ -1,0 +1,130 @@
+---
+/**
+ * 宽银幕标题卡：每一章的第一屏（首页主张、人物、作品）都用它。
+ * 上下两条遮幅停在 --lb，和片头黑幕同一高度，片头开幕时衔接无缝；
+ * 中间是放映机的光，内容放进 slot，自己决定在 12 栏里怎么排。
+ */
+interface Props {
+  scene: string;
+  label: string;
+  accent?: string;
+  cue?: { href: string; label: string };
+  id?: string;
+}
+
+const { scene, label, accent, cue, id } = Astro.props;
+---
+
+<section class="card" id={id} data-scene={scene} data-scene-label={label} data-scene-accent={accent}>
+  <div class="beam" aria-hidden="true"></div>
+
+  <div class="frame">
+    <slot />
+  </div>
+
+  <div class="letterbox letterbox--top" aria-hidden="true"></div>
+  <div class="letterbox letterbox--bottom">
+    {
+      cue && (
+        <a class="cue meta" href={cue.href}>
+          {cue.label}
+          <i aria-hidden="true" />
+        </a>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .card {
+    position: relative;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
+  }
+
+  .letterbox {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: var(--lb);
+    background: var(--bg-deep);
+    z-index: 2;
+  }
+
+  .letterbox--top {
+    top: 0;
+  }
+
+  .letterbox--bottom {
+    bottom: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  /* 放映机的光：从画幅顶部斜斜落下，极慢地漂移 */
+  .beam {
+    position: absolute;
+    inset: var(--lb) 0;
+    background:
+      radial-gradient(ellipse 46% 70% at 72% 0%, rgb(236 232 225 / 0.075), transparent 70%),
+      radial-gradient(ellipse 30% 40% at 18% 100%, rgb(236 232 225 / 0.03), transparent 70%);
+    animation:
+      beam-in 2.4s var(--ease-film) calc(var(--intro-delay) + 0.2s) both,
+      drift 22s ease-in-out infinite alternate;
+  }
+
+  @keyframes beam-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes drift {
+    to {
+      transform: translate3d(-4%, 2%, 0) scale(1.05);
+    }
+  }
+
+  .frame {
+    position: absolute;
+    inset: var(--lb) var(--gutter);
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    align-content: center;
+    row-gap: clamp(28px, 5svh, 56px);
+  }
+
+  .cue {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink-3);
+    animation: enter-up 1.2s var(--ease-film) calc(var(--intro-delay) + 1.2s) both;
+  }
+
+  .cue i {
+    position: relative;
+    width: 40px;
+    height: 1px;
+    background: var(--ink-4);
+    overflow: hidden;
+  }
+
+  .cue i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: translateX(-100%);
+    animation: scan 2.6s var(--ease-pen) infinite;
+  }
+
+  @keyframes scan {
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+</style>

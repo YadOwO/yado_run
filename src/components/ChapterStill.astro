@@ -1,0 +1,82 @@
+---
+/**
+ * 目录里每一章的那一帧画面（2.39:1）。
+ * 人物：签名在暗场里写出来；作品：主推产品的主视觉缩略（和作品章、产品页共享 view transition）；
+ * 没有专属画面的章节（包括预留位）是一块空画幅。新章节想要自己的画面，在这里加一个分支。
+ */
+import KeyArt from '@/components/KeyArt.astro';
+import Signature from '@/components/Signature.astro';
+import { featuredProduct } from '@/data/products';
+
+interface Props {
+  /** 章节 slug；不传就是预留位 */
+  slug?: string;
+  /** 空画幅中间那行小字 */
+  placeholder?: string;
+}
+
+const { slug, placeholder } = Astro.props;
+---
+
+{
+  slug === 'works' && featuredProduct ? (
+    <KeyArt product={featuredProduct} variant="thumb" />
+  ) : (
+    <div class:list={['frame', { 'frame--empty': slug !== 'about' }]}>
+      <span class="crop crop--tl" aria-hidden="true" />
+      <span class="crop crop--tr" aria-hidden="true" />
+      <span class="crop crop--bl" aria-hidden="true" />
+      <span class="crop crop--br" aria-hidden="true" />
+      {slug === 'about' ? (
+        <Signature draw="inview" class="sig" />
+      ) : (
+        placeholder && <span class="meta placeholder">{placeholder}</span>
+      )}
+    </div>
+  )
+}
+
+<style>
+  .frame {
+    position: relative;
+    aspect-ratio: 2.39 / 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 52% 70% at 50% -10%, rgb(236 232 225 / 0.09), transparent 70%),
+      #0d0c0c;
+  }
+
+  .frame--empty {
+    background: var(--bg-raise);
+    outline: 1px solid var(--line);
+    outline-offset: -1px;
+  }
+
+  /* 子组件不接收作用域属性，用 :global 选中签名 */
+  .frame :global(.sig) {
+    width: 28%;
+    color: var(--ink);
+    --sig-scale: 0.8;
+    --sig-start: 0.3s;
+  }
+
+  .placeholder {
+    color: var(--ink-4);
+  }
+
+  .crop {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--ink-4);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .crop--tl { top: 12px; left: 12px; border-top-width: 1px; border-left-width: 1px; }
+  .crop--tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+  .crop--bl { bottom: 12px; left: 12px; border-bottom-width: 1px; border-left-width: 1px; }
+  .crop--br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+</style>

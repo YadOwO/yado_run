@@ -1,0 +1,89 @@
+---
+/**
+ * 作品章：芽豆系列。标题卡 → 即将上映（主推产品）→ 片单（海报墙预留）→ 下一章 → 片尾。
+ * 产品页挂在 /works/<slug>/ 下面。
+ */
+import Base from '@/layouts/Base.astro';
+import Credits from '@/components/Credits.astro';
+import NextChapter from '@/components/NextChapter.astro';
+import TitleCard from '@/components/TitleCard.astro';
+import Feature from '@/components/works/Feature.astro';
+import Slate from '@/components/works/Slate.astro';
+import { chapterNo, getChapter } from '@/data/chapters';
+import { featuredProduct } from '@/data/products';
+import { strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = strings[lang];
+const chapter = getChapter('works');
+const label = chapter.title[lang];
+---
+
+<Base
+  lang={lang}
+  path="/works/"
+  title={`${label} — ${t.site.title}`}
+  description={chapter.logline[lang]}
+  firstScene={`01 — ${label}`}
+>
+  <TitleCard scene="01" label={label} cue={{ href: '#coming-soon', label: t.hero.scroll }}>
+    <p class="meta kicker" data-enter>{t.chapters.chapter}{chapterNo('works')} — {label}</p>
+    <h1 class="display title" data-enter-lines>
+      <span class="mask-line"><span style="--i:1">{t.works.title}</span></span>
+    </h1>
+    <ul class="summary" data-enter style="--i:3">
+      {chapter.contents.map((x) => <li class="meta">{x[lang]}</li>)}
+    </ul>
+    <p class="lede" data-enter style="--i:3">{t.works.lede}</p>
+  </TitleCard>
+
+  {featuredProduct && <Feature lang={lang} product={featuredProduct} />}
+  <Slate lang={lang} />
+  <NextChapter lang={lang} slug="works" scene="04" />
+  <Credits lang={lang} scene="05" slot="footer" />
+</Base>
+
+<style>
+  .kicker {
+    grid-column: 1 / -1;
+  }
+
+  .title {
+    grid-column: 1 / span 10;
+    font-size: var(--fs-hero);
+  }
+
+  .summary {
+    grid-column: 1 / span 5;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em 1.6em;
+  }
+
+  .summary li:not(:last-child)::after {
+    content: '·';
+    margin-left: 1.6em;
+    color: var(--ink-4);
+  }
+
+  .lede {
+    grid-column: 8 / span 5;
+  }
+
+  @media (max-width: 900px) {
+    .title,
+    .summary,
+    .lede {
+      grid-column: 1 / -1;
+    }
+
+    .summary {
+      order: 1;
+    }
+  }
+</style>

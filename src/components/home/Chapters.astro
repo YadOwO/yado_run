@@ -1,0 +1,210 @@
+---
+/**
+ * 序「目录」：像影碟的章节选择。每一章一行：编号、章名、一句话、小节，右边是这一章的一帧画面。
+ * 章节来自 data/chapters.ts；末尾留一行「筹备中」，告诉人还有下一章。
+ */
+import ChapterStill from '@/components/ChapterStill.astro';
+import { CHAPTERS, RESERVE_NEXT_CHAPTER, chapterNo, chapterPath } from '@/data/chapters';
+import { href, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  scene: string;
+}
+
+const { lang, scene } = Astro.props;
+const t = strings[lang];
+const reservedNo = String(CHAPTERS.length + 1).padStart(2, '0');
+---
+
+<section class="chapters" id="chapters" data-scene={scene} data-scene-label={t.scenes.contents}>
+  <p class="meta heading" data-reveal>{t.chapters.heading}</p>
+
+  <ol class="list">
+    {
+      CHAPTERS.map((c, i) => (
+        <li class="item" data-reveal style={`--i:${i}`}>
+          <a class="row" href={href(lang, chapterPath(c))}>
+            <div class="text">
+              <div>
+                <p class="meta no">
+                  {t.chapters.chapter}
+                  {chapterNo(c.slug)}
+                </p>
+                <h2 class="display title">{c.title[lang]}</h2>
+              </div>
+              <div class="body">
+                <p class="logline">{c.logline[lang]}</p>
+                <ul class="meta case contents">
+                  {c.contents.map((x) => (
+                    <li>{x[lang]}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div class="still">
+              <ChapterStill slug={c.slug} />
+            </div>
+          </a>
+        </li>
+      ))
+    }
+    {
+      RESERVE_NEXT_CHAPTER && (
+        <li class="item item--reserved" data-reveal style={`--i:${CHAPTERS.length}`}>
+          <div class="slim">
+            <span class="meta no">
+              {t.chapters.chapter}
+              {reservedNo}
+            </span>
+            <span class="display slim__title">{t.chapters.reservedTitle}</span>
+            <span class="slim__note">{t.chapters.reservedNote}</span>
+            <span class="meta tag">{t.chapters.reserved}</span>
+          </div>
+        </li>
+      )
+    }
+  </ol>
+</section>
+
+<style>
+  .chapters {
+    padding: clamp(96px, 16svh, 180px) var(--gutter) clamp(48px, 8svh, 96px);
+  }
+
+  .heading {
+    margin-bottom: clamp(28px, 5svh, 48px);
+  }
+
+  .item {
+    border-top: 1px solid var(--line);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 28px;
+    padding: clamp(28px, 5svh, 48px) 0;
+  }
+
+  .text {
+    grid-column: 1 / span 5;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 28px;
+  }
+
+  .no {
+    margin-bottom: 18px;
+  }
+
+  .title {
+    font-size: clamp(2.5rem, 4.6vw, 4.75rem);
+    transition: transform 1s var(--ease-film);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .logline {
+    max-width: 30ch;
+    font-size: var(--fs-lede);
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  :lang(zh) .logline {
+    max-width: 22em;
+  }
+
+  .contents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4em 1.2em;
+  }
+
+  .contents li:not(:last-child)::after {
+    content: '·';
+    margin-left: 1.2em;
+    color: var(--ink-4);
+  }
+
+  .still {
+    grid-column: 6 / -1;
+    overflow: hidden;
+  }
+
+  .still > :global(*) {
+    transition: transform 1.4s var(--ease-film);
+  }
+
+  @media (hover: hover) {
+    a.row:hover .title {
+      transform: translateX(10px);
+    }
+
+    a.row:hover .still > :global(*) {
+      transform: scale(1.035);
+    }
+  }
+
+  /* 预留的下一章：一条细行，不占一整帧 */
+  .item--reserved {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .slim {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    align-items: baseline;
+    row-gap: 10px;
+    padding: clamp(22px, 3.5svh, 32px) 0;
+    color: var(--ink-3);
+  }
+
+  .slim .no {
+    grid-column: 1 / span 1;
+    margin: 0;
+  }
+
+  .slim__title {
+    grid-column: 2 / span 4;
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    color: var(--ink-3);
+  }
+
+  .slim__note {
+    grid-column: 6 / span 5;
+  }
+
+  .tag {
+    grid-column: 11 / -1;
+    justify-self: end;
+    color: var(--ink-4);
+  }
+
+  @media (max-width: 900px) {
+    .text,
+    .still {
+      grid-column: 1 / -1;
+    }
+
+    .still {
+      order: -1;
+    }
+
+    .slim .no,
+    .slim__title,
+    .slim__note,
+    .tag {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+</style>

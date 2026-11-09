@@ -1,11 +1,12 @@
 ---
-/** 首页：一部短片。片头 → 主张 → 即将上映 → 片单（预留）→ 片尾 */
+/**
+ * 首页 =「序」：片头 → 主张 → 目录 → 片尾。
+ * 具体内容都在各章里（人物、作品……），首页只负责开场和带路。
+ */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
 import Hero from '@/components/home/Hero.astro';
-import Feature from '@/components/home/Feature.astro';
-import Slate from '@/components/home/Slate.astro';
-import { featuredProduct } from '@/data/products';
+import Chapters from '@/components/home/Chapters.astro';
 import { strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -18,7 +19,6 @@ const t = strings[lang];
 
 <Base lang={lang} path="/" opening firstScene={`01 — ${t.scenes.manifesto}`}>
   <Hero lang={lang} />
-  {featuredProduct && <Feature lang={lang} product={featuredProduct} />}
-  <Slate lang={lang} />
-  <Credits lang={lang} scene="04" slot="footer" />
+  <Chapters lang={lang} scene="02" />
+  <Credits lang={lang} scene="03" slot="footer" />
 </Base>

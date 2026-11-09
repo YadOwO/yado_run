@@ -1,11 +1,11 @@
 ---
 /**
- * 第二幕「即将上映」：首页唯一有颜色的一幕，颜色来自当前主推产品。
+ * 作品章「即将上映」：颜色来自当前主推产品。
  * 整块画幅可点，点击后画幅放大成产品页首屏（共享 view-transition-name）。
  */
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
-import type { Product } from '@/data/products';
+import { productPath, type Product } from '@/data/products';
 import { href, strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -16,7 +16,7 @@ interface Props {
 const { lang, product } = Astro.props;
 const t = strings[lang];
 const other: Lang = lang === 'en' ? 'zh' : 'en';
-const link = product.page ? href(lang, `/${product.slug}/`) : undefined;
+const link = product.page ? href(lang, productPath(product)) : undefined;
 ---
 
 <section

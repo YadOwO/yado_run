@@ -18,27 +18,31 @@ No test runner is configured. `astro check` is not set up: @astrojs/check 0.9 cr
 
 ## Architecture
 
-Static Astro site, zero framework runtime. The whole site is designed as a short film: dark-only, cinematic, minimal. The only client JS is `src/scripts/stage.ts` (~1KB): reveal-on-scroll, HUD scene label, scroll timecode, skipping the opening.
+Static Astro site, zero framework runtime. The whole site is designed as a film told in chapters: dark-only, cinematic, minimal. The home page is the prologue (opening, manifesto, table of contents); each part of the site is a chapter with its own page (Portrait `/about/`, Filmography `/works/`, more later). The only client JS is `src/scripts/stage.ts` (~1KB): reveal-on-scroll, HUD scene label, scroll timecode, closing the index after a bfcache restore, skipping the opening.
 
 ```
 src/
   styles/tokens.css    # the only source of color / type / motion tokens
   styles/global.css    # base, grain + vignette, reveal utilities, view transitions
-  i18n/index.ts        # all user-facing strings (en + zh, zh typed from en)
-  data/products.ts     # the slate: every yado product; status drives labels everywhere
+  i18n/index.ts        # all UI strings (en + zh, zh typed from en)
+  data/chapters.ts     # the chapters (parts of the site); drives home contents, HUD index, next-chapter links, sitemap
+  data/about.ts        # Portrait chapter content (profile, principles, off-screen)
+  data/products.ts     # every yado product; status drives labels everywhere; product pages live at /works/<slug>/
   layouts/Base.astro   # head, fonts, HUD, opening flag, the one script
-  views/               # HomeView, ProductView — shared by en and zh pages
-  pages/               # thin wrappers: / and /zh/, /[product]/ and /zh/[product]/
-  components/          # Signature, Opening, Hud, KeyArt, StatusChip, Credits, home/*, product/*
+  views/               # HomeView, AboutView, WorksView, ProductView — shared by en and zh pages
+  pages/               # thin wrappers for en and zh/, plus sitemap.xml.ts (generated at build)
+  components/          # TitleCard, Hud + IndexMenu, ChapterStill, NextChapter, KeyArt, Signature, Opening, Credits, home/*, works/*, product/*
 ```
 
 ### Key Patterns
 
 - **Path alias:** use `@/` for imports from `src/`.
 - **Frame vs. color:** the frame (HUD, type, grain) is always monochrome. Color only enters through a product's `accent` (set as `--accent` on its scene). Never hard-code product colors in components.
-- **Products:** add a product by adding an entry to `PRODUCTS`. `SLATE_PUBLIC = false` keeps the home slate as anonymous poster slots.
+- **Chapters:** add a new part of the site by adding an entry to `CHAPTERS`, a view in `views/`, and pages at `pages/<slug>` and `pages/zh/<slug>` (zh pages import Noto Serif SC). Give it a frame in `ChapterStill.astro`. Home contents, the HUD index, next-chapter links and the sitemap follow automatically. `RESERVE_NEXT_CHAPTER` shows an "in development" row at the end.
+- **Products:** add a product by adding an entry to `PRODUCTS`. `SLATE_PUBLIC = false` keeps the Filmography slate as anonymous poster slots. Link to product pages with `productPath()`.
 - **i18n:** English at `/`, Chinese at `/zh/`. Every string needs both `en` and `zh`; build links with `href(lang, path)`.
 - **Motion:** only animate `transform`, `opacity`, `clip-path`. Use `--ease-film` / `--ease-pen` and the `data-reveal`, `data-reveal-lines`, `data-enter`, `data-inview` utilities rather than new JS. Respect `prefers-reduced-motion`.
+- **Scroll-driven animations:** put `animation-timeline` in its own rule (e.g. `.parent > .el { animation-timeline: ... }`), separate from the `animation` shorthand. The CSS minifier otherwise merges it into the shorthand, which Chrome rejects, dropping the whole declaration. Don't write `animation-range` with `entry`/`exit` (the minifier rewrites it wrongly). An `overflow: hidden` ancestor is a scroll container, so `view()` inside it never progresses; declare a named `view-timeline` on that ancestor instead.
 - **Scenes:** sections carry `data-scene`, `data-scene-label`, optionally `data-scene-accent` — the HUD reads them.
 - **Fonts:** self-hosted via Fontsource. Noto Serif SC is imported only in `pages/zh/*`.
 
