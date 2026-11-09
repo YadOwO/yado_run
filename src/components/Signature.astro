@@ -68,10 +68,15 @@ const strokes = [
     stroke-width: 16;
   }
 
+  /*
+   * 没开始写之前整笔藏在空隙里。空隙（2）比整笔（1）长，偏移 1.5 让整笔落在空隙正中，
+   * 两头各留 0.5 余量；如果空隙刚好等于笔长、偏移又多一点，下一段虚线会从笔尾露出来，
+   * 16 粗的平头笔画会在每笔末端留下一道小白线。
+   */
   .signature--draw path,
   :global(.js) .signature--inview path {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 1.001;
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1.5;
   }
 
   .signature--draw path,
@@ -80,7 +85,11 @@ const strokes = [
       calc(var(--sig-start, 0s) + var(--d) * var(--sig-scale, 1)) forwards;
   }
 
+  /* 从 1 开始（笔头刚好在空隙起点），不然前一小段时间什么都不画 */
   @keyframes write {
+    from {
+      stroke-dashoffset: 1;
+    }
     to {
       stroke-dashoffset: 0;
     }
