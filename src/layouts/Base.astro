@@ -27,7 +27,7 @@ interface Props {
   firstScene: string;
   /** 时间码换算用的“片长”（秒），整页滚完等于放完 */
   runtime?: number;
-  /** 产品自己的纸和墨：整页片框换成纸上墨字（见 tokens.css 的 data-theme='paper'） */
+  /** 产品自己的世界：整页换成产品 App 深色外观的底色和墨色（见 tokens.css 的 data-theme='app'） */
   theme?: ProductTheme;
 }
 
@@ -44,7 +44,7 @@ const themeStyle = theme
 ---
 
 <!doctype html>
-<html lang={htmlLang[lang]} class="no-js" data-theme={theme ? 'paper' : undefined} style={themeStyle}>
+<html lang={htmlLang[lang]} class="no-js" data-theme={theme ? 'app' : undefined} style={themeStyle}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -64,7 +64,7 @@ const themeStyle = theme
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
 
-    {/* 纸面主题的标题用系统衬线，不需要预载 Instrument Serif */}
+    {/* 产品主题的标题用系统衬线，不需要预载 Instrument Serif */}
     {!theme && <link rel="preload" href={serifWoff2} as="font" type="font/woff2" crossorigin />}
     <link rel="preload" href={monoWoff2} as="font" type="font/woff2" crossorigin />
 

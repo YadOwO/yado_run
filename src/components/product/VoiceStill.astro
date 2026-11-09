@@ -1,6 +1,6 @@
 ---
 /**
- * 剧照：App 里的一张语音卡片。用产品自己的纸色和墨色，把“一句话记两笔”演一遍：
+ * 剧照：App 里的一张语音卡片，用页面的底色和墨色（产品页有 theme 时就是 App 深色外观），把“一句话记两笔”演一遍：
  * 听到的话像墨水一样写出来 → 对勾写出 → 两笔账依次落下，每笔前面的色块上写出一个红对勾（App 里“刚记下”的样子）。
  * 卡片边框、行间细线、色块都是 App 里的手绘笔迹。滚动到眼前时只演一次。
  */
@@ -18,7 +18,7 @@ interface Props {
 const { still, lang } = Astro.props;
 ---
 
-<figure class="still" style={`--paper:${still.paper};--paper-ink:${still.ink}`} data-inview>
+<figure class="still" data-inview>
   <div class="stage">
     <div class="paper">
       <InkBox width={360} height={300} radius={26} seed="voice-still" />
@@ -70,7 +70,7 @@ const { still, lang } = Astro.props;
     gap: 28px;
   }
 
-  /* 暗场里：地灯打在纸下面 */
+  /* 地灯打在卡片下面 */
   .stage {
     position: relative;
     width: 100%;
@@ -80,30 +80,17 @@ const { still, lang } = Astro.props;
     background: radial-gradient(ellipse 40% 60% at 50% 100%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
   }
 
-  /* 纸面上：不用地灯，卡片像一张便签放在桌上 */
-  :global([data-theme='paper']) .stage {
-    background: none;
-  }
-
+  /* 卡片：App 的 PaperSurface，边框是手绘方框（InkBox），行间是手绘细线 */
   .paper {
-    /* 卡片里的墨和线都跟着卡片自己的墨色走，手绘方框、细线自动取用 */
-    --ink: var(--paper-ink);
-    --line: color-mix(in srgb, var(--paper-ink) 16%, transparent);
-
     position: relative;
     width: min(360px, 86vw);
     padding: 28px 26px 14px;
     border-radius: 26px;
-    background: var(--paper);
-    color: var(--paper-ink);
+    background: var(--bg-raise);
+    color: var(--ink);
     box-shadow: 0 40px 80px -20px rgb(0 0 0 / 0.7);
     transform: rotate(-1.2deg);
     font-family: var(--font-sans);
-  }
-
-  :global([data-theme='paper']) .paper {
-    background: var(--bg-raise);
-    box-shadow: 0 30px 60px -34px color-mix(in srgb, var(--paper-ink) 32%, transparent);
   }
 
   .heard {
@@ -115,7 +102,7 @@ const { still, lang } = Astro.props;
     line-height: 1.3;
   }
 
-  :global([data-theme='paper']) .heard {
+  :global([data-theme='app']) .heard {
     font-size: 1.3125rem;
   }
 
@@ -152,7 +139,7 @@ const { still, lang } = Astro.props;
     gap: 8px;
     margin-top: 22px;
     font-size: 0.8125rem;
-    color: color-mix(in oklab, var(--paper-ink) 60%, transparent);
+    color: var(--ink-2);
   }
 
   /* App 图标上那一笔对勾，用强调色写出来 */
@@ -260,7 +247,7 @@ const { still, lang } = Astro.props;
 
   .cat {
     font-size: 0.75rem;
-    color: color-mix(in srgb, var(--paper-ink) 50%, transparent);
+    color: var(--ink-3);
   }
 
   .amt {

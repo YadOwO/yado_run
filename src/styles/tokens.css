@@ -69,36 +69,25 @@
   --measure: 26em;
 }
 
-/* 片框的“调色”：暗角和胶片颗粒 */
-:root {
-  --vignette: rgb(0 0 0 / 0.55);
-  --grain-opacity: 0.06;
-}
-
 /*
- * 产品自己的世界（产品数据里的 theme）：纸上墨字。
- * --bg、--bg-raise、--ink、--paper-accent 由 Base 写在 <html> 的行内样式里，这里只推导其余的层级。
+ * 产品自己的世界（产品数据里的 theme）：用产品 App 的深色外观，和站点的暗场一路衔接，不会点进来突然变亮。
+ * --bg、--bg-raise、--ink 由 Base 写在 <html> 的行内样式里，这里按片框同样的层级推导其余的墨色。
  * 仍然只有一种墨色，颜色依旧只由产品场景的 --accent 带进来。
  */
-:root[data-theme='paper'] {
-  color-scheme: light;
-
-  --bg-deep: color-mix(in srgb, var(--bg) 93%, var(--ink));
-  --ink-2: color-mix(in srgb, var(--ink) 72%, transparent);
-  --ink-3: color-mix(in srgb, var(--ink) 52%, transparent);
-  --ink-4: color-mix(in srgb, var(--ink) 26%, transparent);
-  --line: color-mix(in srgb, var(--ink) 15%, transparent);
+:root[data-theme='app'] {
+  --bg-deep: color-mix(in srgb, var(--bg) 60%, black);
+  --ink-2: color-mix(in srgb, var(--ink) 64%, transparent);
+  --ink-3: color-mix(in srgb, var(--ink) 40%, transparent);
+  --ink-4: color-mix(in srgb, var(--ink) 20%, transparent);
+  /* App 的账本细线比片框的细线略重，手绘的起伏才看得出来 */
+  --line: color-mix(in srgb, var(--ink) 13%, transparent);
 
   /* 和 App 一样用系统衬线（Apple 设备上是 New York）；中文落到思源宋体 */
   --font-display: ui-serif, 'New York', 'Iowan Old Style', Georgia, 'Noto Serif SC', 'Songti SC', 'STSong', serif;
-
-  /* 纸张边缘微微发暗，颗粒换成深色纤维 */
-  --vignette: color-mix(in srgb, var(--ink) 9%, transparent);
-  --grain-opacity: 0.05;
 }
 
 /* 系统衬线比 Instrument Serif 宽，西文标题收小一档 */
-:root[data-theme='paper']:not(:lang(zh)) {
+:root[data-theme='app']:not(:lang(zh)) {
   --fs-title: clamp(2.375rem, 5vw, 5.25rem);
   --fs-h2: clamp(1.625rem, 2.8vw, 2.625rem);
 }

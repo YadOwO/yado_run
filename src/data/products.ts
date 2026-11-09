@@ -13,34 +13,30 @@ export interface Highlight {
   body: L10n;
 }
 
-/** 剧照：用产品自己的纸色和墨色，把一个核心动作演一遍；有了真实截图后可换成图片 */
+/** 剧照：在产品页的底色和墨色上，把一个核心动作演一遍；有了真实截图后可换成图片 */
 export interface Still {
   caption: L10n;
-  paper: string;
-  ink: string;
   heard: L10n;
   done: L10n;
   rows: { label: L10n; category: L10n; amount: string }[];
 }
 
 /**
- * 产品自己的世界：产品页不再是暗场，而是换成产品自己的纸和墨。
- * 片框（HUD、文字、线条）仍然只有一种墨色，只是从“暗场亮字”翻成“纸上墨字”；
- * 线条改成手绘，标题改用系统衬线（与 App 一致）。颜色取自 App 的浅色外观。
+ * 产品自己的世界：产品页换成产品 App 深色外观的底色和墨色，线条改成手绘，标题改用系统衬线（与 App 一致）。
+ * 用深色外观而不是浅色，是为了和站点的暗场一路衔接：点进来仍然是暗的，但已经是这个 App 的样子。
+ * 片框（HUD、文字、线条）仍然只有一种墨色；强调色仍是 Product.accent（它本来就是 App 深色外观里的那一档）。
  */
 export interface ProductTheme {
-  /** 页面底色（App 的 PaperBackground） */
+  /** 页面底色（App 的 PaperBackground，深色外观） */
   paper: string;
-  /** 比底色略亮的一层纸，用于卡片（App 的 PaperSurface） */
+  /** 比底色略亮的一层，用于卡片（App 的 PaperSurface，深色外观） */
   surface: string;
-  /** 墨色：文字、线条、HUD（App 的 AccentColor） */
+  /** 墨色：文字、线条、HUD（App 的 AccentColor，深色外观） */
   ink: string;
-  /** 纸上的强调色；暗场里用的仍是 Product.accent */
-  accent: string;
 }
 
 export interface ProductPage {
-  /** 有了就用产品自己的纸和墨来呈现产品页，否则沿用暗场 */
+  /** 有了就用产品 App 的样子来呈现产品页，否则沿用站点的暗场 */
   theme?: ProductTheme;
   /** 规格表里“形态”“账号”两栏，平台和年份取自产品本身 */
   format: L10n;
@@ -88,7 +84,7 @@ export const PRODUCTS: Product[] = [
       zh: '会听话的账本。说一句话，账就记好了。',
     },
     page: {
-      theme: { paper: '#F2EFE7', surface: '#FBF9F3', ink: '#17181A', accent: '#D5452B' },
+      theme: { paper: '#101112', surface: '#1B1C1E', ink: '#F2EFE7' },
       format: { en: 'iPhone', zh: 'iPhone' },
       account: {
         en: 'On-device first · one yado account across the series',
@@ -96,8 +92,6 @@ export const PRODUCTS: Product[] = [
       },
       still: {
         caption: { en: 'Still 01 — Voice entry', zh: '剧照 01 — 语音记账' },
-        paper: '#F2EFE7',
-        ink: '#17181A',
         heard: { en: '“Lunch 32, taxi 28”', zh: '「午饭 32，打车 28」' },
         done: { en: '2 entries logged', zh: '已记 2 笔' },
         rows: [

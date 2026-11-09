@@ -2,7 +2,7 @@
 /**
  * 产品页模版：每部作品同一套结构。
  * 主视觉 → 规格 → 剧照与看点 → 幕后 → 上映信息 → 下一部 → 片尾
- * 产品有自己的纸和墨（page.theme）时，整页换成产品的世界：纸上墨字、手绘线条、纸上的强调色。
+ * 产品有自己的世界（page.theme）时，整页换成产品 App 深色外观的样子：App 的底色和墨色、手绘线条、系统衬线。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
@@ -28,7 +28,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const { theme } = page;
 /** 有自己的世界就用手绘笔迹，否则是片框里的直线 */
 const hand = !!theme;
-const accent = theme?.accent ?? product.accent;
 
 const specs = [
   { label: t.product.specs.platform, value: product.platform, mono: true },
@@ -47,9 +46,9 @@ const specs = [
   firstScene={`01 — ${t.scenes.keyArt}`}
   theme={theme}
 >
-  <div class:list={['product', { 'product--hand': hand }]} style={`--accent:${accent}`}>
+  <div class:list={['product', { 'product--hand': hand }]} style={`--accent:${product.accent}`}>
     <!-- 01 主视觉 -->
-    <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={accent}>
+    <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={product.accent}>
       <KeyArt product={product} variant="full" />
       <div class="scrim" aria-hidden="true"></div>
 
@@ -84,7 +83,7 @@ const specs = [
     </section>
 
     <!-- 03 剧照与看点 -->
-    <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={accent}>
+    <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={product.accent}>
       {page.still && <VoiceStill still={page.still} lang={lang} />}
 
       <div class="list">
@@ -122,7 +121,7 @@ const specs = [
     </section>
 
     <!-- 05 上映信息 + 下一部 -->
-    <section class="release" data-scene="05" data-scene-label={t.scenes.release} data-scene-accent={accent}>
+    <section class="release" data-scene="05" data-scene-label={t.scenes.release} data-scene-accent={product.accent}>
       <InkRule hand={hand} heavy seed={`${product.slug}-release`} class="release__rule" />
       <div class="release__main">
         <div data-reveal><StatusChip status={product.status} lang={lang} /></div>

@@ -87,8 +87,8 @@ img {
   line-height: 1.18;
 }
 
-/* 纸面主题的系统衬线字面更大，行高放松一点，免得下行字母被遮罩切掉 */
-:root[data-theme='paper']:not(:lang(zh)) .display {
+/* 产品主题的系统衬线字面更大，行高放松一点，免得下行字母被遮罩切掉 */
+:root[data-theme='app']:not(:lang(zh)) .display {
   letter-spacing: -0.015em;
   line-height: 1.06;
 }
@@ -243,7 +243,7 @@ img {
 
 .vignette {
   inset: 0;
-  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, var(--vignette) 100%);
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(0 0 0 / 0.55) 100%);
 }
 
 .grain {
@@ -255,16 +255,12 @@ img {
   content: '';
   position: absolute;
   inset: -6%;
-  opacity: var(--grain-opacity);
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   will-change: transform;
   animation: grain 0.9s steps(6) infinite;
 }
 
-/* 纸面上：白噪点看不见，换成墨色的纸纤维 */
-:root[data-theme='paper'] .grain::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.09 0 0 0 0 0.09 0 0 0 0 0.1 0 0 0 1.4 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 
 @keyframes grain {
   0% { transform: translate3d(0, 0, 0); }
