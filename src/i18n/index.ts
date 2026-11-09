@@ -42,8 +42,7 @@ const en = {
   scenes: {
     manifesto: 'Manifesto',
     contents: 'Contents',
-    statement: 'In my words',
-    after: 'After hours',
+    hobbies: 'Hobbies',
     next: 'Next chapter',
     comingSoon: 'Coming soon',
     slate: 'The slate',
@@ -71,8 +70,6 @@ const en = {
   },
   about: {
     labels: { identity: 'Identity', job: 'Day job', making: 'Making', contact: 'Contact' },
-    behind: 'How it’s made.',
-    after: 'When I’m not coding.',
     still: 'Still',
   },
   works: {
@@ -155,8 +152,7 @@ const zh: typeof en = {
   scenes: {
     manifesto: '主张',
     contents: '目录',
-    statement: '自述',
-    after: '下班后',
+    hobbies: '爱好',
     next: '下一章',
     comingSoon: '即将上映',
     slate: '片单',
@@ -184,8 +180,6 @@ const zh: typeof en = {
   },
   about: {
     labels: { identity: '身份', job: '在职', making: '在做', contact: '联系' },
-    behind: '怎么做出来的。',
-    after: '不写代码的时候。',
     still: '剧照',
   },
   works: {

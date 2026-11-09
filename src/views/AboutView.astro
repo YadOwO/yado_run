@@ -1,6 +1,6 @@
 ---
 /**
- * 人物章：标题卡（签名 + 人物介绍卡）→ 自述 → 幕后 → 下班后 → 下一章 → 片尾。
+ * 人物章：标题卡（签名 + 人物介绍卡）→ 爱好 → 下一章 → 片尾。
  * 内容在 data/about.ts。
  */
 import Base from '@/layouts/Base.astro';
@@ -8,7 +8,7 @@ import Credits from '@/components/Credits.astro';
 import NextChapter from '@/components/NextChapter.astro';
 import Signature from '@/components/Signature.astro';
 import TitleCard from '@/components/TitleCard.astro';
-import { behind, hobbies, profile } from '@/data/about';
+import { hobbies, profile } from '@/data/about';
 import { chapterNo, chapterPath, getChapter } from '@/data/chapters';
 import { contact, href, strings, type Lang } from '@/i18n';
 
@@ -23,10 +23,6 @@ const label = chapter.title[lang];
 const worksHref = href(lang, chapterPath(getChapter('works')));
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** 自述按词（中文按字）拆开，滚动时逐个点亮 */
-const statement = profile.statement[lang];
-const tokens = lang === 'zh' ? Array.from(statement) : statement.split(' ');
-const joiner = lang === 'zh' ? '' : ' ';
 ---
 
 <Base
@@ -37,7 +33,7 @@ const joiner = lang === 'zh' ? '' : ' ';
   firstScene={`01 — ${label}`}
 >
   <!-- 01 标题卡：签名当片名，旁边是一张人物介绍卡 -->
-  <TitleCard scene="01" label={label} cue={{ href: '#statement', label: t.hero.scroll }}>
+  <TitleCard scene="01" label={label} cue={{ href: '#hobbies', label: t.hero.scroll }}>
     <p class="meta kicker" data-enter>{t.chapters.chapter}{chapterNo('about')} — {label}</p>
     <h1 class="name">
       <Signature draw class="sig" />
@@ -62,49 +58,11 @@ const joiner = lang === 'zh' ? '' : ' ';
     </dl>
   </TitleCard>
 
-  <!-- 02 自述：滚动到这里时，字一个一个亮起来 -->
-  <section class="statement" id="statement" data-scene="02" data-scene-label={t.scenes.statement}>
-    <p class="meta" data-reveal>{t.scenes.statement}</p>
-    <p class="display words">
-      {
-        tokens.map((w, i) => (
-          <Fragment>
-            <span class="w" style={`--p:${(i / tokens.length).toFixed(3)}`}>{w}</span>
-            {joiner}
-          </Fragment>
-        ))
-      }
-    </p>
-  </section>
-
-  <!-- 03 幕后：芽豆系列是怎么做出来的 -->
-  <section class="behind" data-scene="03" data-scene-label={t.scenes.behind}>
-    <div class="intro">
-      <h2 class="display heading" data-reveal-lines>
-        <span class="mask-line"><span>{t.about.behind}</span></span>
-      </h2>
-      <p class="intro__lede" data-reveal style="--i:1">{behind.lede[lang]}</p>
-    </div>
-    <ol class="rows">
-      {
-        behind.items.map((item, i) => (
-          <li class="row" data-reveal>
-            <span class="meta no">{pad(i + 1)}</span>
-            <h3 class="display row__label">{item.label[lang]}</h3>
-            <p class="row__body">{item.body[lang]}</p>
-          </li>
-        ))
-      }
-    </ol>
-  </section>
-
-  <!-- 04 下班后：一排剧照，几张都排得下（多了横向滑动） -->
-  <section class="after" data-scene="04" data-scene-label={t.scenes.after}>
-    <div class="intro">
-      <h2 class="display heading" data-reveal-lines>
-        <span class="mask-line"><span>{t.about.after}</span></span>
-      </h2>
-    </div>
+  <!-- 02 爱好：一排剧照，几张都排得下（多了横向滑动） -->
+  <section class="hobbies" id="hobbies" data-scene="02" data-scene-label={t.scenes.hobbies}>
+    <h2 class="display heading" data-reveal-lines>
+      <span class="mask-line"><span>{t.scenes.hobbies}</span></span>
+    </h2>
     <ol class="stills">
       {
         hobbies.map((h, i) => {
@@ -131,8 +89,8 @@ const joiner = lang === 'zh' ? '' : ' ';
     </ol>
   </section>
 
-  <NextChapter lang={lang} slug="about" scene="05" />
-  <Credits lang={lang} scene="06" slot="footer" />
+  <NextChapter lang={lang} slug="about" scene="03" />
+  <Credits lang={lang} scene="04" slot="footer" />
 </Base>
 
 <style>
@@ -174,129 +132,21 @@ const joiner = lang === 'zh' ? '' : ' ';
     padding-bottom: 2px;
   }
 
-  /* ---------- 02 自述 ---------- */
-  .statement {
+  /* ---------- 02 爱好 ---------- */
+  .hobbies {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: var(--gutter);
-    row-gap: 36px;
-    padding: clamp(96px, 16svh, 180px) var(--gutter);
-  }
-
-  .statement > .meta {
-    grid-column: 1 / -1;
-  }
-
-  .words {
-    grid-column: 1 / span 11;
-    font-size: var(--fs-h2);
-    line-height: 1.22;
-    text-wrap: pretty;
-    view-timeline: --statement block;
-  }
-
-  :lang(zh) .words {
-    line-height: 1.7;
-  }
-
-  /* 支持滚动时间线的浏览器：整段经过画面中部时，字按顺序从暗到亮 */
-  @supports (animation-timeline: view()) {
-    .w {
-      animation: lit linear both;
-      animation-range: cover calc(16% + var(--p) * 34%) cover calc(21% + var(--p) * 34%);
-    }
-
-    /* animation-timeline 必须单独一条规则：CSS 压缩会把它并进 animation 简写，Chrome 不认，整条丢掉 */
-    .words > .w {
-      animation-timeline: --statement;
-    }
-
-    @keyframes lit {
-      from {
-        opacity: 0.16;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .w {
-      animation: none;
-    }
-  }
-
-  /* ---------- 03 幕后 / 04 下班后：共用的段落框架 ---------- */
-  .behind,
-  .after {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    column-gap: var(--gutter);
     row-gap: 48px;
     margin: 0 var(--gutter);
     padding: clamp(80px, 14svh, 160px) 0;
     border-top: 1px solid var(--line);
   }
 
-  .intro {
-    grid-column: 1 / span 4;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
   .heading {
     font-size: var(--fs-h2);
   }
 
-  .intro__lede {
-    max-width: 26em;
-    color: var(--ink-2);
-    line-height: 1.7;
-  }
-
-  /* ---------- 03 幕后：一行一件事 ---------- */
-  .rows {
-    grid-column: 6 / -1;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 3rem minmax(6rem, 0.32fr) 1fr;
-    align-items: baseline;
-    gap: 16px;
-    padding: clamp(20px, 3svh, 28px) 0;
-    border-top: 1px solid var(--line);
-  }
-
-  .no {
-    color: var(--ink-4);
-  }
-
-  .row__label {
-    font-size: clamp(1.375rem, 1.9vw, 1.75rem);
-    line-height: 1.15;
-  }
-
-  :lang(zh) .row__label {
-    font-size: clamp(1.1875rem, 1.5vw, 1.375rem);
-  }
-
-  .row__body {
-    color: var(--ink-2);
-    max-width: 34em;
-  }
-
-  /* ---------- 04 下班后：一排剧照 ---------- */
-  .after .intro {
-    grid-column: 1 / -1;
-  }
-
-  /* 每张至少 220px、至多 360px；放不下就横向滑动，所以兴趣增减不用改样式 */
+  /* 每张至少 220px、至多 360px；放不下就横向滑动，所以爱好增减不用改样式 */
   .stills {
-    grid-column: 1 / -1;
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: minmax(220px, 360px);
@@ -401,10 +251,7 @@ const joiner = lang === 'zh' ? '' : ' ';
   /* ---------- 窄屏 ---------- */
   @media (max-width: 900px) {
     .name,
-    .card,
-    .words,
-    .intro,
-    .rows {
+    .card {
       grid-column: 1 / -1;
     }
 
@@ -418,21 +265,10 @@ const joiner = lang === 'zh' ? '' : ' ';
       grid-template-columns: 5.5em 1fr;
     }
 
-    .behind,
-    .after {
+    .hobbies {
       margin: 0;
       padding-left: var(--gutter);
       padding-right: var(--gutter);
-    }
-
-    /* 窄屏：编号一列，标签和说明上下排 */
-    .row {
-      grid-template-columns: 2.5rem 1fr;
-      row-gap: 8px;
-    }
-
-    .row__body {
-      grid-column: 2;
     }
 
     /* 剧照贴着右边缘滑出，和片单一致 */
