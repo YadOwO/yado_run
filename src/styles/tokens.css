@@ -1,0 +1,70 @@
+/**
+ * 设计令牌：全站唯一的颜色、字体、节奏来源。
+ * 片框永远是黑白的；颜色只由产品场景通过 --accent 带进来。
+ */
+:root {
+  color-scheme: dark;
+
+  /* 暗场 */
+  --bg: #0a0a0b;
+  --bg-raise: #111113;
+  --bg-deep: #050506;
+
+  /* 暖白：接近芽豆资产的纸色，不用纯白 */
+  --ink: #ece8e1;
+  --ink-2: rgb(236 232 225 / 0.64);
+  --ink-3: rgb(236 232 225 / 0.4);
+  --ink-4: rgb(236 232 225 / 0.2);
+  --line: rgb(236 232 225 / 0.1);
+
+  /* 默认强调色就是墨色本身；产品场景覆盖它 */
+  --accent: var(--ink);
+
+  /* 字体：衬线做主角，等宽做元信息，正文交给系统 */
+  --font-display: 'Instrument Serif', 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* 字号 */
+  --fs-hero: clamp(3rem, 7.4vw, 8.25rem);
+  --fs-title: clamp(2.5rem, 5.6vw, 6rem);
+  --fs-h2: clamp(1.75rem, 3.2vw, 3rem);
+  --fs-lede: clamp(1rem, 1.25vw, 1.1875rem);
+  --fs-body: 1rem;
+  --fs-meta: 0.6875rem;
+
+  /* 镜头节奏：慢、有分量、不回弹 */
+  --ease-film: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pen: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-cut: 0.45s;
+  --dur-move: 1.2s;
+  --dur-reveal: 1.4s;
+
+  /* 版式 */
+  --gutter: clamp(20px, 4.5vw, 64px);
+  --hud-inset: clamp(16px, 2.4vw, 32px);
+  --measure: 34ch;
+
+  /* 宽银幕遮幅：横屏按 2.39:1 计算，竖屏用细边 */
+  --lb: clamp(32px, calc((100svh - 100vw / 2.39) / 2), 18svh);
+
+  /* 片头之后正片元素的入场延迟；跳过片头时设为 0 */
+  --intro-delay: 3.3s;
+}
+
+@media (orientation: portrait) {
+  :root {
+    --lb: 9svh;
+  }
+}
+
+:root[data-opening='skip'] {
+  --intro-delay: 0.1s;
+}
+
+:lang(zh) {
+  --fs-hero: clamp(2.375rem, 5.8vw, 6.25rem);
+  --fs-title: clamp(2.25rem, 4.6vw, 4.75rem);
+  --measure: 26em;
+}

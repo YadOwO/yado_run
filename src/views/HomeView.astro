@@ -1,0 +1,24 @@
+---
+/** 首页：一部短片。片头 → 主张 → 即将上映 → 片单（预留）→ 片尾 */
+import Base from '@/layouts/Base.astro';
+import Credits from '@/components/Credits.astro';
+import Hero from '@/components/home/Hero.astro';
+import Feature from '@/components/home/Feature.astro';
+import Slate from '@/components/home/Slate.astro';
+import { featuredProduct } from '@/data/products';
+import { strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = strings[lang];
+---
+
+<Base lang={lang} path="/" opening firstScene={`01 — ${t.scenes.manifesto}`}>
+  <Hero lang={lang} />
+  {featuredProduct && <Feature lang={lang} product={featuredProduct} />}
+  <Slate lang={lang} />
+  <Credits lang={lang} scene="04" slot="footer" />
+</Base>

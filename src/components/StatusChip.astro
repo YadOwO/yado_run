@@ -1,0 +1,57 @@
+---
+/** 制作状态标签：一个强调色圆点 + 等宽小字；上映中/即将上映的圆点会呼吸 */
+import { strings, type Lang } from '@/i18n';
+import type { Status } from '@/data/products';
+
+interface Props {
+  status: Status;
+  lang: Lang;
+  class?: string;
+}
+
+const { status, lang, class: className } = Astro.props;
+const live = status === 'coming-soon' || status === 'now-showing';
+---
+
+<span class:list={['chip meta', { 'chip--live': live }, className]}>
+  <i class="dot" aria-hidden="true"></i>
+  {strings[lang].status[status]}
+</span>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9em;
+    color: var(--ink-2);
+  }
+
+  .dot {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .chip--live .dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    opacity: 0;
+    animation: pulse 2.8s var(--ease-film) infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.4);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+</style>

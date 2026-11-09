@@ -1,0 +1,322 @@
+@import './tokens.css';
+
+/* ---------- 基础 ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  line-height: 1.6;
+  /* 光晕等装饰允许画出边界，但绝不产生横向滚动 */
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ol,
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+svg,
+img {
+  display: block;
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 1px solid var(--ink-2);
+  outline-offset: 4px;
+}
+
+/* ---------- 排版原子 ---------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-wrap: balance;
+  letter-spacing: -0.01em;
+  line-height: 0.98;
+}
+
+:lang(zh) .display {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.18;
+}
+
+.display em {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+/* 专有名词（yadoA、iOS）保持原本大小写 */
+.meta.case {
+  text-transform: none;
+  letter-spacing: 0.1em;
+}
+
+.lede {
+  font-size: var(--fs-lede);
+  line-height: 1.7;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* 带下划线伸展的文字链接 */
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding-bottom: 6px;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.28);
+  transform-origin: left;
+  opacity: 0.5;
+  transition:
+    transform 0.9s var(--ease-film),
+    opacity 0.9s var(--ease-film);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.link .arrow {
+  transition: transform 0.9s var(--ease-film);
+}
+
+.link:hover .arrow {
+  transform: translateX(6px);
+}
+
+/* ---------- 入场：只在有 JS 时隐藏，保证无 JS 也能看到全部内容 ---------- */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity var(--dur-reveal) var(--ease-film),
+    transform var(--dur-reveal) var(--ease-film);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* 首屏入场：不等滚动，跟着片头（或页面切换）直接播放 */
+[data-enter] {
+  animation: enter-up var(--dur-reveal) var(--ease-film) calc(var(--intro-delay) + 0.25s + var(--i, 0) * 120ms) both;
+}
+
+[data-enter-lines] .mask-line > span {
+  animation: line-rise var(--dur-reveal) var(--ease-film) calc(var(--intro-delay) + 0.25s + var(--i, 0) * 120ms) both;
+}
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+}
+
+@keyframes line-rise {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+}
+
+/* 遮罩逐行升起 */
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+
+.mask-line > span {
+  display: block;
+}
+
+.js [data-reveal-lines] .mask-line > span {
+  transform: translate3d(0, 108%, 0);
+  transition: transform var(--dur-reveal) var(--ease-film);
+  transition-delay: calc(var(--i, 0) * 120ms);
+}
+
+.js [data-reveal-lines].is-in .mask-line > span {
+  transform: none;
+}
+
+/* ---------- 胶片颗粒与暗角：盖在一切之上，统一“调色” ---------- */
+.grain,
+.vignette {
+  position: fixed;
+  pointer-events: none;
+  z-index: 80;
+}
+
+.vignette {
+  inset: 0;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(0 0 0 / 0.55) 100%);
+}
+
+.grain {
+  inset: 0;
+  overflow: hidden;
+}
+
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: -6%;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 -0.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  will-change: transform;
+  animation: grain 0.9s steps(6) infinite;
+}
+
+@keyframes grain {
+  0% { transform: translate3d(0, 0, 0); }
+  17% { transform: translate3d(-2.5%, 1.5%, 0); }
+  33% { transform: translate3d(1.5%, -2.5%, 0); }
+  50% { transform: translate3d(-1.5%, -1%, 0); }
+  67% { transform: translate3d(2.5%, 2%, 0); }
+  83% { transform: translate3d(-1%, 2.5%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* ---------- 跨页：像剪辑一样切换 ---------- */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: vt-out var(--dur-cut) var(--ease-pen) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-in 0.7s var(--ease-pen) 0.2s both;
+}
+
+::view-transition-group(*) {
+  animation-duration: 1s;
+  animation-timing-function: var(--ease-film);
+}
+
+/* 主视觉放大：新旧两帧都铺满画幅，避免宽银幕与整屏比例不同造成重影 */
+::view-transition-old(*.keyart),
+::view-transition-new(*.keyart) {
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-group(*.keyart) {
+  animation-duration: 1.1s;
+}
+
+@keyframes vt-out {
+  to { opacity: 0; }
+}
+
+@keyframes vt-in {
+  from { opacity: 0; }
+}
+
+/* ---------- 减少动态效果：一切直接出现 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  .grain::before {
+    animation: none;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

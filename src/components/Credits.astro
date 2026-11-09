@@ -1,0 +1,120 @@
+---
+/**
+ * 片尾演职员表：当作全站页脚。
+ * 一个人包揽导演、设计、工程，再加上一起干活的 agent，幕后的故事在这里交代。
+ */
+import Signature from './Signature.astro';
+import { contact, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  scene: string;
+}
+
+const { lang, scene } = Astro.props;
+const t = strings[lang];
+const year = new Date().getFullYear();
+---
+
+<footer class="credits" data-scene={scene} data-scene-label={t.scenes.credits}>
+  <p class="meta heading" data-reveal>{t.credits.heading}</p>
+
+  <dl class="roll">
+    {
+      t.credits.roles.map((r, i) => (
+        <div class="row" data-reveal style={`--i:${i}`}>
+          <dt class="meta">{r.role}</dt>
+          <dd class="display">{r.name}</dd>
+        </div>
+      ))
+    }
+    <div class="row row--gap" data-reveal style={`--i:${t.credits.roles.length}`}>
+      <dt class="meta">{t.credits.contact}</dt>
+      <dd>
+        <a class="link" href={`mailto:${contact.email}`}>{contact.email}</a>
+      </dd>
+    </div>
+    <div class="row" data-reveal style={`--i:${t.credits.roles.length + 1}`}>
+      <dt class="meta">{contact.github.label}</dt>
+      <dd>
+        <a class="link" href={contact.github.url} rel="noopener">{contact.github.handle}</a>
+      </dd>
+    </div>
+  </dl>
+
+  <div class="end">
+    <Signature draw="inview" class="sig" />
+    <p class="display tbc" data-reveal style="--i:4">{t.credits.tbc}</p>
+    <p class="meta fine">© {year} Yado · yado1225.top</p>
+  </div>
+</footer>
+
+<style>
+  .credits {
+    padding: clamp(96px, 14svh, 160px) var(--gutter) calc(var(--hud-inset) + 72px);
+    text-align: center;
+  }
+
+  .heading {
+    margin-bottom: clamp(48px, 8svh, 88px);
+  }
+
+  .roll {
+    display: grid;
+    gap: 22px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: baseline;
+    gap: clamp(20px, 3vw, 40px);
+  }
+
+  .row--gap {
+    margin-top: 40px;
+  }
+
+  dt {
+    text-align: right;
+  }
+
+  dd {
+    text-align: left;
+    font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+    color: var(--ink);
+  }
+
+  dd .link {
+    font-size: 0.95rem;
+    color: var(--ink-2);
+  }
+
+  .end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    margin-top: clamp(120px, 20svh, 220px);
+  }
+
+  .end :global(.sig) {
+    width: 92px;
+    color: var(--ink);
+  }
+
+  .tbc {
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    font-style: italic;
+    color: var(--ink-2);
+  }
+
+  :lang(zh) .tbc {
+    font-style: normal;
+  }
+
+  .fine {
+    margin-top: 40px;
+    color: var(--ink-4);
+  }
+</style>

@@ -1,0 +1,68 @@
+---
+/**
+ * Yado 签名。原图是三笔描边，这里拆成书写顺序的五段。
+ * draw=true：页面加载后一笔一笔写出来；draw="inview"：滚动到眼前时再写。纯 CSS 驱动。
+ */
+interface Props {
+  draw?: boolean | 'inview';
+  class?: string;
+  label?: string;
+}
+
+const { draw = false, class: className, label = 'Yado' } = Astro.props;
+
+/** 书写顺序：y 的左臂 → 长笔（y 的尾、a、d 的竖）→ 进环 → 绕环 → 出锋。delay/dur 单位为秒 */
+const strokes = [
+  { d: 'M7.95612 101.968C7.95612 101.968 17.894 196.968 57.6456 199.468C97.3971 201.968 147.087 164.468 147.087 164.468', delay: 0, dur: 0.55 },
+  { d: 'M12.925 301.968C12.925 301.968 77.5213 106.968 124.726 106.968C171.931 106.968 157.024 226.968 204.229 226.968C251.434 226.968 308.577 1.9682 308.577 1.9682', delay: 0.5, dur: 1.15 },
+  { d: 'M171.931 149.468C171.931 149.468 243.981 111.968 278.764 111.968C308.522 111.968 331.954 118.335 356.831 131.069', delay: 1.6, dur: 0.4 },
+  { d: 'M356.831 131.069C358.954 132.156 361.087 133.289 363.236 134.468C389.141 148.687 388.893 184.339 373.174 209.468C357.972 233.769 332.436 240.505 306.093 229.468C265.627 212.514 322.687 160.889 355.782 131.968C356.126 131.668 356.475 131.368 356.831 131.069', delay: 1.98, dur: 0.6 },
+  { d: 'M356.831 131.069C374.823 115.927 407.956 101.968 407.956 101.968', delay: 2.56, dur: 0.28 },
+];
+---
+
+<svg
+  class:list={[
+    'signature',
+    { 'signature--draw': draw === true, 'signature--inview': draw === 'inview' },
+    className,
+  ]}
+  viewBox="0 0 412 305"
+  fill="none"
+  role="img"
+  aria-label={label}
+  data-inview={draw === 'inview' ? '' : undefined}
+>
+  {strokes.map((s) => <path d={s.d} pathLength="1" style={`--d:${s.delay}s;--t:${s.dur}s`} />)}
+</svg>
+
+<style>
+  .signature {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  path {
+    stroke: currentColor;
+    stroke-width: 16;
+  }
+
+  .signature--draw path,
+  :global(.js) .signature--inview path {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1.001;
+  }
+
+  .signature--draw path,
+  :global(.js) .signature--inview.is-in path {
+    animation: write calc(var(--t) * var(--sig-scale, 1)) var(--ease-pen)
+      calc(var(--sig-start, 0s) + var(--d) * var(--sig-scale, 1)) forwards;
+  }
+
+  @keyframes write {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

@@ -1,0 +1,218 @@
+---
+/**
+ * 产品主视觉：暗场 + 产品色的地灯 + 品牌标志。
+ * 首页是一块 2.39:1 的画幅（panel），产品页是整屏（full）；
+ * 两处共用同一个 view-transition-name，点击后画幅会直接放大成产品页首屏。
+ */
+import type { Product } from '@/data/products';
+import yadoaMark from '@/assets/yadoa-mark.svg?raw';
+
+interface Props {
+  product: Product;
+  variant: 'panel' | 'full';
+}
+
+const { product, variant } = Astro.props;
+
+/** 从原始 SVG 里取出路径；强调色那一笔（对勾）加遮罩，入画时从左往右“写”出来 */
+function buildMark(raw: string, slug: string) {
+  const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100';
+  const paths = [...raw.matchAll(/<path d="([^"]+)"[^>]*fill="([^"]+)"/g)].map((m) => ({ d: m[1], fill: m[2] }));
+  return { viewBox, paths, maskId: `wipe-${slug}` };
+}
+
+const marks: Record<string, ReturnType<typeof buildMark> & { wipe: [number, number, number, number] }> = {
+  yadoa: { ...buildMark(yadoaMark, 'yadoa'), wipe: [330, 490, 440, 260] },
+};
+
+const mark = marks[product.slug];
+---
+
+<div
+  class:list={['keyart', `keyart--${variant}`]}
+  style={`view-transition-name: keyart-${product.slug}; view-transition-class: keyart; --accent: ${product.accent}`}
+  data-inview
+>
+  <div class="light" aria-hidden="true"></div>
+  <div class="floor" aria-hidden="true"></div>
+
+  <div class="mark">
+    {
+      mark ? (
+        <svg viewBox={mark.viewBox} fill="none" role="img" aria-label={product.codename}>
+          <defs>
+            <mask id={mark.maskId} maskUnits="userSpaceOnUse">
+              <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
+            </mask>
+          </defs>
+          {mark.paths.map((p, i) => (
+            <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${mark.maskId})` : undefined} />
+          ))}
+        </svg>
+      ) : (
+        <span class="mark__fallback display">{product.codename}</span>
+      )
+    }
+  </div>
+
+  <span class="crop crop--tl" aria-hidden="true"></span>
+  <span class="crop crop--tr" aria-hidden="true"></span>
+  <span class="crop crop--bl" aria-hidden="true"></span>
+  <span class="crop crop--br" aria-hidden="true"></span>
+  <span class="label label--tl meta case" aria-hidden="true">{product.codename} — {product.year}</span>
+  <span class="label label--br meta case" aria-hidden="true">{product.platform}</span>
+</div>
+
+<style>
+  .keyart {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0d0c0c;
+    contain: paint;
+  }
+
+  .keyart--panel {
+    aspect-ratio: 2.39 / 1;
+  }
+
+  .keyart--full {
+    position: absolute;
+    inset: 0;
+  }
+
+  @media (orientation: portrait) {
+    .keyart--panel {
+      aspect-ratio: 4 / 5;
+    }
+  }
+
+  /* 地灯：产品色从画面底部打上来；顶部一层很淡的冷光补光 */
+  .light {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 58% 62% at 50% 108%, color-mix(in oklab, var(--accent) 46%, transparent) 0%, transparent 72%),
+      radial-gradient(ellipse 44% 38% at 50% -4%, rgb(236 232 225 / 0.07), transparent 70%);
+    animation: breathe 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes breathe {
+    from {
+      opacity: 0.78;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 舞台地面的一圈投影 */
+  .floor {
+    position: absolute;
+    left: 50%;
+    bottom: 14%;
+    width: 34%;
+    height: 7%;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.55), transparent);
+    filter: blur(6px);
+  }
+
+  .mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .mark svg {
+    height: 52%;
+    width: auto;
+    filter: drop-shadow(0 28px 48px rgb(0 0 0 / 0.55));
+    transition: transform 1.4s var(--ease-film);
+  }
+
+  .keyart--full .mark svg {
+    height: min(40svh, 58vw);
+    translate: 0 -6svh;
+  }
+
+  .mark__fallback {
+    font-size: var(--fs-title);
+    color: var(--ink);
+  }
+
+  /* 对勾的书写：遮罩矩形从左往右展开 */
+  .wipe {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+
+  :global(.js) .wipe {
+    transform: scaleX(0);
+  }
+
+  :global(.js) .keyart.is-in .wipe {
+    transform: scaleX(1);
+    transition: transform 1s var(--ease-pen) 0.55s;
+  }
+
+  /* 取景框的四角裁切线 */
+  .crop {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: var(--ink-4);
+    border-style: solid;
+    border-width: 0;
+  }
+
+  .crop--tl { top: 18px; left: 18px; border-top-width: 1px; border-left-width: 1px; }
+  .crop--tr { top: 18px; right: 18px; border-top-width: 1px; border-right-width: 1px; }
+  .crop--bl { bottom: 18px; left: 18px; border-bottom-width: 1px; border-left-width: 1px; }
+  .crop--br { bottom: 18px; right: 18px; border-bottom-width: 1px; border-right-width: 1px; }
+
+  .label {
+    position: absolute;
+    color: var(--ink-3);
+  }
+
+  .label--tl { top: 40px; left: 40px; }
+  .label--br { bottom: 40px; right: 40px; }
+
+  .keyart--full .crop,
+  .keyart--full .label {
+    display: none;
+  }
+
+  /* 滚动推镜：支持滚动时间线的浏览器里，标志随滚动缓慢放大 */
+  @supports (animation-timeline: view()) {
+    .keyart--panel .mark {
+      animation: push-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+
+    @keyframes push-in {
+      from {
+        transform: scale(0.94);
+      }
+      to {
+        transform: scale(1.08);
+      }
+    }
+  }
+
+  @media (hover: hover) {
+    :global(a:hover) > .keyart .mark svg {
+      transform: translateY(-8px);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .label--tl { top: 32px; left: 32px; }
+    .label--br { bottom: 32px; right: 32px; }
+  }
+</style>

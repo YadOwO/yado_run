@@ -1,0 +1,13 @@
+---
+import '@fontsource/noto-serif-sc/500.css';
+import ProductView from '@/views/ProductView.astro';
+import { productsWithPage } from '@/data/products';
+
+export function getStaticPaths() {
+  return productsWithPage.map((product) => ({ params: { product: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props;
+---
+
+<ProductView lang="zh" product={product} />

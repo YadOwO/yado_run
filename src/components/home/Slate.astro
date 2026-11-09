@@ -1,0 +1,176 @@
+---
+/**
+ * 第三幕「片单」：海报墙的预留位。
+ * 海报墙未公开（SLATE_PUBLIC = false）时，只露出数量和空白的 2:3 海报位，不露片名与颜色；
+ * 公开后，这里的每个空位换成真正的海报，版式不变；作品多了自动换行。
+ */
+import { unannounced } from '@/data/products';
+import { strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = strings[lang];
+const count = unannounced.length;
+const pad = (n: number) => String(n).padStart(2, '0');
+// 中文在逗号后断行，避免“正 / 在拍摄”这种断法
+const headingLines = t.slate.count(count).split(/(?<=，)/);
+---
+
+{
+  count > 0 && (
+    <section class="slate" id="slate" data-scene="03" data-scene-label={t.scenes.slate}>
+      <div class="intro">
+        <h2 class="display heading" data-reveal-lines>
+          {headingLines.map((line, i) => (
+            <span class="mask-line">
+              <span style={`--i:${i}`}>{line}</span>
+            </span>
+          ))}
+        </h2>
+        <p class="meta" data-reveal style="--i:2">
+          {t.slate.note}
+        </p>
+      </div>
+
+      <ol class="slots">
+        {unannounced.map((_, i) => (
+          <li class="slot" data-reveal style={`--i:${i}`}>
+            <div class="poster">
+              <span class="meta no">No.{pad(i + 2)}</span>
+              <span class="untitled display">{t.slate.untitled}</span>
+              <span class="meta status">{t.slate.slot}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+<style>
+  .slate {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 48px;
+    margin: 0 var(--gutter);
+    padding: clamp(80px, 14svh, 160px) 0 clamp(80px, 12svh, 140px);
+    border-top: 1px solid var(--line);
+  }
+
+  .intro {
+    grid-column: 1 / span 4;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .heading {
+    font-size: var(--fs-h2);
+  }
+
+  .slots {
+    grid-column: 5 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+    gap: clamp(14px, 1.6vw, 24px);
+  }
+
+  .poster {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(180deg, rgb(236 232 225 / 0.025), transparent 40%),
+      var(--bg-raise);
+    overflow: hidden;
+    transition: border-color 1s var(--ease-film);
+  }
+
+  /* 悬停时一道很淡的光扫过，像放映机在等片 */
+  .poster::after {
+    content: '';
+    position: absolute;
+    inset: -20% -60%;
+    background: linear-gradient(105deg, transparent 40%, rgb(236 232 225 / 0.05) 50%, transparent 60%);
+    transform: translateX(-60%);
+    transition: transform 1.6s var(--ease-film);
+  }
+
+  .slot:hover .poster {
+    border-color: var(--ink-4);
+  }
+
+  .slot:hover .poster::after {
+    transform: translateX(60%);
+  }
+
+  .no {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+  }
+
+  .status {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+  }
+
+  .untitled {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+    font-style: italic;
+    color: var(--ink-4);
+  }
+
+  :lang(zh) .untitled {
+    font-style: normal;
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+  }
+
+  @media (max-width: 900px) {
+    .intro,
+    .slots {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* 手机：横向滑动，和未来的海报墙一致 */
+  @media (max-width: 640px) {
+    .slate {
+      margin: 0;
+      padding-left: var(--gutter);
+      padding-right: 0;
+      border-top: 0;
+    }
+
+    .intro {
+      padding-right: var(--gutter);
+    }
+
+    .slots {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding-right: var(--gutter);
+    }
+
+    .slots::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slot {
+      flex: 0 0 58vw;
+      scroll-snap-align: start;
+    }
+  }
+</style>

@@ -1,0 +1,182 @@
+---
+/**
+ * 取景器式的四角信息：左上签名回首页，右上语言，左下当前场景，右下时间码。
+ * 场景名和时间码由 scripts/stage.ts 随滚动更新；手机上只留上面两个角。
+ */
+import Signature from './Signature.astro';
+import { href, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  /** 不带语言前缀的当前路径，用来生成另一种语言的链接 */
+  path: string;
+  /** 首屏场景，服务端先渲染，避免脚本运行前是空的 */
+  firstScene: string;
+}
+
+const { lang, path, firstScene } = Astro.props;
+const t = strings[lang];
+---
+
+<header class="hud">
+  <a class="corner tl home" href={href(lang, '/')} aria-label={t.hud.home}>
+    <Signature />
+  </a>
+
+  <nav class="corner tr lang meta" aria-label={t.hud.language}>
+    <a href={href('en', path)} hreflang="en" aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+    <span aria-hidden="true">/</span>
+    <a href={href('zh', path)} hreflang="zh-CN" aria-current={lang === 'zh' ? 'true' : undefined}>中</a>
+  </nav>
+
+  <p class="corner bl meta scene">
+    <span class="sr-only">{t.hud.scene}</span>
+    <span class="sc">SC.</span><span data-hud-scene>{firstScene}</span>
+  </p>
+
+  <p class="corner br meta tc">
+    <span class="sr-only">{t.hud.timecode}</span>
+    <span class="rec" aria-hidden="true"></span>
+    <span data-hud-timecode>00:00:00:00</span>
+  </p>
+</header>
+
+<style>
+  .hud {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    animation: hud-in 1.2s var(--ease-film) calc(var(--intro-delay) + 0.6s) both;
+  }
+
+  /* 取景器上下两条柔和的暗带：内容从角标下面经过时淡出，不和角标打架 */
+  .hud::before,
+  .hud::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: calc(var(--hud-inset) * 2 + 56px);
+    pointer-events: none;
+  }
+
+  .hud::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgb(10 10 11 / 0.9), rgb(10 10 11 / 0.55) 45%, transparent);
+  }
+
+  .hud::after {
+    bottom: 0;
+    background: linear-gradient(to top, rgb(10 10 11 / 0.9), rgb(10 10 11 / 0.55) 45%, transparent);
+  }
+
+  @keyframes hud-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .corner {
+    position: absolute;
+    pointer-events: auto;
+  }
+
+  .tl {
+    top: var(--hud-inset);
+    left: var(--hud-inset);
+    view-transition-name: hud-home;
+  }
+
+  .tr {
+    top: var(--hud-inset);
+    right: var(--hud-inset);
+    view-transition-name: hud-lang;
+  }
+
+  .bl {
+    bottom: var(--hud-inset);
+    left: var(--hud-inset);
+    view-transition-name: hud-scene;
+  }
+
+  .br {
+    bottom: var(--hud-inset);
+    right: var(--hud-inset);
+    view-transition-name: hud-tc;
+  }
+
+  .home {
+    display: block;
+    width: 46px;
+    padding: 6px 0;
+    color: var(--ink);
+    opacity: 0.9;
+    transition: opacity 0.6s var(--ease-film);
+  }
+
+  .home:hover {
+    opacity: 1;
+  }
+
+  .lang {
+    display: flex;
+    gap: 0.7em;
+    padding: 8px 0;
+    color: var(--ink-4);
+  }
+
+  .lang a {
+    color: var(--ink-3);
+    transition: color 0.6s var(--ease-film);
+  }
+
+  .lang a:hover,
+  .lang a[aria-current] {
+    color: var(--ink);
+  }
+
+  .scene,
+  .tc {
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-3);
+  }
+
+  .sc {
+    color: var(--ink-4);
+  }
+
+  [data-hud-scene] {
+    display: inline-block;
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  [data-hud-scene].is-swapping {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .tc {
+    display: flex;
+    align-items: center;
+    gap: 0.8em;
+  }
+
+  /* 录制灯：跟随当前场景的强调色 */
+  .rec {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--hud-accent, var(--ink-3));
+    transition: background 0.8s var(--ease-film);
+  }
+
+  @media (max-width: 640px) {
+    .bl,
+    .br {
+      display: none;
+    }
+  }
+</style>

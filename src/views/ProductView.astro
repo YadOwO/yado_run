@@ -1,0 +1,369 @@
+---
+/**
+ * 产品页模版：每部作品同一套结构。
+ * 主视觉 → 规格 → 剧照与看点 → 幕后 → 上映信息 → 下一部 → 片尾
+ */
+import Base from '@/layouts/Base.astro';
+import Credits from '@/components/Credits.astro';
+import KeyArt from '@/components/KeyArt.astro';
+import StatusChip from '@/components/StatusChip.astro';
+import VoiceStill from '@/components/product/VoiceStill.astro';
+import type { Product, ProductPage } from '@/data/products';
+import { href, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  product: Product & { page: ProductPage };
+}
+
+const { lang, product } = Astro.props;
+const { page } = product;
+const t = strings[lang];
+const other: Lang = lang === 'en' ? 'zh' : 'en';
+const pad = (n: number) => String(n).padStart(2, '0');
+
+const specs = [
+  { label: t.product.specs.platform, value: product.platform, mono: true },
+  { label: t.product.specs.format, value: page.format[lang] },
+  { label: t.product.specs.status, value: t.status[product.status] },
+  { label: t.product.specs.year, value: String(product.year), mono: true },
+  { label: t.product.specs.account, value: page.account[lang], small: true },
+];
+---
+
+<Base
+  lang={lang}
+  path={`/${product.slug}/`}
+  title={`${product.name[lang]} — ${t.site.title}`}
+  description={product.logline?.[lang]}
+  firstScene={`01 — ${t.scenes.keyArt}`}
+>
+  <div class="product" style={`--accent:${product.accent}`}>
+    <!-- 01 主视觉 -->
+    <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={product.accent}>
+      <KeyArt product={product} variant="full" />
+      <div class="scrim" aria-hidden="true"></div>
+
+      <div class="hero__text">
+        <div class="titles">
+          <div data-enter><StatusChip status={product.status} lang={lang} /></div>
+          <h1 class="display name" data-enter-lines>
+            <span class="mask-line"><span style="--i:1">{product.name[lang]}</span></span>
+          </h1>
+          <p class="meta case" data-enter style="--i:2">
+            {t.product.originalTitle} {product.name[other]} · {product.codename}
+          </p>
+        </div>
+        {product.logline && <p class="logline" data-enter style="--i:3">{product.logline[lang]}</p>}
+      </div>
+    </section>
+
+    <!-- 02 规格：像影片的技术参数表 -->
+    <section class="specs" data-scene="02" data-scene-label={t.scenes.specs}>
+      <dl>
+        {
+          specs.map((s, i) => (
+            <div class="spec" data-reveal style={`--i:${i}`}>
+              <dt class="meta">{s.label}</dt>
+              <dd class:list={{ mono: s.mono, small: s.small }}>{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- 03 剧照与看点 -->
+    <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={product.accent}>
+      {page.still && <VoiceStill still={page.still} lang={lang} />}
+
+      <ol class="list">
+        {
+          page.highlights.map((h, i) => (
+            <li class="item" data-reveal>
+              <span class="meta no">{pad(i + 1)}</span>
+              <h2 class="display item__title">{h.title[lang]}</h2>
+              <p class="lede item__body">{h.body[lang]}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 04 幕后 -->
+    <section class="behind" data-scene="04" data-scene-label={t.scenes.behind}>
+      <p class="meta" data-reveal>{t.product.behind}</p>
+      <h2 class="display behind__title" data-reveal-lines>
+        <span class="mask-line"><span>{page.behind.title[lang]}</span></span>
+      </h2>
+      <p class="lede behind__body" data-reveal style="--i:2">{page.behind.body[lang]}</p>
+    </section>
+
+    <!-- 05 上映信息 + 下一部 -->
+    <section class="release" data-scene="05" data-scene-label={t.scenes.release} data-scene-accent={product.accent}>
+      <div class="release__main">
+        <div data-reveal><StatusChip status={product.status} lang={lang} /></div>
+        <h2 class="display release__title" data-reveal style="--i:1">{t.product.releaseHeading[product.status]}</h2>
+        <ul class="release__links" data-reveal style="--i:2">
+          <li><span>{t.product.privacy}</span><span class="meta">{t.product.atLaunch}</span></li>
+          <li><span>{t.product.support}</span><span class="meta">{t.product.atLaunch}</span></li>
+        </ul>
+      </div>
+
+      <a class="next" href={href(lang, '/#slate')} data-reveal style="--i:3">
+        <span class="meta">{t.product.next}</span>
+        <span class="display next__title">{t.product.nextTba}</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </section>
+  </div>
+
+  <Credits lang={lang} scene="06" slot="footer" />
+</Base>
+
+<style>
+  /* ---------- 01 主视觉 ---------- */
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(10 10 11 / 0.88) 0%, rgb(10 10 11 / 0.3) 24%, transparent 40%);
+    pointer-events: none;
+  }
+
+  .hero__text {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(56px, 10svh, 104px);
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 24px;
+    align-items: end;
+  }
+
+  .titles {
+    grid-column: 1 / span 7;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .name {
+    font-size: var(--fs-title);
+  }
+
+  .logline {
+    grid-column: 8 / span 5;
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 2vw, 1.875rem);
+    line-height: 1.3;
+  }
+
+  :lang(zh) .logline {
+    font-weight: 500;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    line-height: 1.6;
+  }
+
+  /* ---------- 02 规格 ---------- */
+  .specs {
+    padding: clamp(56px, 9svh, 96px) var(--gutter);
+  }
+
+  .specs dl {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 2fr);
+    border-top: 1px solid var(--line);
+  }
+
+  .spec {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px 20px 0 0;
+  }
+
+  dd {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+    line-height: 1.2;
+  }
+
+  :lang(zh) dd {
+    font-weight: 500;
+    font-size: clamp(1.0625rem, 1.4vw, 1.375rem);
+  }
+
+  dd.mono {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    padding-top: 0.3em;
+  }
+
+  dd.small {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--ink-2);
+    padding-top: 0.2em;
+  }
+
+  /* ---------- 03 剧照与看点 ---------- */
+  .highlights {
+    padding: clamp(40px, 8svh, 80px) var(--gutter) clamp(80px, 14svh, 160px);
+  }
+
+  .list {
+    margin-top: clamp(64px, 12svh, 140px);
+    border-top: 1px solid var(--line);
+  }
+
+  .item {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 14px;
+    align-items: baseline;
+    padding: clamp(32px, 5svh, 52px) 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .no {
+    grid-column: 1 / span 1;
+  }
+
+  .item__title {
+    grid-column: 2 / span 6;
+    font-size: var(--fs-h2);
+  }
+
+  .item__body {
+    grid-column: 8 / span 5;
+  }
+
+  /* ---------- 04 幕后 ---------- */
+  .behind {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 28px;
+    padding: clamp(64px, 12svh, 140px) var(--gutter);
+  }
+
+  .behind > .meta {
+    grid-column: 1 / -1;
+  }
+
+  .behind__title {
+    grid-column: 1 / span 6;
+    font-size: var(--fs-title);
+  }
+
+  .behind__body {
+    grid-column: 8 / span 5;
+    align-self: end;
+  }
+
+  /* ---------- 05 上映信息 ---------- */
+  .release {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 64px;
+    margin: 0 var(--gutter);
+    padding: clamp(64px, 12svh, 140px) 0 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .release__main {
+    grid-column: 1 / span 7;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .release__title {
+    font-size: var(--fs-h2);
+  }
+
+  .release__links li {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+    max-width: 30rem;
+  }
+
+  .next {
+    grid-column: 9 / span 4;
+    align-self: end;
+    display: grid;
+    gap: 14px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    transition:
+      border-color 1s var(--ease-film),
+      background-color 1s var(--ease-film);
+  }
+
+  .next:hover {
+    border-color: var(--ink-4);
+    background: rgb(236 232 225 / 0.02);
+  }
+
+  .next__title {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  :lang(zh) .next__title {
+    font-size: 1.25rem;
+  }
+
+  .next .arrow {
+    justify-self: end;
+    transition: transform 0.9s var(--ease-film);
+  }
+
+  .next:hover .arrow {
+    transform: translateX(6px);
+  }
+
+  /* ---------- 窄屏 ---------- */
+  @media (max-width: 900px) {
+    .titles,
+    .logline,
+    .item__title,
+    .item__body,
+    .behind__title,
+    .behind__body,
+    .release__main,
+    .next {
+      grid-column: 1 / -1;
+    }
+
+    .no {
+      grid-column: 1 / -1;
+    }
+
+    .specs dl {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 28px;
+    }
+
+    .spec:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

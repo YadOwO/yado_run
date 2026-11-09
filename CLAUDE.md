@@ -5,42 +5,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-pnpm dev        # Start dev server on port 3000
-pnpm build      # TypeScript check + Vite production build
+pnpm dev        # Start dev server on port 3000 (runs in the background; stop with `pnpm astro dev stop`)
+pnpm build      # Static production build into dist/
 pnpm preview    # Preview production build locally
 ```
 
-No test runner is configured in this project.
+Node version is pinned in `.node-version` (26) and managed with fnm; pnpm is installed globally into that Node.
 
-**Deployment:** Production deploys are triggered by pushing `v*` tags (e.g. `git tag v1.0.0 && git push --tags`), which runs the GitHub Actions workflow → Vercel.
+No test runner is configured. `astro check` is not set up: @astrojs/check 0.9 crashes with Astro 7 (and does not support TypeScript 7).
+
+**Deployment:** Production deploys are triggered by pushing `v*` tags (e.g. `git tag v1.0.0 && git push --tags`), which runs the GitHub Actions workflow → Vercel (`vercel.json` declares the Astro framework).
 
 ## Architecture
 
-This is a minimalist portfolio/personal site. It is a **single-page app with view-state-based navigation** (no router library).
-
-### View States
-
-Navigation is managed via React `useState` in the main layout. The four states are: `home`, `profile`, `arch`, `play`. Overlay sections (`ProfileSection`, `ArchitectureSection`, `PlaygroundSection`) are shown/hidden with Framer Motion `AnimatePresence`.
+Static Astro site, zero framework runtime. The whole site is designed as a short film: dark-only, cinematic, minimal. The only client JS is `src/scripts/stage.ts` (~1KB): reveal-on-scroll, HUD scene label, scroll timecode, skipping the opening.
 
 ```
-App (ThemeProvider + LanguageProvider)
-└── MainLayout
-    ├── PersistentPill (fixed, bottom-right: language + theme toggles)
-    └── Scroll-snap container
-        ├── IntroSection  (snap point 1)
-        ├── MenuSection   (snap point 2 — navigates to overlay sections)
-        ├── ProfileSection (full-screen overlay)
-        ├── ArchitectureSection (full-screen overlay)
-        └── PlaygroundSection (full-screen overlay)
+src/
+  styles/tokens.css    # the only source of color / type / motion tokens
+  styles/global.css    # base, grain + vignette, reveal utilities, view transitions
+  i18n/index.ts        # all user-facing strings (en + zh, zh typed from en)
+  data/products.ts     # the slate: every yado product; status drives labels everywhere
+  layouts/Base.astro   # head, fonts, HUD, opening flag, the one script
+  views/               # HomeView, ProductView — shared by en and zh pages
+  pages/               # thin wrappers: / and /zh/, /[product]/ and /zh/[product]/
+  components/          # Signature, Opening, Hud, KeyArt, StatusChip, Credits, home/*, product/*
 ```
 
 ### Key Patterns
 
-- **Path alias:** Use `@/` for all imports from `src/` (configured in `tsconfig.json` and `vite.config.ts`)
-- **Styling:** Tailwind CSS loaded via CDN in `index.html` (not PostCSS). Custom config (dark mode, colors) is defined inline in the CDN script tag.
-- **Animations:** All motion uses `APPLE_SPRING` constants from `src/lib/constants.ts` (`stiffness: 150, damping: 20, mass: 1.2`) for consistency.
-- **i18n:** `src/lib/i18n.ts` holds all EN/CN translation strings inline. All user-facing text must have both `en` and `cn` keys.
-- **Class merging:** Use the `cn()` utility from `@/lib/utils` (combines `clsx` + `tailwind-merge`).
-- **Dark mode:** Controlled by `ThemeContext`. The `index.html` has an inline script to apply the theme class before React hydrates (prevents flash).
+- **Path alias:** use `@/` for imports from `src/`.
+- **Frame vs. color:** the frame (HUD, type, grain) is always monochrome. Color only enters through a product's `accent` (set as `--accent` on its scene). Never hard-code product colors in components.
+- **Products:** add a product by adding an entry to `PRODUCTS`. `SLATE_PUBLIC = false` keeps the home slate as anonymous poster slots.
+- **i18n:** English at `/`, Chinese at `/zh/`. Every string needs both `en` and `zh`; build links with `href(lang, path)`.
+- **Motion:** only animate `transform`, `opacity`, `clip-path`. Use `--ease-film` / `--ease-pen` and the `data-reveal`, `data-reveal-lines`, `data-enter`, `data-inview` utilities rather than new JS. Respect `prefers-reduced-motion`.
+- **Scenes:** sections carry `data-scene`, `data-scene-label`, optionally `data-scene-accent` — the HUD reads them.
+- **Fonts:** self-hosted via Fontsource. Noto Serif SC is imported only in `pages/zh/*`.
 
 Responsive Requirement: Ensure seamless compatibility and adaptive layout for both mobile and web platforms.
