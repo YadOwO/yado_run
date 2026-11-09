@@ -23,7 +23,25 @@ export interface Still {
   rows: { label: L10n; category: L10n; amount: string }[];
 }
 
+/**
+ * 产品自己的世界：产品页不再是暗场，而是换成产品自己的纸和墨。
+ * 片框（HUD、文字、线条）仍然只有一种墨色，只是从“暗场亮字”翻成“纸上墨字”；
+ * 线条改成手绘，标题改用系统衬线（与 App 一致）。颜色取自 App 的浅色外观。
+ */
+export interface ProductTheme {
+  /** 页面底色（App 的 PaperBackground） */
+  paper: string;
+  /** 比底色略亮的一层纸，用于卡片（App 的 PaperSurface） */
+  surface: string;
+  /** 墨色：文字、线条、HUD（App 的 AccentColor） */
+  ink: string;
+  /** 纸上的强调色；暗场里用的仍是 Product.accent */
+  accent: string;
+}
+
 export interface ProductPage {
+  /** 有了就用产品自己的纸和墨来呈现产品页，否则沿用暗场 */
+  theme?: ProductTheme;
   /** 规格表里“形态”“账号”两栏，平台和年份取自产品本身 */
   format: L10n;
   account: L10n;
@@ -70,6 +88,7 @@ export const PRODUCTS: Product[] = [
       zh: '会听话的账本。说一句话，账就记好了。',
     },
     page: {
+      theme: { paper: '#F2EFE7', surface: '#FBF9F3', ink: '#17181A', accent: '#D5452B' },
       format: { en: 'iPhone', zh: 'iPhone' },
       account: {
         en: 'On-device first · one yado account across the series',

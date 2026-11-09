@@ -1,0 +1,65 @@
+---
+/**
+ * 分隔线。`hand` 时是芽豆资产账本上那种随手画的墨线，进入视口时从左往右写出来；
+ * 否则就是片框里的一条直细线。
+ * heavy：标题下的重线（App 里的 ledgerHeadingRule），否则是行与行之间的细线（ledgerRow）。
+ */
+import { rulePath, type Seed } from './handDrawn';
+
+interface Props {
+  hand?: boolean;
+  heavy?: boolean;
+  seed?: Seed;
+  class?: string;
+}
+
+const { hand = false, heavy = false, seed = 0, class: className } = Astro.props;
+
+/** 画布按 640 宽生成：桌面上起伏舒缓，手机上压窄后也不至于太碎 */
+const W = 640;
+const H = 4;
+const d = hand ? rulePath(W, H, seed) : `M0 ${H / 2} L${W} ${H / 2}`;
+---
+
+<!-- 外层负责“进入视口”，里面的 svg 负责被裁切：IntersectionObserver 会把元素自身的 clip-path 算进可见面积 -->
+<span
+  class:list={['rule', { 'rule--hand': hand, 'rule--heavy': heavy }, className]}
+  aria-hidden="true"
+  data-inview={hand ? '' : undefined}
+>
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+    <path d={d} vector-effect="non-scaling-stroke"></path>
+  </svg>
+</span>
+
+<style>
+  .rule {
+    display: block;
+    height: 4px;
+  }
+
+  .rule svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1;
+    stroke-linecap: round;
+  }
+
+  .rule--hand.rule--heavy svg {
+    stroke: color-mix(in srgb, var(--ink) 60%, transparent);
+    stroke-width: 1.3;
+  }
+
+  /* 墨线书写：从左往右露出 */
+  :global(.js) .rule--hand svg {
+    clip-path: inset(-4px 100% -4px 0);
+  }
+
+  :global(.js) .rule--hand.is-in svg {
+    clip-path: inset(-4px 0 -4px 0);
+    transition: clip-path 1.3s var(--ease-pen) calc(var(--i, 0) * 110ms + 0.15s);
+  }
+</style>

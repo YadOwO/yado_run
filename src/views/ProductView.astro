@@ -2,12 +2,16 @@
 /**
  * 产品页模版：每部作品同一套结构。
  * 主视觉 → 规格 → 剧照与看点 → 幕后 → 上映信息 → 下一部 → 片尾
+ * 产品有自己的纸和墨（page.theme）时，整页换成产品的世界：纸上墨字、手绘线条、纸上的强调色。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import VoiceStill from '@/components/product/VoiceStill.astro';
+import InkBox from '@/components/ink/InkBox.astro';
+import InkRule from '@/components/ink/InkRule.astro';
+import { blobPath } from '@/components/ink/handDrawn';
 import { productPath, type Product, type ProductPage } from '@/data/products';
 import { href, strings, type Lang } from '@/i18n';
 
@@ -21,6 +25,10 @@ const { page } = product;
 const t = strings[lang];
 const other: Lang = lang === 'en' ? 'zh' : 'en';
 const pad = (n: number) => String(n).padStart(2, '0');
+const { theme } = page;
+/** 有自己的世界就用手绘笔迹，否则是片框里的直线 */
+const hand = !!theme;
+const accent = theme?.accent ?? product.accent;
 
 const specs = [
   { label: t.product.specs.platform, value: product.platform, mono: true },
@@ -37,10 +45,11 @@ const specs = [
   title={`${product.name[lang]} — ${t.site.title}`}
   description={product.logline?.[lang]}
   firstScene={`01 — ${t.scenes.keyArt}`}
+  theme={theme}
 >
-  <div class="product" style={`--accent:${product.accent}`}>
+  <div class:list={['product', { 'product--hand': hand }]} style={`--accent:${accent}`}>
     <!-- 01 主视觉 -->
-    <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={product.accent}>
+    <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={accent}>
       <KeyArt product={product} variant="full" />
       <div class="scrim" aria-hidden="true"></div>
 
@@ -50,6 +59,7 @@ const specs = [
           <h1 class="display name" data-enter-lines>
             <span class="mask-line"><span style="--i:1">{product.name[lang]}</span></span>
           </h1>
+          {hand && <InkRule hand heavy seed={`${product.slug}-title`} class="title-rule" />}
           <p class="meta case" data-enter style="--i:2">
             {t.product.originalTitle} {product.name[other]} · {product.codename}
           </p>
@@ -60,6 +70,7 @@ const specs = [
 
     <!-- 02 规格：像影片的技术参数表 -->
     <section class="specs" data-scene="02" data-scene-label={t.scenes.specs}>
+      <InkRule hand={hand} heavy seed={`${product.slug}-specs`} />
       <dl>
         {
           specs.map((s, i) => (
@@ -73,20 +84,32 @@ const specs = [
     </section>
 
     <!-- 03 剧照与看点 -->
-    <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={product.accent}>
+    <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={accent}>
       {page.still && <VoiceStill still={page.still} lang={lang} />}
 
-      <ol class="list">
-        {
-          page.highlights.map((h, i) => (
-            <li class="item" data-reveal>
-              <span class="meta no">{pad(i + 1)}</span>
-              <h2 class="display item__title">{h.title[lang]}</h2>
-              <p class="lede item__body">{h.body[lang]}</p>
-            </li>
-          ))
-        }
-      </ol>
+      <div class="list">
+        <InkRule hand={hand} heavy seed={`${product.slug}-highlights`} />
+        <ol>
+          {
+            page.highlights.map((h, i) => (
+              <li class="item" data-reveal>
+                <span class="meta no">
+                  {/* 编号垫在随手涂出的色块上，像 App 里流水前面的图标底 */}
+                  {hand && (
+                    <svg class="blob" viewBox="0 0 40 40" aria-hidden="true">
+                      <path d={blobPath(40, 40, `${product.slug}-highlight-${i}`)} />
+                    </svg>
+                  )}
+                  <span>{pad(i + 1)}</span>
+                </span>
+                <h2 class="display item__title">{h.title[lang]}</h2>
+                <p class="lede item__body">{h.body[lang]}</p>
+                <InkRule hand={hand} seed={`${product.slug}-highlight-rule-${i}`} class="item__rule" />
+              </li>
+            ))
+          }
+        </ol>
+      </div>
     </section>
 
     <!-- 04 幕后 -->
@@ -99,17 +122,25 @@ const specs = [
     </section>
 
     <!-- 05 上映信息 + 下一部 -->
-    <section class="release" data-scene="05" data-scene-label={t.scenes.release} data-scene-accent={product.accent}>
+    <section class="release" data-scene="05" data-scene-label={t.scenes.release} data-scene-accent={accent}>
+      <InkRule hand={hand} heavy seed={`${product.slug}-release`} class="release__rule" />
       <div class="release__main">
         <div data-reveal><StatusChip status={product.status} lang={lang} /></div>
         <h2 class="display release__title" data-reveal style="--i:1">{t.product.releaseHeading[product.status]}</h2>
         <ul class="release__links" data-reveal style="--i:2">
-          <li><span>{t.product.privacy}</span><span class="meta">{t.product.atLaunch}</span></li>
-          <li><span>{t.product.support}</span><span class="meta">{t.product.atLaunch}</span></li>
+          <li>
+            <span>{t.product.privacy}</span><span class="meta">{t.product.atLaunch}</span>
+            <InkRule hand={hand} seed={`${product.slug}-privacy`} class="link__rule" />
+          </li>
+          <li>
+            <span>{t.product.support}</span><span class="meta">{t.product.atLaunch}</span>
+            <InkRule hand={hand} seed={`${product.slug}-support`} class="link__rule" />
+          </li>
         </ul>
       </div>
 
       <a class="next" href={href(lang, '/works/#slate')} data-reveal style="--i:3">
+        {hand && <InkBox width={360} height={170} radius={22} seed={`${product.slug}-next`} />}
         <span class="meta">{t.product.next}</span>
         <span class="display next__title">{t.product.nextTba}</span>
         <span class="arrow" aria-hidden="true">→</span>
@@ -132,7 +163,12 @@ const specs = [
   .scrim {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgb(10 10 11 / 0.88) 0%, rgb(10 10 11 / 0.3) 24%, transparent 40%);
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--bg) 88%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 30%, transparent) 24%,
+      transparent 40%
+    );
     pointer-events: none;
   }
 
@@ -159,6 +195,12 @@ const specs = [
     font-size: var(--fs-title);
   }
 
+  /* 标题下的一道重墨线（App 里日期标题下的那条） */
+  .titles > :global(.title-rule) {
+    max-width: 26rem;
+    margin-top: -4px;
+  }
+
   .logline {
     grid-column: 8 / span 5;
     font-family: var(--font-display);
@@ -180,7 +222,6 @@ const specs = [
   .specs dl {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 2fr);
-    border-top: 1px solid var(--line);
   }
 
   .spec {
@@ -224,21 +265,54 @@ const specs = [
 
   .list {
     margin-top: clamp(64px, 12svh, 140px);
-    border-top: 1px solid var(--line);
   }
 
   .item {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: var(--gutter);
     row-gap: 14px;
     align-items: baseline;
     padding: clamp(32px, 5svh, 52px) 0;
-    border-bottom: 1px solid var(--line);
+  }
+
+  .item > :global(.item__rule) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
   }
 
   .no {
     grid-column: 1 / span 1;
+  }
+
+  /* 手绘：编号写在一块随手涂出的墨色底上 */
+  .product--hand .no {
+    position: relative;
+    justify-self: start;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    align-self: start;
+  }
+
+  .product--hand .no > * {
+    grid-area: 1 / 1;
+  }
+
+  .blob {
+    width: 100%;
+    height: 100%;
+    fill: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+
+  .product--hand .item__title {
+    align-self: start;
   }
 
   .item__title {
@@ -275,13 +349,20 @@ const specs = [
 
   /* ---------- 05 上映信息 ---------- */
   .release {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: var(--gutter);
     row-gap: 64px;
     margin: 0 var(--gutter);
     padding: clamp(64px, 12svh, 140px) 0 0;
-    border-top: 1px solid var(--line);
+  }
+
+  .release > :global(.release__rule) {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
   }
 
   .release__main {
@@ -296,16 +377,24 @@ const specs = [
   }
 
   .release__links li {
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 24px;
     padding: 16px 0;
-    border-bottom: 1px solid var(--line);
     color: var(--ink-2);
     max-width: 30rem;
   }
 
+  .release__links li > :global(.link__rule) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+  }
+
   .next {
+    position: relative;
     grid-column: 9 / span 4;
     align-self: end;
     display: grid;
@@ -319,7 +408,13 @@ const specs = [
 
   .next:hover {
     border-color: var(--ink-4);
-    background: rgb(236 232 225 / 0.02);
+    background: color-mix(in srgb, var(--ink) 3%, transparent);
+  }
+
+  /* 手绘：方框由 InkBox 画，去掉直线边框；悬停时只把纸面压暗一点 */
+  .product--hand .next {
+    border-color: transparent;
+    border-radius: 22px;
   }
 
   .next__title {

@@ -72,12 +72,12 @@ const t = strings[lang];
 
   .hud::before {
     top: 0;
-    background: linear-gradient(to bottom, rgb(10 10 11 / 0.9), rgb(10 10 11 / 0.55) 45%, transparent);
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 55%, transparent) 45%, transparent);
   }
 
   .hud::after {
     bottom: 0;
-    background: linear-gradient(to top, rgb(10 10 11 / 0.9), rgb(10 10 11 / 0.55) 45%, transparent);
+    background: linear-gradient(to top, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 55%, transparent) 45%, transparent);
   }
 
   @keyframes hud-in {
@@ -88,6 +88,7 @@ const t = strings[lang];
 
   .corner {
     position: absolute;
+    z-index: 1; /* 盖在上下两条暗带之上；否则底部的 ::after 会把左下、右下两个角标压暗 */
     pointer-events: auto;
   }
 

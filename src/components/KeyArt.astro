@@ -3,6 +3,8 @@
  * 产品主视觉：暗场 + 产品色的地灯 + 品牌标志。
  * 首页目录里是一帧小缩略（thumb），作品章是一块 2.39:1 的画幅（panel），产品页是整屏（full）；
  * 三处共用同一个 view-transition-name，一路点进去，画面会从缩略放大到画幅、再放大成产品页首屏。
+ * 产品有自己的纸和墨（page.theme）时，整屏那一帧换成 App 的图标和启动画面：纸上一个墨色标志，
+ * 对勾用纸上的强调色写出来。于是点进来的那一下，暗场里的画幅放大、亮起，像打开了这个 App。
  */
 import type { Product } from '@/data/products';
 import yadoaMark from '@/assets/yadoa-mark.svg?raw';
@@ -13,6 +15,8 @@ interface Props {
 }
 
 const { product, variant } = Astro.props;
+const paper = variant === 'full' && !!product.page?.theme;
+const accent = paper ? product.page!.theme!.accent : product.accent;
 
 /** 从原始 SVG 里取出路径；强调色那一笔（对勾）加遮罩，入画时从左往右“写”出来 */
 function buildMark(raw: string, slug: string) {
@@ -29,8 +33,8 @@ const mark = marks[product.slug];
 ---
 
 <div
-  class:list={['keyart', `keyart--${variant}`]}
-  style={`view-transition-name: keyart-${product.slug}; view-transition-class: keyart; --accent: ${product.accent}`}
+  class:list={['keyart', `keyart--${variant}`, { 'keyart--paper': paper }]}
+  style={`view-transition-name: keyart-${product.slug}; view-transition-class: keyart; --accent: ${accent}`}
   data-inview
 >
   <div class="light" aria-hidden="true"></div>
@@ -45,9 +49,12 @@ const mark = marks[product.slug];
               <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
             </mask>
           </defs>
-          {mark.paths.map((p, i) => (
-            <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${mark.maskId})` : undefined} />
-          ))}
+          {mark.paths.map((p, i) => {
+            const isTick = i === mark.paths.length - 1;
+            // 纸面上：标志主体用墨色，对勾用强调色（与 App 浅色外观的 BrandMark 一致）
+            const fill = paper ? (isTick ? 'var(--accent)' : 'var(--ink)') : p.fill;
+            return <path d={p.d} fill={fill} mask={isTick ? `url(#${mark.maskId})` : undefined} />;
+          })}
         </svg>
       ) : (
         <span class="mark__fallback display">{product.codename}</span>
@@ -138,6 +145,30 @@ const mark = marks[product.slug];
   .keyart--full .mark svg {
     height: min(40svh, 58vw);
     translate: 0 -6svh;
+  }
+
+  /* ---------- 纸面：App 图标与启动画面 ---------- */
+  /* 纸色从左上的亮面过渡到右下略深的纸（App 图标的底色渐变） */
+  .keyart--paper {
+    background: linear-gradient(
+      150deg,
+      var(--bg-raise) 0%,
+      var(--bg) 52%,
+      color-mix(in srgb, var(--bg) 90%, var(--ink)) 100%
+    );
+  }
+
+  /* 一束从左上斜照进来的光，替代暗场的地灯 */
+  .keyart--paper .light {
+    background: radial-gradient(ellipse 62% 54% at 28% 0%, rgb(255 255 255 / 0.7), transparent 72%);
+  }
+
+  .keyart--paper .floor {
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 16%, transparent), transparent);
+  }
+
+  .keyart--paper .mark svg {
+    filter: drop-shadow(0 22px 34px color-mix(in srgb, var(--ink) 16%, transparent));
   }
 
   .mark__fallback {

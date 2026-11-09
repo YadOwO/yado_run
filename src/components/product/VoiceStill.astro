@@ -1,10 +1,14 @@
 ---
 /**
- * 剧照：暗场里的一张纸。用产品自己的纸色和墨色，把“一句话记两笔”演一遍：
- * 听到的话像墨水一样写出来 → 对勾 → 两笔账依次落下。滚动到眼前时只演一次。
+ * 剧照：App 里的一张语音卡片。用产品自己的纸色和墨色，把“一句话记两笔”演一遍：
+ * 听到的话像墨水一样写出来 → 对勾写出 → 两笔账依次落下，每笔前面的色块上写出一个红对勾（App 里“刚记下”的样子）。
+ * 卡片边框、行间细线、色块都是 App 里的手绘笔迹。滚动到眼前时只演一次。
  */
 import type { Still } from '@/data/products';
 import type { Lang } from '@/i18n';
+import InkBox from '@/components/ink/InkBox.astro';
+import InkRule from '@/components/ink/InkRule.astro';
+import { blobPath, tick } from '@/components/ink/handDrawn';
 
 interface Props {
   still: Still;
@@ -17,25 +21,38 @@ const { still, lang } = Astro.props;
 <figure class="still" style={`--paper:${still.paper};--paper-ink:${still.ink}`} data-inview>
   <div class="stage">
     <div class="paper">
+      <InkBox width={360} height={300} radius={26} seed="voice-still" />
+
       <p class="heard">
         <span class="mic" aria-hidden="true"></span>
         <span class="words">{still.heard[lang]}</span>
       </p>
 
       <p class="done">
-        <svg class="tick" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 12.5l4.2 4.2L19 7" pathLength="1"></path>
-        </svg>
+        <svg class="tick" viewBox={tick.viewBox} aria-hidden="true"><path d={tick.d}></path></svg>
         {still.done[lang]}
       </p>
+
+      <InkRule hand heavy seed="voice-still-heading" class="heading-rule" />
 
       <ul class="rows">
         {
           still.rows.map((r, i) => (
             <li style={`--r:${i}`}>
-              <span class="label">{r.label[lang]}</span>
-              <span class="cat">{r.category[lang]}</span>
+              <span class="icon" aria-hidden="true">
+                <svg class="icon__blob" viewBox="0 0 38 38">
+                  <path d={blobPath(38, 38, `voice-still-row-${i}`)} />
+                </svg>
+                <svg class="icon__tick" viewBox={tick.viewBox}>
+                  <path d={tick.d} />
+                </svg>
+              </span>
+              <span class="text">
+                <span class="label">{r.label[lang]}</span>
+                <span class="cat">{r.category[lang]}</span>
+              </span>
               <span class="amt">{r.amount}</span>
+              {i < still.rows.length - 1 && <InkRule hand seed={`voice-still-rule-${i}`} class="row-rule" />}
             </li>
           ))
         }
@@ -53,7 +70,7 @@ const { still, lang } = Astro.props;
     gap: 28px;
   }
 
-  /* 地灯打在纸下面 */
+  /* 暗场里：地灯打在纸下面 */
   .stage {
     position: relative;
     width: 100%;
@@ -63,17 +80,30 @@ const { still, lang } = Astro.props;
     background: radial-gradient(ellipse 40% 60% at 50% 100%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
   }
 
+  /* 纸面上：不用地灯，卡片像一张便签放在桌上 */
+  :global([data-theme='paper']) .stage {
+    background: none;
+  }
+
   .paper {
+    /* 卡片里的墨和线都跟着卡片自己的墨色走，手绘方框、细线自动取用 */
+    --ink: var(--paper-ink);
+    --line: color-mix(in srgb, var(--paper-ink) 16%, transparent);
+
+    position: relative;
     width: min(360px, 86vw);
-    padding: 28px 26px 18px;
-    border-radius: 28px;
+    padding: 28px 26px 14px;
+    border-radius: 26px;
     background: var(--paper);
     color: var(--paper-ink);
-    box-shadow:
-      0 40px 80px -20px rgb(0 0 0 / 0.7),
-      0 0 0 1px rgb(255 255 255 / 0.04);
+    box-shadow: 0 40px 80px -20px rgb(0 0 0 / 0.7);
     transform: rotate(-1.2deg);
     font-family: var(--font-sans);
+  }
+
+  :global([data-theme='paper']) .paper {
+    background: var(--bg-raise);
+    box-shadow: 0 30px 60px -34px color-mix(in srgb, var(--paper-ink) 32%, transparent);
   }
 
   .heard {
@@ -83,6 +113,10 @@ const { still, lang } = Astro.props;
     font-family: var(--font-display);
     font-size: 1.5rem;
     line-height: 1.3;
+  }
+
+  :global([data-theme='paper']) .heard {
+    font-size: 1.3125rem;
   }
 
   :lang(zh) .heard {
@@ -121,14 +155,11 @@ const { still, lang } = Astro.props;
     color: color-mix(in oklab, var(--paper-ink) 60%, transparent);
   }
 
+  /* App 图标上那一笔对勾，用强调色写出来 */
   .tick {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 2.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 22px;
+    height: auto;
+    fill: var(--accent);
   }
 
   :global(.js) .done {
@@ -140,32 +171,36 @@ const { still, lang } = Astro.props;
     transition: opacity 0.6s ease 1.5s;
   }
 
-  :global(.js) .tick path {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 1;
+  :global(.js) .tick,
+  :global(.js) .icon__tick {
+    clip-path: inset(0 100% 0 0);
   }
 
-  :global(.js) .is-in .tick path {
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 0.6s var(--ease-pen) 1.6s;
+  :global(.js) .is-in .tick {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.6s var(--ease-pen) 1.6s;
   }
 
-  .rows {
-    margin-top: 12px;
-    border-top: 1px solid color-mix(in oklab, var(--paper-ink) 10%, transparent);
+  /* 对勾写完之后再落这道重线 */
+  .paper > :global(.heading-rule) {
+    --i: 14;
+    margin-top: 10px;
   }
 
   .rows li {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: baseline;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     gap: 14px;
-    padding: 14px 2px;
-    border-bottom: 1px solid color-mix(in oklab, var(--paper-ink) 8%, transparent);
+    padding: 12px 2px;
   }
 
-  .rows li:last-child {
-    border-bottom: 0;
+  .rows li > :global(.row-rule) {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: -2px;
   }
 
   :global(.js) .rows li {
@@ -182,6 +217,42 @@ const { still, lang } = Astro.props;
     transition-delay: calc(1.9s + var(--r) * 0.18s);
   }
 
+  /* 图标位：随手涂出的色块，上面写出一个“刚记下”的红对勾 */
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+  }
+
+  .icon > * {
+    grid-area: 1 / 1;
+  }
+
+  .icon__blob {
+    width: 100%;
+    height: 100%;
+    fill: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .icon__tick {
+    width: 22px;
+    height: auto;
+    fill: var(--accent);
+  }
+
+  :global(.js) .is-in .icon__tick {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.5s var(--ease-pen) calc(2.3s + var(--r) * 0.18s);
+  }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
   .label {
     font-size: 0.9375rem;
     font-weight: 500;
@@ -189,7 +260,7 @@ const { still, lang } = Astro.props;
 
   .cat {
     font-size: 0.75rem;
-    color: color-mix(in oklab, var(--paper-ink) 50%, transparent);
+    color: color-mix(in srgb, var(--paper-ink) 50%, transparent);
   }
 
   .amt {

@@ -1,0 +1,37 @@
+---
+/**
+ * 一笔画成的手绘方框（App 里的 HandDrawnBox），铺满最近的定位父元素，当作卡片的边框。
+ * width / height 是按卡片常见尺寸生成笔迹用的，实际大小跟着父元素伸缩，线宽不变。
+ */
+import { boxPath, type Seed } from './handDrawn';
+
+interface Props {
+  width: number;
+  height: number;
+  radius?: number;
+  seed?: Seed;
+  class?: string;
+}
+
+const { width, height, radius = 22, seed = 0, class: className } = Astro.props;
+---
+
+<svg class:list={['box', className]} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
+  <path d={boxPath(width, height, radius, seed)} vector-effect="non-scaling-stroke"></path>
+</svg>
+
+<style>
+  .box {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    stroke: color-mix(in srgb, var(--ink) 85%, transparent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>
