@@ -1,6 +1,6 @@
 ---
 /**
- * 人物章：标题卡（签名 + 人物介绍卡）→ 自述 → 做事的方式 → 屏幕之外 → 下一章 → 片尾。
+ * 人物章：标题卡（签名 + 人物介绍卡）→ 自述 → 幕后 → 下班后 → 下一章 → 片尾。
  * 内容在 data/about.ts。
  */
 import Base from '@/layouts/Base.astro';
@@ -8,9 +8,9 @@ import Credits from '@/components/Credits.astro';
 import NextChapter from '@/components/NextChapter.astro';
 import Signature from '@/components/Signature.astro';
 import TitleCard from '@/components/TitleCard.astro';
-import { offscreen, principles, profile } from '@/data/about';
-import { chapterNo, getChapter } from '@/data/chapters';
-import { contact, strings, type Lang } from '@/i18n';
+import { behind, hobbies, profile } from '@/data/about';
+import { chapterNo, chapterPath, getChapter } from '@/data/chapters';
+import { contact, href, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
@@ -20,6 +20,7 @@ const { lang } = Astro.props;
 const t = strings[lang];
 const chapter = getChapter('about');
 const label = chapter.title[lang];
+const worksHref = href(lang, chapterPath(getChapter('works')));
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** 自述按词（中文按字）拆开，滚动时逐个点亮 */
@@ -43,14 +44,18 @@ const joiner = lang === 'zh' ? '' : ' ';
     </h1>
     <dl class="card">
       <div class="card__row" data-enter style="--i:4">
-        <dt class="meta">{t.about.labels.role}</dt>
-        <dd>{profile.role[lang]}</dd>
-      </div>
-      <div class="card__row" data-enter style="--i:5">
         <dt class="meta">{t.about.labels.identity}</dt>
         <dd>{profile.identity[lang]}</dd>
       </div>
+      <div class="card__row" data-enter style="--i:5">
+        <dt class="meta">{t.about.labels.job}</dt>
+        <dd>{profile.job[lang]}</dd>
+      </div>
       <div class="card__row" data-enter style="--i:6">
+        <dt class="meta">{t.about.labels.making}</dt>
+        <dd><a class="link" href={worksHref}>{profile.making[lang]}</a></dd>
+      </div>
+      <div class="card__row" data-enter style="--i:7">
         <dt class="meta">{t.about.labels.contact}</dt>
         <dd><a class="link" href={`mailto:${contact.email}`}>{contact.email}</a></dd>
       </div>
@@ -72,65 +77,56 @@ const joiner = lang === 'zh' ? '' : ' ';
     </p>
   </section>
 
-  <!-- 03 做事的方式 -->
-  <section class="principles" data-scene="03" data-scene-label={t.scenes.principles}>
+  <!-- 03 幕后：芽豆系列是怎么做出来的 -->
+  <section class="behind" data-scene="03" data-scene-label={t.scenes.behind}>
     <div class="intro">
       <h2 class="display heading" data-reveal-lines>
-        <span class="mask-line"><span>{t.about.principles}</span></span>
+        <span class="mask-line"><span>{t.about.behind}</span></span>
       </h2>
+      <p class="intro__lede" data-reveal style="--i:1">{behind.lede[lang]}</p>
     </div>
-    <ol class="grid">
+    <ol class="rows">
       {
-        principles.map((p, i) => (
-          <li class="principle" data-reveal style={`--i:${i % 2}`}>
+        behind.items.map((item, i) => (
+          <li class="row" data-reveal>
             <span class="meta no">{pad(i + 1)}</span>
-            <h3 class="display principle__title">{p.title[lang]}</h3>
-            <p class="principle__body">{p.body[lang]}</p>
+            <h3 class="display row__label">{item.label[lang]}</h3>
+            <p class="row__body">{item.body[lang]}</p>
           </li>
         ))
       }
     </ol>
   </section>
 
-  <!-- 04 屏幕之外：三张剧照，每张一小段纯 CSS 动画 -->
-  <section class="offscreen" data-scene="04" data-scene-label={t.scenes.offscreen}>
+  <!-- 04 下班后：一排剧照，几张都排得下（多了横向滑动） -->
+  <section class="after" data-scene="04" data-scene-label={t.scenes.after}>
     <div class="intro">
       <h2 class="display heading" data-reveal-lines>
-        <span class="mask-line"><span>{t.about.offscreen}</span></span>
+        <span class="mask-line"><span>{t.about.after}</span></span>
       </h2>
     </div>
     <ol class="stills">
       {
-        offscreen.map((o, i) => (
-          <li class="still-item" data-reveal style={`--i:${i}`}>
-            <figure class="still">
-              <span class="meta case tag">
-                {t.about.still} {pad(i + 1)} — {o.label[lang]}
-              </span>
-              <div class={`motif motif--${o.motif}`} aria-hidden="true">
-                {o.motif === 'road' && (
-                  <Fragment>
-                    <i class="edge" />
-                    <i class="dash" />
-                  </Fragment>
-                )}
-                {o.motif === 'crosshair' && (
-                  <Fragment>
-                    <i class="arm arm--t" />
-                    <i class="arm arm--r" />
-                    <i class="arm arm--b" />
-                    <i class="arm arm--l" />
-                  </Fragment>
-                )}
-                {o.motif === 'eq' && Array.from({ length: 7 }, (_, k) => <i class="bar" style={`--k:${k}`} />)}
-              </div>
-              <figcaption>
-                <span class="display still__title">{o.title[lang]}</span>
-                <span class="meta case">{o.detail?.[lang] ?? '\u00a0'}</span>
-              </figcaption>
-            </figure>
-          </li>
-        ))
+        hobbies.map((h, i) => {
+          const Mark = h.mark;
+          return (
+            <li class="still-item" data-reveal style={`--i:${Math.min(i, 4)}`}>
+              <figure class="still">
+                <span class="meta case tag">
+                  {t.about.still} {pad(i + 1)}
+                </span>
+                <div class="stage" aria-hidden="true">
+                  {Mark ? <Mark /> : <span class="display fallback">{h.title[lang]}</span>}
+                  <i class="floor" />
+                </div>
+                <figcaption>
+                  <span class="display still__title">{h.title[lang]}</span>
+                  <span class="still__detail">{h.detail?.[lang] ?? '\u00a0'}</span>
+                </figcaption>
+              </figure>
+            </li>
+          );
+        })
       }
     </ol>
   </section>
@@ -231,9 +227,9 @@ const joiner = lang === 'zh' ? '' : ' ';
     }
   }
 
-  /* ---------- 03 做事的方式 ---------- */
-  .principles,
-  .offscreen {
+  /* ---------- 03 幕后 / 04 下班后：共用的段落框架 ---------- */
+  .behind,
+  .after {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: var(--gutter);
@@ -254,52 +250,82 @@ const joiner = lang === 'zh' ? '' : ' ';
     font-size: var(--fs-h2);
   }
 
-  .grid {
-    grid-column: 5 / -1;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--gutter);
+  .intro__lede {
+    max-width: 26em;
+    color: var(--ink-2);
+    line-height: 1.7;
   }
 
-  .principle {
+  /* ---------- 03 幕后：一行一件事 ---------- */
+  .rows {
+    grid-column: 6 / -1;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row {
     display: grid;
-    gap: 12px;
-    align-content: start;
-    padding: 24px 0 40px;
+    grid-template-columns: 3rem minmax(6rem, 0.32fr) 1fr;
+    align-items: baseline;
+    gap: 16px;
+    padding: clamp(20px, 3svh, 28px) 0;
     border-top: 1px solid var(--line);
   }
 
-  .principle__title {
+  .no {
+    color: var(--ink-4);
+  }
+
+  .row__label {
     font-size: clamp(1.375rem, 1.9vw, 1.75rem);
     line-height: 1.15;
   }
 
-  :lang(zh) .principle__title {
+  :lang(zh) .row__label {
     font-size: clamp(1.1875rem, 1.5vw, 1.375rem);
   }
 
-  .principle__body {
+  .row__body {
     color: var(--ink-2);
-    max-width: 32em;
+    max-width: 34em;
   }
 
-  /* ---------- 04 屏幕之外 ---------- */
+  /* ---------- 04 下班后：一排剧照 ---------- */
+  .after .intro {
+    grid-column: 1 / -1;
+  }
+
+  /* 每张至少 220px、至多 360px；放不下就横向滑动，所以兴趣增减不用改样式 */
   .stills {
-    grid-column: 5 / -1;
+    grid-column: 1 / -1;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 360px);
     gap: clamp(14px, 1.6vw, 24px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* 剧照入场时从下方 28px 升上来；滚动容器会裁掉越界部分，留出这段距离 */
+    padding-bottom: 32px;
+    margin-bottom: -32px;
+  }
+
+  .stills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .still-item {
+    scroll-snap-align: start;
   }
 
   .still {
     position: relative;
     aspect-ratio: 4 / 5;
-    display: grid;
-    place-items: center;
     overflow: hidden;
     border: 1px solid var(--line);
     background:
-      radial-gradient(ellipse 70% 50% at 50% 0%, rgb(236 232 225 / 0.06), transparent 70%),
+      radial-gradient(ellipse 70% 46% at 50% 0%, rgb(236 232 225 / 0.07), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgb(236 232 225 / 0.04), transparent 70%),
       #0d0c0c;
   }
 
@@ -307,6 +333,50 @@ const joiner = lang === 'zh' ? '' : ' ';
     position: absolute;
     top: 18px;
     left: 18px;
+    z-index: 1;
+  }
+
+  /* 画面：标志放在偏上的位置，下面留给字幕 */
+  .stage {
+    position: absolute;
+    inset: 0 0 26%;
+    display: grid;
+    place-items: center;
+    color: var(--ink);
+  }
+
+  .stage :global(svg) {
+    width: 34%;
+    height: auto;
+    fill: currentColor;
+    filter: drop-shadow(0 18px 32px rgb(0 0 0 / 0.6));
+    transition: transform 1.2s var(--ease-film);
+  }
+
+  .fallback {
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    text-align: center;
+    padding: 0 18px;
+    transition: transform 1.2s var(--ease-film);
+  }
+
+  .floor {
+    position: absolute;
+    left: 50%;
+    bottom: 16%;
+    width: 40%;
+    height: 6%;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.6), transparent);
+    filter: blur(5px);
+  }
+
+  @media (hover: hover) {
+    .still:hover .stage :global(svg),
+    .still:hover .fallback {
+      transform: translateY(-6px);
+    }
   }
 
   figcaption {
@@ -323,110 +393,9 @@ const joiner = lang === 'zh' ? '' : ' ';
     line-height: 1.05;
   }
 
-  .motif {
-    position: relative;
-    width: 56%;
-    height: 72px;
-    translate: 0 -12px;
-    color: var(--ink-2);
-  }
-
-  .motif i {
-    position: absolute;
-    display: block;
-  }
-
-  /* 公路：路沿不动，中线向后退，像在往前骑 */
-  .motif--road {
-    overflow: hidden;
-  }
-
-  .edge {
-    left: 0;
-    right: 0;
-    top: 22px;
-    height: 1px;
-    background: var(--ink-4);
-  }
-
-  .dash {
-    left: 0;
-    top: 48px;
-    width: calc(100% + 36px);
-    height: 1px;
-    background: repeating-linear-gradient(90deg, currentColor 0 18px, transparent 18px 36px);
-    animation: ride 0.9s linear infinite;
-  }
-
-  @keyframes ride {
-    to {
-      transform: translateX(-36px);
-    }
-  }
-
-  /* 准星：每隔一会儿开一枪，四根线向外弹开再收回 */
-  .arm {
-    left: 50%;
-    top: 50%;
-    background: currentColor;
-    animation: recoil 2.6s var(--ease-film) infinite;
-  }
-
-  .arm--t,
-  .arm--b {
-    width: 1px;
-    height: 14px;
-    margin-left: -0.5px;
-  }
-
-  .arm--l,
-  .arm--r {
-    width: 14px;
-    height: 1px;
-    margin-top: -0.5px;
-  }
-
-  /* translate 摆好位置（中心留 6px 空隙），--dx/--dy 是开枪时弹开的方向 */
-  .arm--t { translate: 0 calc(-100% - 6px); --dx: 0px; --dy: -7px; }
-  .arm--b { translate: 0 6px; --dx: 0px; --dy: 7px; }
-  .arm--l { translate: calc(-100% - 6px) 0; --dx: -7px; --dy: 0px; }
-  .arm--r { translate: 6px 0; --dx: 7px; --dy: 0px; }
-
-  @keyframes recoil {
-    0%,
-    78%,
-    100% {
-      transform: none;
-    }
-    82% {
-      transform: translate(var(--dx), var(--dy));
-    }
-  }
-
-  /* 均衡器：七根柱子各按自己的节拍起落 */
-  .motif--eq {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 7px;
-  }
-
-  .motif--eq .bar {
-    position: relative;
-    width: 3px;
-    height: 100%;
-    background: currentColor;
-    transform-origin: bottom;
-    animation: eq calc(0.7s + var(--k) * 0.13s) ease-in-out calc(var(--k) * -0.37s) infinite alternate;
-  }
-
-  @keyframes eq {
-    from {
-      transform: scaleY(0.12);
-    }
-    to {
-      transform: scaleY(1);
-    }
+  .still__detail {
+    font-size: 0.875rem;
+    color: var(--ink-3);
   }
 
   /* ---------- 窄屏 ---------- */
@@ -435,8 +404,7 @@ const joiner = lang === 'zh' ? '' : ' ';
     .card,
     .words,
     .intro,
-    .grid,
-    .stills {
+    .rows {
       grid-column: 1 / -1;
     }
 
@@ -450,34 +418,29 @@ const joiner = lang === 'zh' ? '' : ' ';
       grid-template-columns: 5.5em 1fr;
     }
 
-    .grid {
-      grid-template-columns: 1fr;
-    }
-
-    .principles,
-    .offscreen {
+    .behind,
+    .after {
       margin: 0;
       padding-left: var(--gutter);
       padding-right: var(--gutter);
     }
 
-    /* 剧照横向滑动，和片单一致 */
+    /* 窄屏：编号一列，标签和说明上下排 */
+    .row {
+      grid-template-columns: 2.5rem 1fr;
+      row-gap: 8px;
+    }
+
+    .row__body {
+      grid-column: 2;
+    }
+
+    /* 剧照贴着右边缘滑出，和片单一致 */
     .stills {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      grid-auto-columns: 68vw;
       margin-right: calc(var(--gutter) * -1);
       padding-right: var(--gutter);
-    }
-
-    .stills::-webkit-scrollbar {
-      display: none;
-    }
-
-    .still-item {
-      flex: 0 0 68vw;
-      scroll-snap-align: start;
+      scroll-padding-left: 0;
     }
   }
 </style>

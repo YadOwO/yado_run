@@ -24,7 +24,7 @@ const en = {
   site: {
     title: 'Yado — A Yado Production',
     description:
-      'Yado, AI front-end engineer. A personal site told in chapters: the person, the yado series of apps, and more to come.',
+      'Yado, AI developer. A personal site told in chapters: the person, the yado series of apps, and more to come.',
   },
   hud: {
     home: 'Yado — home',
@@ -43,8 +43,7 @@ const en = {
     manifesto: 'Manifesto',
     contents: 'Contents',
     statement: 'In my words',
-    principles: 'How I work',
-    offscreen: 'Off-screen',
+    after: 'After hours',
     next: 'Next chapter',
     comingSoon: 'Coming soon',
     slate: 'The slate',
@@ -71,9 +70,9 @@ const en = {
     back: 'Back to contents',
   },
   about: {
-    labels: { role: 'Role', identity: 'Identity', contact: 'Contact' },
-    principles: 'How I work.',
-    offscreen: 'When the screen is off.',
+    labels: { identity: 'Identity', job: 'Day job', making: 'Making', contact: 'Contact' },
+    behind: 'How it’s made.',
+    after: 'When I’m not coding.',
     still: 'Still',
   },
   works: {
@@ -138,7 +137,7 @@ const en = {
 const zh: typeof en = {
   site: {
     title: 'Yado — 芽豆出品',
-    description: 'Yado，AI 前端工程师。一个分章节的个人站：人物、芽豆系列作品，以及之后的更多。',
+    description: 'Yado，AI 开发。一个分章节的个人站：人物、芽豆系列作品，以及之后的更多。',
   },
   hud: {
     home: 'Yado — 首页',
@@ -157,8 +156,7 @@ const zh: typeof en = {
     manifesto: '主张',
     contents: '目录',
     statement: '自述',
-    principles: '做事的方式',
-    offscreen: '屏幕之外',
+    after: '下班后',
     next: '下一章',
     comingSoon: '即将上映',
     slate: '片单',
@@ -185,9 +183,9 @@ const zh: typeof en = {
     back: '回到目录',
   },
   about: {
-    labels: { role: '角色', identity: '身份', contact: '联系' },
-    principles: '做事的方式。',
-    offscreen: '关掉屏幕之后。',
+    labels: { identity: '身份', job: '在职', making: '在做', contact: '联系' },
+    behind: '怎么做出来的。',
+    after: '不写代码的时候。',
     still: '剧照',
   },
   works: {

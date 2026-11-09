@@ -2,7 +2,7 @@
 /**
  * 片头：黑场 → 签名一笔一笔写出 → 出品字幕 → 上下两块黑幕退到遮幅位置，露出第一幕。
  * 全程纯 CSS，每个会话只放一次；点击、按键、滚轮都能跳过（逻辑在 scripts/stage.ts）。
- * 时间线：签名 0.3–2.7s，字幕 2.0s 起，标题淡出 3.0s，开幕 3.1–4.6s。
+ * 时间线：签名 0.3–2.3s（和 yadoI 启动动画同速），字幕 2.0s 起，标题淡出 3.0s，开幕 3.1–4.6s。
  */
 import Signature from './Signature.astro';
 import { strings, type Lang } from '@/i18n';
@@ -111,7 +111,6 @@ const t = strings[Astro.props.lang];
     width: clamp(132px, 15vw, 210px);
     color: var(--ink);
     --sig-start: 0.3s;
-    --sig-scale: 0.85;
   }
 
   .credit {

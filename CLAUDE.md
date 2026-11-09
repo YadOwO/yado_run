@@ -26,7 +26,7 @@ src/
   styles/global.css    # base, grain + vignette, reveal utilities, view transitions
   i18n/index.ts        # all UI strings (en + zh, zh typed from en)
   data/chapters.ts     # the chapters (parts of the site); drives home contents, HUD index, next-chapter links, sitemap
-  data/about.ts        # Portrait chapter content (profile, principles, off-screen)
+  data/about.ts        # Portrait chapter content (profile card, statement, behind the scenes, hobbies)
   data/products.ts     # every yado product; status drives labels everywhere; product pages live at /works/<slug>/
   layouts/Base.astro   # head, fonts, HUD, opening flag, the one script
   views/               # HomeView, AboutView, WorksView, ProductView — shared by en and zh pages
@@ -39,6 +39,8 @@ src/
 - **Path alias:** use `@/` for imports from `src/`.
 - **Frame vs. color:** the frame (HUD, type, grain) is always monochrome. Color only enters through a product's `accent` (set as `--accent` on its scene). Never hard-code product colors in components.
 - **Chapters:** add a new part of the site by adding an entry to `CHAPTERS`, a view in `views/`, and pages at `pages/<slug>` and `pages/zh/<slug>` (zh pages import Noto Serif SC). Give it a frame in `ChapterStill.astro`. Home contents, the HUD index, next-chapter links and the sitemap follow automatically. `RESERVE_NEXT_CHAPTER` shows an "in development" row at the end.
+- **Hobbies (Portrait → After hours):** they change often; add/remove/reorder entries in `hobbies` in `data/about.ts`. `mark` is a single-color SVG in `src/assets/hobbies/` with no fill (it takes the text color); without a mark the title fills the frame. The strip fits any count (scrolls sideways when full).
+- **Signature:** the writing animation copies the logo-only opening of yadoI's launch Lottie (`yadoI/BrandAssets/yadoI.json`): same stroke order, timing and easing per stroke. Keep them in sync.
 - **Products:** add a product by adding an entry to `PRODUCTS`. `SLATE_PUBLIC = false` keeps the Filmography slate as anonymous poster slots. Link to product pages with `productPath()`.
 - **i18n:** English at `/`, Chinese at `/zh/`. Every string needs both `en` and `zh`; build links with `href(lang, path)`.
 - **Motion:** only animate `transform`, `opacity`, `clip-path`. Use `--ease-film` / `--ease-pen` and the `data-reveal`, `data-reveal-lines`, `data-enter`, `data-inview` utilities rather than new JS. Respect `prefers-reduced-motion`.

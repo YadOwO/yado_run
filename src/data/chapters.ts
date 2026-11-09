@@ -36,13 +36,13 @@ export const CHAPTERS: Chapter[] = [
     slug: 'about',
     title: { en: 'Portrait', zh: '人物' },
     logline: {
-      en: 'Who I am, how I work, and what I do when the screen is off.',
-      zh: '我是谁，怎么做事，以及关掉屏幕之后。',
+      en: 'Who I am, how the yado series gets made, and what I do when I’m not coding.',
+      zh: '我是谁，芽豆系列怎么做出来的，以及不写代码的时候。',
     },
     contents: [
       { en: 'In my words', zh: '自述' },
-      { en: 'How I work', zh: '做事的方式' },
-      { en: 'Off-screen', zh: '屏幕之外' },
+      { en: 'Behind the scenes', zh: '幕后' },
+      { en: 'After hours', zh: '下班后' },
     ],
   },
   {
