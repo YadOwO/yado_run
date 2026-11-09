@@ -14,6 +14,8 @@ interface Props {
 const { lang, scene } = Astro.props;
 const t = strings[lang];
 const year = new Date().getFullYear();
+/** 页脚显示的域名跟 astro.config 里的 site 走，换域名只改一处 */
+const host = Astro.site?.host ?? 'my.yado1225.top';
 ---
 
 <footer class="credits" data-scene={scene} data-scene-label={t.scenes.credits}>
@@ -45,7 +47,7 @@ const year = new Date().getFullYear();
   <div class="end">
     <Signature draw="inview" class="sig" />
     <p class="display tbc" data-reveal style="--i:4">{t.credits.tbc}</p>
-    <p class="meta fine">© {year} Yado · yado1225.top</p>
+    <p class="meta fine">© {year} Yado · {host}</p>
   </div>
 </footer>
 

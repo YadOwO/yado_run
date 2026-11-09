@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # 告知爬虫你的站点地图位置，加速抓取
-Sitemap: https://yado1225.top/sitemap.xml
+Sitemap: https://my.yado1225.top/sitemap.xml
