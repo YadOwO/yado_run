@@ -67,6 +67,8 @@ AI bookkeeping uses points. New users receive free points, and you can check in 
 
 When you send feedback in the App, we receive your message plus the App version, OS version, device model and App language, so we can find the problem and reply.
 
+If you turn on "Attach recent diagnostics" when sending (off by default, chosen for each message), the message also includes up to 5 recent crash, hang or disk-write reports recorded on your device: call stacks, OS version and App version, **with no ledger data**. iOS provides these reports and they stay on your device until you turn this on and send them with your feedback.
+
 ### Server logs
 
 To keep our services secure and reliable, troubleshoot problems and meet legal log-retention requirements, our servers record access logs: **IP address, time, the endpoint requested, the result and duration**, and for some services your account ID and device identifier. **Logs do not contain your ledger, chat text or images.**
@@ -172,7 +174,7 @@ For anything you can't do in the App, contact us using the details below. We wil
 
 ## 8. Additional information for users in the United States
 
-- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI), photos you send to the AI, feedback content and device information.
+- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI), photos you send to the AI, feedback content, device information and diagnostic reports you choose to attach.
 - **We do not sell or "share" personal information** for cross-context behavioral advertising, and we have not done so in the past 12 months. We do not use sensitive personal information to infer characteristics about you.
 - **Your rights**: depending on your state, you may have the right to know, access, correct and delete your personal information, and to obtain a portable copy. You can exercise most of these in the App, or by emailing us. You may use an authorized agent; we may ask you to verify your identity. **We will not discriminate against you for exercising your rights.**
 - **Do Not Track**: the App does not track you across third-party websites or apps, so Do Not Track signals don't change how it works.
