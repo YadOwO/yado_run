@@ -185,6 +185,6 @@ We may update this policy when features or laws change. We will post the new ver
 ## 10. Contact us
 
 - Data controller: YU JUNJIE (independent developer)
-- Email: privacy@yado1225.top
+- Email: yado.dev@proton.me
 
 We will reply within 15 business days after receiving your email and verifying your identity. If you are not satisfied with our reply, you may contact your local data protection or consumer protection authority.

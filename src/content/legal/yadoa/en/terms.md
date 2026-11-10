@@ -106,6 +106,6 @@ These Terms are governed by the laws of the People's Republic of China, without 
 ## 14. Contact us
 
 - Developer: YU JUNJIE (independent developer)
-- Email: support@yado1225.top
+- Email: yado.dev@proton.me
 
 These Terms are available in Chinese and English with the same content. If they differ, the Chinese version applies to users in mainland China and the English version applies to users elsewhere.
