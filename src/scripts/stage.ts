@@ -3,7 +3,8 @@
  * 1. 元素进入视口时加 .is-in，触发 CSS 里写好的入场；
  * 2. 根据视口中央所在的场景，更新左下角场景名和录制灯颜色；
  * 3. 把滚动进度换算成右下角的时间码；
- * 4. 片头播放中，点击、按键、滚轮即可跳过。
+ * 4. 片头播放中，点击、按键、滚轮即可跳过；
+ * 5. 左上角的「返回」：回到这个标签页里的上一页。
  * 所有动画本身都在 CSS 里，这里只负责“什么时候”。
  */
 
@@ -105,3 +106,12 @@ if (opening && root.dataset.opening !== 'skip') {
     if (event.animationName === 'opening-done') stop();
   });
 }
+
+/* ---------- 5. 返回 ---------- */
+/* 显不显示在首帧之前就定了（Base.astro），要回到的那条历史记录的 key 记在 <html data-back> 上 */
+document.querySelector('[data-hud-back]')?.addEventListener('click', () => {
+  const key = root.dataset.back;
+  const nav = (window as unknown as { navigation?: { traverseTo(key: string): unknown } }).navigation;
+  if (key && nav) nav.traverseTo(key);
+  else history.back();
+});

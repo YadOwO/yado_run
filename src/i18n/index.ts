@@ -28,6 +28,7 @@ const en = {
   },
   hud: {
     home: 'Yado — home',
+    back: 'Back',
     language: 'Language',
     scene: 'Scene',
     timecode: 'Timecode',
@@ -144,6 +145,7 @@ const zh: typeof en = {
   },
   hud: {
     home: 'Yado — 首页',
+    back: '返回',
     language: '语言',
     scene: '场景',
     timecode: '时间码',

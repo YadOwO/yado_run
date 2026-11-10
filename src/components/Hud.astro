@@ -1,8 +1,10 @@
 ---
 /**
- * 取景器式的四角信息：左上签名回首页，右上语言，左下当前场景，右下时间码。
+ * 取景器式的四角信息：左上签名回首页（旁边是「返回」），右上语言，左下当前场景，右下时间码。
  * 场景名和时间码由 scripts/stage.ts 随滚动更新；手机上只留上面两个角。
  * 没有全站目录：去哪儿都靠页面里的入口（Cta）和每章结尾的「下一章」。
+ * 「返回」只在首页以外的页面上有，而且要这个标签页里确实有上一页（也是本站的页面）才出现：
+ * 从别处直接打开的页面没有可回的地方，就不显示。由 Base 里首帧之前的脚本判断，在 <html> 上标 data-back。
  */
 import Signature from './Signature.astro';
 import { href, strings, type Lang } from '@/i18n';
@@ -23,6 +25,15 @@ const t = strings[lang];
   <a class="corner tl home" href={href(lang, '/')} aria-label={t.hud.home}>
     <Signature />
   </a>
+
+  {
+    path !== '/' && (
+      <button class="corner back meta" type="button" data-hud-back>
+        <span class="arrow" aria-hidden="true">←</span>
+        {t.hud.back}
+      </button>
+    )
+  }
 
   <div class="corner tr">
     <nav class="lang meta" aria-label={t.hud.language}>
@@ -121,6 +132,41 @@ const t = strings[lang];
 
   .home:hover {
     opacity: 1;
+  }
+
+  /* 返回：紧挨着签名，和它一样高；默认不显示，<html> 上有 data-back 才出现 */
+  .back {
+    display: none;
+    top: var(--hud-inset);
+    left: calc(var(--hud-inset) + 46px + clamp(8px, 1.4vw, 16px));
+    height: 46px;
+    align-items: center;
+    gap: 0.7em;
+    padding: 0 10px;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    cursor: pointer;
+    view-transition-name: hud-back;
+    transition: color 0.6s var(--ease-film);
+  }
+
+  :global(:root[data-back]) .back {
+    display: flex;
+  }
+
+  .back:hover {
+    color: var(--ink);
+  }
+
+  .back .arrow {
+    transition: transform 0.6s var(--ease-film);
+  }
+
+  @media (hover: hover) {
+    .back:hover .arrow {
+      transform: translateX(-4px);
+    }
   }
 
   .lang {

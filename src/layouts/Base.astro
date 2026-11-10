@@ -68,7 +68,7 @@ const themeStyle = theme
     {!theme && <link rel="preload" href={serifWoff2} as="font" type="font/woff2" crossorigin />}
     <link rel="preload" href={monoWoff2} as="font" type="font/woff2" crossorigin />
 
-    <!-- 在首帧之前决定片头放不放：每个会话一次；带锚点、减少动态效果、非首页都跳过 -->
+    <!-- 在首帧之前决定两件事：片头放不放（每个会话一次；带锚点、减少动态效果、非首页都跳过），返回按钮显不显示 -->
     <script is:inline define:vars={{ opening }}>
       (function () {
         var d = document.documentElement;
@@ -82,6 +82,28 @@ const themeStyle = theme
         } catch (e) {}
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) skip = true;
         if (skip) d.dataset.opening = 'skip';
+
+        // 返回按钮：这个标签页里，前面有本站的另一个页面才显示（直接打开的页面没有可回的地方）。
+        // 同一页的另一种语言、同一页的锚点不算「上一页」，跳过去找再前面的；要回到的那一条记在 <html> 上。
+        try {
+          var page = function (u) {
+            return new URL(u, location.href).pathname.replace(/^\/zh(?=\/|$)/, '').replace(/\/+$/, '');
+          };
+          var here = page(location.href);
+          var nav = window.navigation;
+          if (nav && nav.currentEntry) {
+            // navigation.entries() 只有这个标签页里连续的同源记录
+            var list = nav.entries();
+            for (var i = nav.currentEntry.index - 1; i >= 0; i--) {
+              if (list[i].url && page(list[i].url) !== here) {
+                d.dataset.back = list[i].key;
+                break;
+              }
+            }
+          } else if (document.referrer && new URL(document.referrer).origin === location.origin && page(document.referrer) !== here) {
+            d.dataset.back = '';
+          }
+        } catch (e) {}
       })();
     </script>
     <slot name="head" />
