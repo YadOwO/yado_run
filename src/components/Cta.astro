@@ -1,0 +1,181 @@
+---
+/**
+ * 入口：全站「这里可以点」的统一样子。一个圆圈里的箭头，后面跟一行字。
+ * 箭头每隔几秒自己往前走一格，圆圈外荡开一圈，不用悬停也看得出能点；悬停时圆圈填实。
+ * quiet：同一处的次要入口，不自己动，只在悬停时走一格，免得两个一起抢。
+ * 不传 href 时渲染成 span：放在整块可点的链接里当它的箭头（下一章、产品页的「下一部」），不写字就只有圆圈。
+ * 大小用 --cta-size 调。
+ */
+interface Props {
+  href?: string;
+  quiet?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { href, quiet = false, class: className, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'span';
+const hasLabel = Astro.slots.has('default');
+---
+
+<Tag class:list={['cta', { 'cta--quiet': quiet }, className]} href={href} {...rest}>
+  <span class="btn" aria-hidden="true">
+    <i class="ping"></i>
+    <span class="clip">
+      <span class="track"><span>→</span><span>→</span></span>
+    </span>
+  </span>
+  {
+    hasLabel && (
+      <span class="meta label">
+        <slot />
+      </span>
+    )
+  }
+</Tag>
+
+<style>
+  .cta {
+    --cta-size: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--ink);
+  }
+
+  .cta--quiet {
+    --cta-size: 34px;
+    gap: 12px;
+    color: var(--ink-2);
+  }
+
+  .btn {
+    position: relative;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--cta-size);
+    height: var(--cta-size);
+    font-size: calc(var(--cta-size) * 0.36);
+    line-height: 1;
+    isolation: isolate;
+  }
+
+  /* 圆圈 */
+  .btn::before,
+  .btn::after,
+  .ping {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  .btn::before {
+    border: 1px solid currentColor;
+    opacity: 0.55;
+  }
+
+  /* 悬停时从中心填实 */
+  .btn::after {
+    z-index: -1;
+    background: currentColor;
+    transform: scale(0);
+    transition: transform 0.6s var(--ease-film);
+  }
+
+  /* 荡开的那一圈 */
+  .ping {
+    border: 1px solid currentColor;
+    opacity: 0;
+  }
+
+  /* 箭头：两支首尾相接，往右走一格后看起来还是原样，可以一直循环 */
+  .clip {
+    width: 1.5em;
+    overflow: hidden;
+    transition: color 0.3s var(--ease-film);
+  }
+
+  .track {
+    display: flex;
+    width: 200%;
+  }
+
+  .track span {
+    flex: 0 0 50%;
+    text-align: center;
+  }
+
+  .label {
+    color: inherit;
+    transition: transform 0.6s var(--ease-film);
+  }
+
+  /* 主入口的字比片框上的小字大一号 */
+  .cta:not(.cta--quiet) .label {
+    font-size: 0.8125rem;
+  }
+
+  .cta:not(.cta--quiet) .track {
+    animation: cta-step 3.4s var(--ease-film) infinite;
+  }
+
+  .cta:not(.cta--quiet) .ping {
+    animation: cta-ping 3.4s ease-out infinite;
+  }
+
+  @keyframes cta-step {
+    from {
+      transform: translateX(-50%);
+    }
+    26%,
+    to {
+      transform: none;
+    }
+  }
+
+  @keyframes cta-ping {
+    0%,
+    12% {
+      transform: none;
+      opacity: 0;
+    }
+    16% {
+      transform: none;
+      opacity: 0.7;
+    }
+    62%,
+    100% {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cta-step-once {
+    from {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* 悬停（自己是链接，或者外面那一整块是链接）、键盘聚焦 */
+  .cta:is(:hover, :focus-visible) .btn::after,
+  :global(a:is(:hover, :focus-visible)) .cta .btn::after {
+    transform: none;
+  }
+
+  .cta:is(:hover, :focus-visible) .clip,
+  :global(a:is(:hover, :focus-visible)) .cta .clip {
+    color: var(--bg);
+  }
+
+  .cta--quiet:is(:hover, :focus-visible) .track {
+    animation: cta-step-once 0.6s var(--ease-film);
+  }
+
+  @media (hover: hover) {
+    .cta:hover .label {
+      transform: translateX(4px);
+    }
+  }
+</style>

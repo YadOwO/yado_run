@@ -3,6 +3,7 @@
  * 剧照：App 里的一张语音卡片，用页面的底色和墨色（产品页有 theme 时就是 App 深色外观），把“一句话记两笔”演一遍：
  * 听到的话像墨水一样写出来 → 对勾写出 → 两笔账依次落下，每笔前面的色块上写出一个红对勾（App 里“刚记下”的样子）。
  * 卡片边框、行间细线、色块都是 App 里的手绘笔迹。滚动到眼前时只演一次。
+ * 传了 scrub（首页正片）就改成跟着滚动演：每一步占滚动时间线上的一段，往回滚会倒着演。
  */
 import type { Still } from '@/data/products';
 import type { Lang } from '@/i18n';
@@ -13,37 +14,51 @@ import { blobPath, tick } from '@/components/ink/handDrawn';
 interface Props {
   still: Still;
   lang: Lang;
+  /** 跟着滚动演：这场戏在滚动时间线上的起止（contain 百分比）；时间线由外面用 --scrub-timeline 指定 */
+  scrub?: { from: number; to: number };
+  /** 只要卡片：上下留白收紧，不带图注 */
+  compact?: boolean;
 }
 
-const { still, lang } = Astro.props;
+const { still, lang, scrub, compact = false } = Astro.props;
+
+/** data-scrub 的值（见 global.css）；不跟滚动时不输出这个属性 */
+const act = (kind: 'fade' | 'rise' | 'wipe') => (scrub ? kind : undefined);
+
+/** 这场戏里的一步：a、b 是戏内 0–1 的进度，换算成时间线上的一段 */
+function cue(a: number, b: number) {
+  if (!scrub) return undefined;
+  const at = (x: number) => `contain ${(scrub.from + (scrub.to - scrub.from) * x).toFixed(1)}%`;
+  return `--from:${at(a)};--to:${at(b)}`;
+}
 ---
 
-<figure class="still" data-inview>
+<figure class:list={['still', { 'still--compact': compact }]} data-inview>
   <div class="stage">
     <div class="paper">
       <InkBox width={360} height={300} radius={26} seed="voice-still" />
 
       <p class="heard">
         <span class="mic" aria-hidden="true"></span>
-        <span class="words">{still.heard[lang]}</span>
+        <span class="words" data-scrub={act('wipe')} style={cue(0, 0.34)}>{still.heard[lang]}</span>
       </p>
 
-      <p class="done">
-        <svg class="tick" viewBox={tick.viewBox} aria-hidden="true"><path d={tick.d}></path></svg>
+      <p class="done" data-scrub={act('fade')} style={cue(0.34, 0.42)}>
+        <svg class="tick" viewBox={tick.viewBox} aria-hidden="true" data-scrub={act('wipe')} style={cue(0.38, 0.5)}><path d={tick.d}></path></svg>
         {still.done[lang]}
       </p>
 
-      <InkRule hand heavy seed="voice-still-heading" class="heading-rule" />
+      <InkRule hand heavy seed="voice-still-heading" class="heading-rule" scrub={cue(0.48, 0.62)} />
 
       <ul class="rows">
         {
           still.rows.map((r, i) => (
-            <li style={`--r:${i}`}>
+            <li data-scrub={act('rise')} style={`--r:${i};${cue(0.58 + i * 0.1, 0.72 + i * 0.1) ?? ''}`}>
               <span class="icon" aria-hidden="true">
                 <svg class="icon__blob" viewBox="0 0 38 38">
                   <path d={blobPath(38, 38, `voice-still-row-${i}`)} />
                 </svg>
-                <svg class="icon__tick" viewBox={tick.viewBox}>
+                <svg class="icon__tick" viewBox={tick.viewBox} data-scrub={act('wipe')} style={cue(0.76 + i * 0.1, 0.88 + i * 0.1)}>
                   <path d={tick.d} />
                 </svg>
               </span>
@@ -78,6 +93,16 @@ const { still, lang } = Astro.props;
     place-items: center;
     padding: clamp(56px, 10svh, 112px) 0;
     background: radial-gradient(ellipse 40% 60% at 50% 100%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
+  }
+
+  /* 地灯收成卡片脚下的一团，四周都淡出去，不留舞台边 */
+  .still--compact .stage {
+    padding: clamp(20px, 4svh, 44px) 0 clamp(36px, 7svh, 72px);
+    background: radial-gradient(ellipse 36% 38% at 50% 72%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 70%);
+  }
+
+  .still--compact figcaption {
+    display: none;
   }
 
   /* 卡片：App 的 PaperSurface，边框是手绘方框（InkBox），行间是手绘细线 */

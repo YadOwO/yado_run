@@ -3,6 +3,7 @@
  * 作品章「即将上映」：颜色来自当前主推产品。
  * 整块画幅可点，点击后画幅放大成产品页首屏（共享 view-transition-name）。
  */
+import Cta from '@/components/Cta.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import { productPath, type Product } from '@/data/products';
@@ -59,10 +60,9 @@ const link = product.page ? href(lang, productPath(product)) : undefined;
       {product.logline && <p class="logline" data-reveal style="--i:2">{product.logline[lang]}</p>}
       {
         link && (
-          <a class="link meta enter" href={link} data-reveal style="--i:3">
+          <Cta href={link} data-reveal style="--i:3">
             {t.feature.enter}
-            <span class="arrow" aria-hidden="true">→</span>
-          </a>
+          </Cta>
         )
       }
     </div>
@@ -140,10 +140,6 @@ const link = product.page ? href(lang, productPath(product)) : undefined;
     font-weight: 500;
     line-height: 1.6;
     font-size: clamp(1.125rem, 1.6vw, 1.5rem);
-  }
-
-  .enter {
-    color: var(--ink);
   }
 
   @media (max-width: 900px) {

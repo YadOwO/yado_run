@@ -7,7 +7,7 @@
  * 标志本来就是 App 深色外观的配色。于是点进来的那一下，暗场里的画幅放大成 App 图标，像打开了这个 App。
  */
 import type { Product } from '@/data/products';
-import yadoaMark from '@/assets/yadoa-mark.svg?raw';
+import { productMarks } from './productMarks';
 
 interface Props {
   product: Product;
@@ -17,18 +17,9 @@ interface Props {
 const { product, variant } = Astro.props;
 const app = variant === 'full' && !!product.page?.theme;
 
-/** 从原始 SVG 里取出路径；强调色那一笔（对勾）加遮罩，入画时从左往右“写”出来 */
-function buildMark(raw: string, slug: string) {
-  const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100';
-  const paths = [...raw.matchAll(/<path d="([^"]+)"[^>]*fill="([^"]+)"/g)].map((m) => ({ d: m[1], fill: m[2] }));
-  return { viewBox, paths, maskId: `wipe-${slug}` };
-}
-
-const marks: Record<string, ReturnType<typeof buildMark> & { wipe: [number, number, number, number] }> = {
-  yadoa: { ...buildMark(yadoaMark, 'yadoa'), wipe: [330, 490, 440, 260] },
-};
-
-const mark = marks[product.slug];
+const mark = productMarks[product.slug];
+/** 同一页可能出现两次同一个标志（首页正片和目录缩略），遮罩 id 带上用途才不会串 */
+const maskId = `wipe-${product.slug}-${variant}`;
 ---
 
 <div
@@ -44,12 +35,12 @@ const mark = marks[product.slug];
       mark ? (
         <svg viewBox={mark.viewBox} fill="none" role="img" aria-label={product.codename}>
           <defs>
-            <mask id={mark.maskId} maskUnits="userSpaceOnUse">
+            <mask id={maskId} maskUnits="userSpaceOnUse">
               <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
             </mask>
           </defs>
           {mark.paths.map((p, i) => (
-            <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${mark.maskId})` : undefined} />
+            <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${maskId})` : undefined} />
           ))}
         </svg>
       ) : (

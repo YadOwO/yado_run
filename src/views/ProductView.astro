@@ -2,10 +2,12 @@
 /**
  * 产品页模版：每部作品同一套结构。
  * 主视觉 → 规格 → 剧照与看点 → 幕后 → 上映信息 → 下一部 → 片尾
+ * 有剧照时，第一个看点和剧照是一场钉住的戏：画面停住，剧照跟着滚动把这个动作演一遍；其余看点照常列在下面。
  * 产品有自己的世界（page.theme）时，整页换成产品 App 深色外观的样子：App 的底色和墨色、手绘线条、系统衬线。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
+import Cta from '@/components/Cta.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import VoiceStill from '@/components/product/VoiceStill.astro';
@@ -28,6 +30,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const { theme } = page;
 /** 有自己的世界就用手绘笔迹，否则是片框里的直线 */
 const hand = !!theme;
+
+/** 第一个看点交给那场钉住的戏，列表从第二个开始（编号不变） */
+const staged = page.still ? page.highlights[0] : undefined;
+const listed = page.highlights.map((h, i) => ({ h, i })).slice(staged ? 1 : 0);
 
 const specs = [
   { label: t.product.specs.platform, value: product.platform, mono: true },
@@ -84,13 +90,29 @@ const specs = [
 
     <!-- 03 剧照与看点 -->
     <section class="highlights" data-scene="03" data-scene-label={t.scenes.highlights} data-scene-accent={product.accent}>
-      {page.still && <VoiceStill still={page.still} lang={lang} />}
+      {
+        page.still && staged && (
+          <div class="act">
+            <div class="act__pin">
+              <div class="act__frame">
+                <div class="act__subject">
+                  <VoiceStill still={page.still} lang={lang} scrub={{ from: 6, to: 80 }} compact />
+                </div>
+                <div class="act__text">
+                  <h2 class="display act__title" data-reveal>{staged.title[lang]}</h2>
+                  <p class="lede act__body" data-reveal style="--i:1">{staged.body[lang]}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
 
       <div class="list">
         <InkRule hand={hand} heavy seed={`${product.slug}-highlights`} />
         <ol>
           {
-            page.highlights.map((h, i) => (
+            listed.map(({ h, i }) => (
               <li class="item" data-reveal>
                 <span class="meta no">
                   {/* 编号垫在随手涂出的色块上，像 App 里流水前面的图标底 */}
@@ -142,7 +164,7 @@ const specs = [
         {hand && <InkBox width={360} height={170} radius={22} seed={`${product.slug}-next`} />}
         <span class="meta">{t.product.next}</span>
         <span class="display next__title">{t.product.nextTba}</span>
-        <span class="arrow" aria-hidden="true">→</span>
+        <Cta class="next__go" />
       </a>
     </section>
   </div>
@@ -260,6 +282,79 @@ const specs = [
   /* ---------- 03 剧照与看点 ---------- */
   .highlights {
     padding: clamp(40px, 8svh, 80px) var(--gutter) clamp(80px, 14svh, 160px);
+  }
+
+  /* 钉住的那场戏：主体（剧照）在中间，这个看点的标题和说明压在底部，和首屏一个构图 */
+  .act {
+    --scrub-timeline: --act;
+  }
+
+  .act__frame {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(32px, 6svh, 64px);
+  }
+
+  .act__subject {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .act__subject > :global(*) {
+    width: 100%;
+  }
+
+  /* 卡片是按手机上的大小画的，大屏上整体放大，不然撑不起一屏 */
+  @media (min-width: 1100px) and (min-height: 760px) {
+    .act__subject > :global(*) {
+      zoom: 1.25;
+    }
+  }
+
+  @media (min-width: 1600px) and (min-height: 960px) {
+    .act__subject > :global(*) {
+      zoom: 1.5;
+    }
+  }
+
+  .act__text {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 18px;
+    align-items: end;
+  }
+
+  .act__title {
+    grid-column: 1 / span 7;
+    font-size: var(--fs-title);
+  }
+
+  .act__body {
+    grid-column: 8 / span 5;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* 2.6 屏高，画面钉住 1.6 屏的滚动距离，剧照在这段里演完 */
+      .act {
+        height: 260svh;
+        view-timeline: --act block;
+      }
+
+      .act__pin {
+        position: sticky;
+        top: 0;
+        height: 100lvh;
+      }
+
+      .act__frame {
+        height: 100dvh;
+        padding: calc(var(--hud-inset) + 64px) 0 clamp(56px, 10svh, 104px);
+      }
+    }
   }
 
   .list {
@@ -425,12 +520,12 @@ const specs = [
     font-size: 1.25rem;
   }
 
-  .next .arrow {
+  .next > :global(.next__go) {
     justify-self: end;
     transition: transform 0.9s var(--ease-film);
   }
 
-  .next:hover .arrow {
+  .next:hover > :global(.next__go) {
     transform: translateX(6px);
   }
 
@@ -438,6 +533,8 @@ const specs = [
   @media (max-width: 900px) {
     .titles,
     .logline,
+    .act__title,
+    .act__body,
     .item__title,
     .item__body,
     .behind__title,

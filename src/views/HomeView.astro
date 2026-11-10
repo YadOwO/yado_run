@@ -1,12 +1,14 @@
 ---
 /**
- * 首页 =「序」：片头 → 主张 → 目录 → 片尾。
- * 具体内容都在各章里（人物、作品……），首页只负责开场和带路。
+ * 首页：正片（签名 → 人物 → 作品，滚动推进）→ 片尾。每一章在正片里有一个镜头，所以不再另列目录。
+ * 没有可当门面的主推产品（没有产品页）时，退回原来的标题卡和目录。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
-import Hero from '@/components/home/Hero.astro';
 import Chapters from '@/components/home/Chapters.astro';
+import Film from '@/components/home/Film.astro';
+import Hero from '@/components/home/Hero.astro';
+import { featuredProduct, productsWithPage } from '@/data/products';
 import { strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -15,10 +17,20 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = strings[lang];
+const lead = productsWithPage.find((p) => p.slug === featuredProduct?.slug);
 ---
 
-<Base lang={lang} path="/" opening firstScene={`01 — ${t.scenes.manifesto}`}>
-  <Hero lang={lang} />
-  <Chapters lang={lang} scene="02" />
-  <Credits lang={lang} scene="03" slot="footer" />
-</Base>
+{
+  lead ? (
+    <Base lang={lang} path="/" firstScene={`01 — ${t.hud.prologue}`}>
+      <Film lang={lang} product={lead} />
+      <Credits lang={lang} scene="04" slot="footer" />
+    </Base>
+  ) : (
+    <Base lang={lang} path="/" opening firstScene={`01 — ${t.scenes.manifesto}`}>
+      <Hero lang={lang} />
+      <Chapters lang={lang} scene="02" />
+      <Credits lang={lang} scene="03" slot="footer" />
+    </Base>
+  )
+}

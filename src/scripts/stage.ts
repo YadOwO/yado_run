@@ -3,8 +3,7 @@
  * 1. 元素进入视口时加 .is-in，触发 CSS 里写好的入场；
  * 2. 根据视口中央所在的场景，更新左下角场景名和录制灯颜色；
  * 3. 把滚动进度换算成右下角的时间码；
- * 4. 从 bfcache 返回时收起目录；
- * 5. 片头播放中，点击、按键、滚轮即可跳过。
+ * 4. 片头播放中，点击、按键、滚轮即可跳过。
  * 所有动画本身都在 CSS 里，这里只负责“什么时候”。
  */
 
@@ -87,15 +86,7 @@ window.addEventListener(
 );
 renderTimecode();
 
-/* ---------- 4. 目录 ---------- */
-// 从目录点进别的页再按返回，页面会从 bfcache 原样恢复，目录还开着；恢复时把它收起来
-window.addEventListener('pageshow', (event) => {
-  if (!event.persisted) return;
-  const index = document.getElementById('hud-index');
-  if (index?.matches(':popover-open')) index.hidePopover();
-});
-
-/* ---------- 5. 跳过片头 ---------- */
+/* ---------- 4. 跳过片头 ---------- */
 const opening = document.querySelector<HTMLElement>('[data-opening-overlay]');
 
 if (opening && root.dataset.opening !== 'skip') {

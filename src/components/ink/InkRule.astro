@@ -11,9 +11,11 @@ interface Props {
   heavy?: boolean;
   seed?: Seed;
   class?: string;
+  /** 跟着滚动时间线写出来：传 `--from:…;--to:…`（见 global.css 的 data-scrub），不传就是进入视口时写 */
+  scrub?: string;
 }
 
-const { hand = false, heavy = false, seed = 0, class: className } = Astro.props;
+const { hand = false, heavy = false, seed = 0, class: className, scrub } = Astro.props;
 
 /** 画布按 640 宽生成：桌面上起伏舒缓，手机上压窄后也不至于太碎 */
 const W = 640;
@@ -27,7 +29,7 @@ const d = hand ? rulePath(W, H, seed) : `M0 ${H / 2} L${W} ${H / 2}`;
   aria-hidden="true"
   data-inview={hand ? '' : undefined}
 >
-  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+  <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" data-scrub={scrub ? 'wipe' : undefined} style={scrub}>
     <path d={d} vector-effect="non-scaling-stroke"></path>
   </svg>
 </span>

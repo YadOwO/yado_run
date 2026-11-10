@@ -1,0 +1,712 @@
+---
+/**
+ * 首页正片：一块钉住的整屏画面，滚动就是播放头。这是个人站，所以讲的是人，作品只是其中一个部分：
+ * 01 签名写出（这时左上角的小签名先藏着）→ 02 签名收进左上角、接上小签名，人物：我是谁、在做什么、爱好
+ * → 03 镜头推过这段话，作品：主推产品的世界亮起来，标志从深处过来。产品本身不在这里讲，点进去是它自己的页面。
+ * 全部是挂在 --film 这条滚动时间线上的 CSS 动画，没有脚本；时间点都是这条时间线 contain 段的百分比
+ *（0% = 画面刚钉住，100% = 画面松开）。
+ * 浏览器不支持滚动时间线、或者用户要求减少动态效果时，三个镜头就是依次排下来的三屏静态画面。
+ */
+import Cta from '@/components/Cta.astro';
+import Signature from '@/components/Signature.astro';
+import StatusChip from '@/components/StatusChip.astro';
+import InkRule from '@/components/ink/InkRule.astro';
+import { productMarks } from '@/components/productMarks';
+import { hobbies, profile } from '@/data/about';
+import { chapterNo, chapterPath, getChapter } from '@/data/chapters';
+import { productPath, type Product, type ProductPage } from '@/data/products';
+import { href, strings, type Lang } from '@/i18n';
+
+interface Props {
+  lang: Lang;
+  /** 主推产品：作品那个镜头用它当门面 */
+  product: Product & { page: ProductPage };
+}
+
+const { lang, product } = Astro.props;
+const { theme } = product.page;
+const t = strings[lang];
+const other: Lang = lang === 'en' ? 'zh' : 'en';
+const about = getChapter('about');
+const works = getChapter('works');
+
+const mark = productMarks[product.slug];
+const maskId = `wipe-${product.slug}-film`;
+const productHref = href(lang, productPath(product));
+
+/** 产品的世界只罩住最后一个镜头：底色、墨色写在这一块上，其余墨色由 tokens.css 的 data-theme='app' 推导 */
+const worldStyle = theme ? `--bg:${theme.paper};--bg-raise:${theme.surface};--ink:${theme.ink}` : undefined;
+
+/** 时间线上的一段，给 data-scrub 用 */
+const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain ${to}%`;
+---
+
+<section class="film" style={`--accent:${product.accent}`}>
+  <div class="pin">
+    <div class="beam" aria-hidden="true"></div>
+
+    <!-- 01 签名 -->
+    <div class="shot shot--sig">
+      <div class="sig">
+        <h1 class="sig__pen"><Signature draw /></h1>
+        <p class="meta credit" data-scrub="out" style={at(0, 5)}><span>{t.opening.credit}</span></p>
+      </div>
+      <p class="cue meta" aria-hidden="true" data-scrub="out" style={at(0, 4)}>
+        <span>{t.hero.scroll}<i></i></span>
+      </p>
+    </div>
+
+    <!-- 02 人物 -->
+    <div class="shot shot--person">
+      <div class="subject">
+        <h2 class="display intro">
+          {
+            profile.intro[lang].map((line, i) => (
+              <span class="mask-line">
+                <span data-scrub="line" style={at(12 + i * 3, 23 + i * 3)}>
+                  {line}
+                </span>
+              </span>
+            ))
+          }
+        </h2>
+      </div>
+
+      <div class="text">
+        <ul class="hobbies" aria-label={t.scenes.hobbies}>
+          {
+            hobbies.map((h, i) => {
+              const Mark = h.mark;
+              return (
+                <li data-scrub="rise" style={at(24 + i * 2, 32 + i * 2)}>
+                  {Mark && <Mark aria-hidden="true" />}
+                  <span class="meta case">{h.title[lang]}</span>
+                </li>
+              );
+            })
+          }
+        </ul>
+        <div class="side" data-scrub="rise" style={at(24, 34)}>
+          <p class="lede">{profile.summary[lang]}</p>
+          <Cta href={href(lang, chapterPath(about))}>
+            {t.chapters.chapter}{chapterNo('about')} — {about.title[lang]}
+          </Cta>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 作品 -->
+    <div class="world" data-theme={theme ? 'app' : undefined} style={worldStyle}>
+      <!-- 画面本身（底 + 标志）和产品页首屏是同一帧，共用 view-transition-name，点进去时接得上 -->
+      <div class="plate" style={`view-transition-name: keyart-${product.slug}; view-transition-class: keyart`}>
+        <div class:list={['world__bg', { 'world__bg--app': !!theme }]} aria-hidden="true"></div>
+        <div class="subject">
+          <!-- 标志本身也能点：键盘和读屏走下面的「进入」，这里不重复占一个焦点 -->
+          <a class="mark-link" href={productHref} tabindex="-1" aria-hidden="true">
+            {
+              mark ? (
+                <svg class="mark" viewBox={mark.viewBox} fill="none">
+                  <defs>
+                    <mask id={maskId} maskUnits="userSpaceOnUse">
+                      <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
+                    </mask>
+                  </defs>
+                  {mark.paths.map((p, i) => (
+                    <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${maskId})` : undefined} />
+                  ))}
+                </svg>
+              ) : (
+                <span class="display mark__fallback">{product.codename}</span>
+              )
+            }
+          </a>
+        </div>
+      </div>
+
+      <div class="shot shot--works">
+        <div class="text">
+          <div class="titles" data-scrub="rise" style={at(62, 72)}>
+            <StatusChip status={product.status} lang={lang} />
+            <h2 class="display name">{product.name[lang]}</h2>
+            {theme && <InkRule hand heavy seed={`${product.slug}-film`} class="title-rule" scrub={at(66, 78)} />}
+            <p class="meta case">{product.name[other]} · {product.platform}</p>
+          </div>
+          <div class="side" data-scrub="rise" style={at(66, 76)}>
+            {product.logline && <p class="logline">{product.logline[lang]}</p>}
+            <p class="links">
+              <Cta href={productHref}>{t.feature.enter}</Cta>
+              <Cta quiet href={href(lang, chapterPath(works))}>
+                {t.chapters.chapter}{chapterNo('works')} — {works.title[lang]}
+              </Cta>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD 左下角的场景名靠这三段换：它们不占位，只标出每个镜头在滚动上的范围 -->
+  <i class="marker marker--1" data-scene="01" data-scene-label={t.hud.prologue}></i>
+  <i class="marker marker--2" data-scene="02" data-scene-label={about.title[lang]}></i>
+  <i class="marker marker--3" data-scene="03" data-scene-label={works.title[lang]} data-scene-accent={product.accent}></i>
+</section>
+
+<style>
+  .film {
+    position: relative;
+    /* 片框的底色：产品的世界里 --bg 会被换掉，边缘要退回片框时用它 */
+    --frame-bg: var(--bg);
+    --scrub-timeline: --film;
+    /* 签名的宽度（px）；收进左上角时要按它算缩放，所以是个数 */
+    --sig-w: 540;
+  }
+
+  .pin {
+    position: relative;
+  }
+
+  .shot {
+    position: relative;
+    min-height: 100svh;
+  }
+
+  /* 放映机的光：从顶上斜斜落下，极慢地漂移；照着前两个镜头 */
+  .beam {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 200svh;
+    background:
+      radial-gradient(ellipse 46% 60% at 68% 0%, rgb(236 232 225 / 0.075), transparent 70%),
+      radial-gradient(ellipse 30% 40% at 18% 100%, rgb(236 232 225 / 0.03), transparent 70%);
+    animation: film-drift 22s ease-in-out infinite alternate;
+  }
+
+  @keyframes film-drift {
+    to {
+      transform: translate3d(-4%, 2%, 0) scale(1.05);
+    }
+  }
+
+  /* ---------- 01 签名 ---------- */
+  .shot--sig {
+    display: grid;
+    place-items: center;
+  }
+
+  /* 签名正好在画面正中（收进左上角时从这里出发），字幕挂在它下面，不参与定位 */
+  .sig {
+    position: relative;
+    width: calc(var(--sig-w) * 1px);
+  }
+
+  .sig__pen {
+    color: var(--ink);
+    --sig-start: 0.3s;
+  }
+
+  .credit {
+    position: absolute;
+    top: calc(100% + clamp(32px, 6svh, 60px));
+    left: 50%;
+    translate: -50% 0;
+    white-space: nowrap;
+    color: var(--ink-2);
+    letter-spacing: 0.3em;
+  }
+
+  /* 外层跟着滚动淡出，里层管刚进来时的入场，两个动画不抢同一个元素 */
+  .credit span {
+    display: block;
+    animation: enter-up 1.4s var(--ease-film) 1.9s both;
+  }
+
+  .cue {
+    position: absolute;
+    left: 50%;
+    /* 抬到 HUD 底部那条暗带上面，不然会被压得看不清 */
+    bottom: clamp(72px, 11svh, 108px);
+    translate: -50% 0;
+  }
+
+  .cue span {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: enter-up 1.2s var(--ease-film) 2.6s both;
+  }
+
+  .cue i {
+    position: relative;
+    width: 40px;
+    height: 1px;
+    background: var(--ink-4);
+    overflow: hidden;
+  }
+
+  .cue i::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform: translateX(-100%);
+    animation: film-scan 2.6s var(--ease-pen) infinite;
+  }
+
+  @keyframes film-scan {
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* ---------- 02、03 同一个构图：主体在中间，文字压在底部 ---------- */
+  .shot--person,
+  .shot--works {
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--hud-inset) + 64px) var(--gutter) clamp(56px, 10svh, 104px);
+  }
+
+  .text {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: var(--gutter);
+    row-gap: 24px;
+    align-items: end;
+  }
+
+  .side {
+    grid-column: 8 / span 5;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  /* ---------- 02 人物 ---------- */
+  .shot--person .subject {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    align-items: center;
+  }
+
+  .intro {
+    font-size: var(--fs-hero);
+  }
+
+  .hobbies {
+    grid-column: 1 / span 7;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px clamp(24px, 3vw, 44px);
+  }
+
+  .hobbies li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hobbies :global(svg) {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+  }
+
+  .hobbies .meta {
+    color: var(--ink-2);
+  }
+
+  /* ---------- 03 作品：产品的世界 ---------- */
+  .world {
+    position: relative;
+    isolation: isolate;
+    background: var(--frame-bg);
+    color: var(--ink);
+  }
+
+  .plate {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  /* 没有自己世界的产品：暗场里一盏产品色的地灯 */
+  .world__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 58% 62% at 50% 108%, color-mix(in oklab, var(--accent) 40%, transparent) 0%, transparent 72%),
+      var(--bg-raise);
+    /* 上下两头退回片框的底色，和前后的画面接上 */
+    mask-image: linear-gradient(to bottom, transparent, #000 14svh, #000 calc(100% - 16svh), transparent);
+  }
+
+  /* 有自己世界的产品：App 图标的底，石墨色从左上的亮面过渡到右下的底色（和产品页首屏一样） */
+  .world__bg--app {
+    background:
+      radial-gradient(ellipse 60% 52% at 26% 0%, rgb(255 255 255 / 0.05), transparent 72%),
+      linear-gradient(150deg, color-mix(in srgb, var(--bg-raise) 92%, var(--ink)) 0%, var(--bg-raise) 38%, var(--bg) 78%);
+  }
+
+  /* 标志的位置和大小照着产品页首屏（KeyArt 的 full），两边才对得上 */
+  .plate .subject {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .mark-link {
+    display: block;
+    translate: 0 -6svh;
+  }
+
+  .mark {
+    display: block;
+    height: min(40svh, 58vw);
+    width: auto;
+    filter: drop-shadow(0 28px 48px rgb(0 0 0 / 0.55));
+    transition: transform 1.4s var(--ease-film);
+  }
+
+  @media (hover: hover) {
+    .mark-link:hover .mark {
+      transform: translateY(-8px);
+    }
+  }
+
+  .mark__fallback {
+    font-size: var(--fs-title);
+  }
+
+  .wipe {
+    transform-box: fill-box;
+    transform-origin: left center;
+  }
+
+  /* 这一层盖在画面上，只有文字那两块接点击，其余让给下面的标志 */
+  .shot--works {
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .shot--works .text > * {
+    pointer-events: auto;
+  }
+
+  .titles {
+    grid-column: 1 / span 7;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .name {
+    font-size: var(--fs-title);
+  }
+
+  .titles > :global(.title-rule) {
+    width: min(26rem, 100%);
+    margin-top: -4px;
+  }
+
+  .logline {
+    font-family: var(--font-display);
+    font-size: clamp(1.375rem, 2vw, 1.875rem);
+    line-height: 1.3;
+  }
+
+  :lang(zh) .logline {
+    font-weight: 500;
+    font-size: clamp(1.125rem, 1.6vw, 1.5rem);
+    line-height: 1.6;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px clamp(24px, 3vw, 40px);
+  }
+
+  /* ---------- 场景范围（静态排版时三屏各占三分之一） ---------- */
+  .marker {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .marker--1 {
+    top: 0;
+    height: 33.33%;
+  }
+
+  .marker--2 {
+    top: 33.33%;
+    height: 33.33%;
+  }
+
+  .marker--3 {
+    top: 66.66%;
+    height: 33.34%;
+  }
+
+  @media (max-width: 900px) {
+    .film {
+      --sig-w: 300;
+    }
+
+    .hobbies,
+    .titles,
+    .side {
+      grid-column: 1 / -1;
+    }
+
+    .text {
+      row-gap: 28px;
+    }
+
+    .hobbies {
+      order: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .film {
+      --sig-w: 232;
+    }
+  }
+
+  /* ---------- 正片：钉住画面，滚动推进 ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* 5 屏高，画面钉住 4 屏的滚动距离；时间线上 1% = 0.04 屏 */
+      .film {
+        height: 500svh;
+        view-timeline: --film block;
+      }
+
+      /* 手机地址栏收起时视口会变高：画面按最高的算（底色铺满），镜头内容按当前视口算（不被挡住） */
+      .pin {
+        position: sticky;
+        top: 0;
+        height: 100lvh;
+        overflow: clip;
+      }
+
+      .beam {
+        height: auto;
+        inset: 0;
+      }
+
+      .shot {
+        position: absolute;
+        inset: 0 0 auto;
+        height: 100dvh;
+        min-height: 0;
+      }
+
+      .world {
+        position: absolute;
+        inset: 0;
+      }
+
+      .world__bg {
+        mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
+      }
+
+      .sig__pen {
+        animation: film-dock linear both;
+      }
+
+      .shot--person {
+        transform-origin: 50% 46%;
+        animation: film-person linear both;
+      }
+
+      .world {
+        animation: film-lights linear both;
+      }
+
+      .plate .subject {
+        animation: film-mark linear both;
+      }
+
+      .wipe {
+        animation: film-tick linear both;
+      }
+
+      .shot--works {
+        animation: film-works-on linear both;
+      }
+
+      /* animation-timeline 必须单独一条规则，而且排在 animation 简写后面（简写会把它重置） */
+      .pin .sig__pen,
+      .pin .shot,
+      .pin .world,
+      .pin .subject,
+      .pin .wipe {
+        animation-timeline: --film;
+        animation-range: contain;
+      }
+
+      .marker--1 {
+        height: 100svh;
+      }
+
+      .marker--2 {
+        top: 100svh;
+        height: 150svh;
+      }
+
+      .marker--3 {
+        top: 250svh;
+        height: 250svh;
+      }
+    }
+  }
+
+  /*
+   * 左上角 HUD 的小签名：开头画面正中已经有一个大的，小的先藏着，等大的收到位的那一刻接上（之后大的隐去）。
+   * HUD 不在 .film 里面，够不着 --film 这条时间线，所以在 body 上用 timeline-scope 把它的名字提上去。
+   * 动的是链接里的 svg，链接自己的透明度和悬停不受影响。
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) and (timeline-scope: --film) {
+      :global(body:has(.film)) {
+        timeline-scope: --film;
+      }
+
+      :global(body:has(.film) .hud .home svg) {
+        animation: film-hud-logo linear both;
+      }
+
+      :global(body:has(.film) .hud .home > svg) {
+        animation-timeline: --film;
+        animation-range: contain;
+      }
+    }
+  }
+
+  @keyframes film-hud-logo {
+    0%,
+    14.9% {
+      opacity: 0;
+    }
+    15%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /*
+   * 01 → 02：签名收进左上角，正好落在 HUD 那个小签名上（46px 宽，中心离左、上各 --hud-inset + 23px），然后隐去。
+   * 签名原本在画面正中，所以位移就是两个中心点的差。
+   */
+  @keyframes film-dock {
+    0%,
+    2% {
+      transform: none;
+      opacity: 1;
+      animation-timing-function: var(--ease-pen);
+    }
+    15% {
+      transform: translate(calc(var(--hud-inset) + 23px - 50vw), calc(var(--hud-inset) + 23px - 50dvh))
+        scale(calc(46 / var(--sig-w)));
+      opacity: 1;
+    }
+    17%,
+    100% {
+      transform: translate(calc(var(--hud-inset) + 23px - 50vw), calc(var(--hud-inset) + 23px - 50dvh))
+        scale(calc(46 / var(--sig-w)));
+      opacity: 0;
+    }
+  }
+
+  /* 02 → 03：镜头推过这段话；没到场和推过去之后这一层都关掉（里面有链接），visibility 只是开关 */
+  @keyframes film-person {
+    0%,
+    9% {
+      transform: none;
+      opacity: 1;
+      visibility: hidden;
+    }
+    10%,
+    42% {
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+    }
+    52% {
+      transform: scale(1.9);
+      opacity: 0;
+      visibility: visible;
+    }
+    53%,
+    100% {
+      transform: scale(1.9);
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* 产品的世界亮起来；亮之前关着，不挡前面镜头的链接 */
+  @keyframes film-lights {
+    0%,
+    43% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    44% {
+      opacity: 0;
+      visibility: visible;
+    }
+    56%,
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+
+  /* 标志从深处过来，停在和产品页首屏一样的位置 */
+  @keyframes film-mark {
+    0%,
+    46% {
+      transform: scale(0.72);
+      opacity: 0;
+    }
+    60%,
+    100% {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  /* 对勾写出 */
+  @keyframes film-tick {
+    0%,
+    60% {
+      transform: scaleX(0);
+    }
+    70%,
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes film-works-on {
+    0%,
+    55% {
+      visibility: hidden;
+    }
+    56%,
+    100% {
+      visibility: visible;
+    }
+  }
+</style>

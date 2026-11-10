@@ -2,10 +2,10 @@ import { strings, type L10n } from '@/i18n';
 import { PRODUCTS, type Status } from './products';
 
 /**
- * 章节：整站按章节组织，每一章是一个独立的部分（人物、作品……），首页只是「序」和目录。
+ * 章节：整站按章节组织，每一章是一个独立的部分（人物、作品……），首页是正片，每章在里面有一个镜头。
  * 加一个新部分 = 在 CHAPTERS 里加一条 + 在 pages/ 和 pages/zh/ 下加 `<slug>.astro`
- *（或 `<slug>/index.astro`），再在 ChapterStill 里给它一帧画面；
- * 首页目录、HUD 目录、下一章、sitemap 都会自动跟上。
+ *（或 `<slug>/index.astro`），再在首页正片（home/Film.astro）里给它一个镜头；
+ * 下一章、sitemap 会自动跟上。没有全站目录，入口都在页面里。
  */
 export interface Chapter {
   /** URL：/about/ */

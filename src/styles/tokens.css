@@ -71,10 +71,11 @@
 
 /*
  * 产品自己的世界（产品数据里的 theme）：用产品 App 的深色外观，和站点的暗场一路衔接，不会点进来突然变亮。
- * --bg、--bg-raise、--ink 由 Base 写在 <html> 的行内样式里，这里按片框同样的层级推导其余的墨色。
+ * 产品页是整页（Base 把 data-theme 和 --bg、--bg-raise、--ink 写在 <html> 上），首页正片是其中一块（写在那一块上）；
+ * 这里按片框同样的层级推导其余的墨色。
  * 仍然只有一种墨色，颜色依旧只由产品场景的 --accent 带进来。
  */
-:root[data-theme='app'] {
+[data-theme='app'] {
   --bg-deep: color-mix(in srgb, var(--bg) 60%, black);
   --ink-2: color-mix(in srgb, var(--ink) 64%, transparent);
   --ink-3: color-mix(in srgb, var(--ink) 40%, transparent);
@@ -87,7 +88,7 @@
 }
 
 /* 系统衬线比 Instrument Serif 宽，西文标题收小一档 */
-:root[data-theme='app']:not(:lang(zh)) {
+[data-theme='app']:not(:lang(zh)) {
   --fs-title: clamp(2.375rem, 5vw, 5.25rem);
   --fs-h2: clamp(1.625rem, 2.8vw, 2.625rem);
 }

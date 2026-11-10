@@ -14,6 +14,15 @@ export const profile = {
   job: { en: 'AI front-end', zh: 'AI 前端' } as L10n,
   /** 「在做」一栏，链到作品章 */
   making: { en: 'The yado series', zh: '芽豆系列' } as L10n,
+  /** 首页正片「人物」镜头：几行大字（一行一个元素）和底下一句补充，说的是上面这几栏同样的事实 */
+  intro: {
+    en: ["I'm Yado,", 'an AI developer.'],
+    zh: ['我是 Yado，', '做 AI 开发。'],
+  } as Record<keyof L10n, string[]>,
+  summary: {
+    en: 'My day job is AI front-end. On my own, I make the yado series.',
+    zh: '在职做 AI 前端，自己在做芽豆系列。',
+  } as L10n,
 };
 
 /**

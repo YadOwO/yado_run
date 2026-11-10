@@ -1,8 +1,9 @@
 ---
 /**
  * 每一章的结尾：「下一章」。像片尾接下一集的预告，一整条可点；
- * 已经是最后一章时，改成「回到目录」。
+ * 已经是最后一章时，改成「回到开头」（首页）。
  */
+import Cta from '@/components/Cta.astro';
 import { chapterNo, chapterPath, nextChapter } from '@/data/chapters';
 import { href, strings, type Lang } from '@/i18n';
 
@@ -16,7 +17,7 @@ interface Props {
 const { lang, slug, scene } = Astro.props;
 const t = strings[lang];
 const next = nextChapter(slug);
-const link = next ? href(lang, chapterPath(next)) : href(lang, '/#chapters');
+const link = next ? href(lang, chapterPath(next)) : href(lang, '/');
 const kicker = next ? `${t.chapters.next} — ${t.chapters.chapter}${chapterNo(next.slug)}` : t.chapters.back;
 const title = next ? next.title[lang] : t.hud.prologue;
 ---
@@ -25,7 +26,7 @@ const title = next ? next.title[lang] : t.hud.prologue;
   <a class="band" href={link} data-reveal>
     <span class="meta kicker">{kicker}</span>
     <span class="display title">{title}</span>
-    <span class="arrow" aria-hidden="true">→</span>
+    <Cta class="go" />
   </a>
 </section>
 
@@ -66,10 +67,11 @@ const title = next ? next.title[lang] : t.hud.prologue;
     transition: transform 1s var(--ease-film);
   }
 
-  .arrow {
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
-    color: var(--ink-2);
-    padding-bottom: 0.3em;
+  .band > :global(.go) {
+    --cta-size: clamp(48px, 5vw, 68px);
+    align-self: center;
+    /* 这一条是 overflow: hidden（要裁掉扫过去的光），右边留出荡开那一圈的位置 */
+    margin-right: calc(var(--cta-size) * 0.38);
     transition: transform 1s var(--ease-film);
   }
 
@@ -82,7 +84,7 @@ const title = next ? next.title[lang] : t.hud.prologue;
       transform: translateX(12px);
     }
 
-    .band:hover .arrow {
+    .band:hover > :global(.go) {
       transform: translateX(8px);
     }
   }

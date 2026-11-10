@@ -88,7 +88,7 @@ img {
 }
 
 /* 产品主题的系统衬线字面更大，行高放松一点，免得下行字母被遮罩切掉 */
-:root[data-theme='app']:not(:lang(zh)) .display {
+[data-theme='app']:not(:lang(zh)) .display {
   letter-spacing: -0.015em;
   line-height: 1.06;
 }
@@ -135,7 +135,7 @@ img {
   white-space: nowrap;
 }
 
-/* 带下划线伸展的文字链接 */
+/* 行内的文字链接：一直带着整条下划线，看得出能点；悬停时线变实。单独成块的入口用 Cta 组件 */
 .link {
   position: relative;
   display: inline-flex;
@@ -152,26 +152,13 @@ img {
   bottom: 0;
   height: 1px;
   background: currentColor;
-  transform: scaleX(0.28);
-  transform-origin: left;
-  opacity: 0.5;
-  transition:
-    transform 0.9s var(--ease-film),
-    opacity 0.9s var(--ease-film);
+  opacity: 0.45;
+  transition: opacity 0.6s var(--ease-film);
 }
 
 .link:hover::after,
 .link:focus-visible::after {
-  transform: scaleX(1);
   opacity: 1;
-}
-
-.link .arrow {
-  transition: transform 0.9s var(--ease-film);
-}
-
-.link:hover .arrow {
-  transform: translateX(6px);
 }
 
 /* ---------- 入场：只在有 JS 时隐藏，保证无 JS 也能看到全部内容 ---------- */
@@ -231,6 +218,96 @@ img {
 
 .js [data-reveal-lines].is-in .mask-line > span {
   transform: none;
+}
+
+/* ---------- 跟随滚动：元素的进度由一条滚动时间线上的一段决定 ---------- */
+/*
+ * 时间线的主人（例如首页正片）在自己身上写 --scrub-timeline；里面的元素写 data-scrub="fade | rise | wipe | line | out"，
+ * 再用 --from / --to 指定自己占时间线上的哪一段（例如 contain 40%）。
+ * 浏览器不支持滚动时间线、或者用户要求减少动态效果时，这些规则都不生效，元素照常走各自的入场。
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-scrub] {
+      animation: var(--scrub) linear both;
+    }
+
+    [data-scrub='fade'] {
+      --scrub: scrub-fade;
+    }
+
+    [data-scrub='rise'] {
+      --scrub: scrub-rise;
+    }
+
+    [data-scrub='wipe'] {
+      --scrub: scrub-wipe;
+    }
+
+    /* 放在 .mask-line 里的那一行：从遮罩下面升上来 */
+    [data-scrub='line'] {
+      --scrub: scrub-line;
+    }
+
+    /* 退场：淡出 */
+    [data-scrub='out'] {
+      --scrub: scrub-out;
+    }
+
+    /* animation-timeline 必须单独一条规则，而且排在 animation 简写后面（简写会把它重置） */
+    :root [data-scrub] {
+      animation-timeline: var(--scrub-timeline);
+      animation-range: var(--from) var(--to);
+    }
+  }
+}
+
+@keyframes scrub-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scrub-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes scrub-line {
+  from {
+    transform: translate3d(0, 108%, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes scrub-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* 像墨水一样从左往右写出来 */
+@keyframes scrub-wipe {
+  from {
+    clip-path: inset(-4px 100% -4px 0);
+  }
+  to {
+    clip-path: inset(-4px 0 -4px 0);
+  }
 }
 
 /* ---------- 胶片颗粒与暗角：盖在一切之上，统一“调色” ---------- */

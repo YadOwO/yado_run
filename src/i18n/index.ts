@@ -31,8 +31,6 @@ const en = {
     language: 'Language',
     scene: 'Scene',
     timecode: 'Timecode',
-    index: 'Index',
-    close: 'Close',
     prologue: 'Prologue',
   },
   opening: {
@@ -66,7 +64,7 @@ const en = {
     reserved: 'In development',
     reservedNote: 'The next chapter is still being written.',
     next: 'Next chapter',
-    back: 'Back to contents',
+    back: 'Back to the start',
   },
   about: {
     labels: { identity: 'Identity', job: 'Day job', making: 'Making', contact: 'Contact' },
@@ -149,8 +147,6 @@ const zh: typeof en = {
     language: '语言',
     scene: '场景',
     timecode: '时间码',
-    index: '目录',
-    close: '关闭',
     prologue: '序',
   },
   opening: {
@@ -184,7 +180,7 @@ const zh: typeof en = {
     reserved: '筹备中',
     reservedNote: '下一章还在写。',
     next: '下一章',
-    back: '回到目录',
+    back: '回到开头',
   },
   about: {
     labels: { identity: '身份', job: '在职', making: '在做', contact: '联系' },
