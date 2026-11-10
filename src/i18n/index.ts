@@ -129,6 +129,14 @@ const en = {
     contact: 'Contact',
     tbc: 'To be continued.',
   },
+  legal: {
+    updated: 'Last updated: ',
+    effective: 'Effective: ',
+    language: '中文',
+    docs: { privacy: 'Privacy Policy', sharing: 'Third-Party Sharing', terms: 'Terms of Use' },
+    /** 日期格式所用的 BCP 47 语言标签 */
+    dateLocale: 'en-US',
+  },
 };
 
 const zh: typeof en = {
@@ -238,6 +246,13 @@ const zh: typeof en = {
     ],
     contact: '联系',
     tbc: '未完待续。',
+  },
+  legal: {
+    updated: '更新日期：',
+    effective: '生效日期：',
+    language: 'English',
+    docs: { privacy: '隐私政策', sharing: '第三方共享清单', terms: '用户协议' },
+    dateLocale: 'zh-CN',
   },
 };
 

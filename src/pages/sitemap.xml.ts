@@ -1,15 +1,15 @@
 /**
- * sitemap 在构建时生成：首页、每一章、每个有产品页的产品，各带中英两个版本。
+ * sitemap 在构建时生成：首页、每一章、每个有产品页的产品、每篇法律文档，各带中英两个版本。
  * 加章节或产品页后不用再手动维护。
  */
 import type { APIRoute } from 'astro';
 import { CHAPTERS, chapterPath } from '@/data/chapters';
+import { legalPaths } from '@/data/legal';
 import { productPath, productsWithPage } from '@/data/products';
 import { LOCALES, href, htmlLang } from '@/i18n';
 
-const paths = ['/', ...CHAPTERS.map(chapterPath), ...productsWithPage.map(productPath)];
-
-export const GET: APIRoute = ({ site }) => {
+export const GET: APIRoute = async ({ site }) => {
+  const paths = ['/', ...CHAPTERS.map(chapterPath), ...productsWithPage.map(productPath), ...(await legalPaths())];
   const base = site ?? new URL('https://my.yado1225.top');
   const abs = (path: string) => new URL(path, base).href;
 

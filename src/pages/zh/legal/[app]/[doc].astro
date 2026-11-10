@@ -1,0 +1,13 @@
+---
+import LegalView from '@/views/LegalView.astro';
+import { legalEntries } from '@/data/legal';
+
+export async function getStaticPaths() {
+  const docs = await legalEntries('zh');
+  return docs.map(({ entry, ref }) => ({ params: { app: ref.app, doc: ref.doc }, props: { entry, ref } }));
+}
+
+const { entry, ref } = Astro.props;
+---
+
+<LegalView entry={entry} ref={ref} />

@@ -1,0 +1,235 @@
+---
+/**
+ * 法律文档页：隐私政策、用户协议，所有 App 共用这一个版式。
+ *
+ * 和站点其他页面不同，这里不套电影片框（HUD、颗粒、片头），也不只用暗场：
+ * 它主要从 App 内的浏览器打开，要像系统页面一样朴素、好读，跟随系统的浅色和深色外观。
+ */
+import { render } from 'astro:content';
+import { LEGAL_DOCS, legalEntries, legalPath, type LegalEntry, type LegalRef } from '@/data/legal';
+import { href, htmlLang, strings, type Lang } from '@/i18n';
+
+interface Props {
+  entry: LegalEntry;
+  ref: LegalRef;
+}
+
+const { entry, ref } = Astro.props;
+const { lang, app, doc } = ref;
+const t = strings[lang].legal;
+const { Content } = await render(entry);
+const { data } = entry;
+/** 这个 App 在当前语言下有哪些文档；没有的（例如有的 App 不需要共享清单）不出现在顶部切换里 */
+const docs = new Set((await legalEntries(lang)).filter(({ ref: other }) => other.app === app).map(({ ref: other }) => other.doc));
+
+const site = Astro.site ?? new URL('https://my.yado1225.top');
+const path = legalPath(app, doc);
+const otherLang: Lang = lang === 'en' ? 'zh' : 'en';
+const pageTitle = lang === 'en' ? `${data.title} — ${data.app}` : `${data.app}${data.title}`;
+
+/** 日期按页面语言写，例如 2026年11月9日 / November 9, 2026 */
+const formatDate = (value: Date | string) =>
+  typeof value === 'string'
+    ? value
+    : new Intl.DateTimeFormat(t.dateLocale, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(
+        value,
+      );
+---
+
+<!doctype html>
+<html lang={htmlLang[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageTitle} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(href(lang, path), site).href} />
+    <link rel="alternate" hreflang="en" href={new URL(href('en', path), site).href} />
+    <link rel="alternate" hreflang="zh-CN" href={new URL(href('zh', path), site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(href('en', path), site).href} />
+  </head>
+  <body>
+    <header>
+      <nav aria-label={data.app}>
+        {
+          LEGAL_DOCS.filter((other) => docs.has(other)).map((other) =>
+            other === doc ? (
+              <span aria-current="page">{t.docs[other]}</span>
+            ) : (
+              <a href={href(lang, legalPath(app, other))}>{t.docs[other]}</a>
+            ),
+          )
+        }
+        <a class="lang" href={href(otherLang, path)} hreflang={htmlLang[otherLang]} lang={htmlLang[otherLang]}>
+          {t.language}
+        </a>
+      </nav>
+      <p class="app">{data.app}</p>
+      <h1>{data.title}</h1>
+      <p class="dates">
+        <span>{t.updated}{formatDate(data.updated)}</span>
+        {data.effective && <span>{t.effective}{formatDate(data.effective)}</span>}
+      </p>
+    </header>
+
+    <article>
+      <Content />
+    </article>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf7;
+    --ink: #1d1c1a;
+    --ink-2: #5f5b55;
+    --line: #e4e0d8;
+    --raise: #f2efe9;
+    --link: #0a64d6;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413;
+      --ink: #ece8e1;
+      --ink-2: #a39e96;
+      --line: #2e2d2a;
+      --raise: #1d1c1a;
+      --link: #6aa8ff;
+    }
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    margin: 0 auto;
+    max-width: 46rem;
+    padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 64px
+      max(20px, env(safe-area-inset-left));
+    line-height: 1.75;
+    font-size: 1rem;
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 0.875rem;
+    color: var(--ink-2);
+  }
+
+  nav a {
+    text-decoration: none;
+  }
+
+  nav [aria-current] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  nav .lang {
+    margin-inline-start: auto;
+  }
+
+  header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .app {
+    margin: 32px 0 0;
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+  }
+
+  h1 {
+    margin: 4px 0 12px;
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    line-height: 1.25;
+  }
+
+  .dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin: 0;
+    color: var(--ink-2);
+    font-size: 0.875rem;
+  }
+
+  article h2 {
+    margin: 2.2em 0 0.6em;
+    font-size: 1.3rem;
+    line-height: 1.4;
+  }
+
+  article h3 {
+    margin: 1.8em 0 0.4em;
+    font-size: 1.08rem;
+  }
+
+  article h4 {
+    margin: 1.4em 0 0.3em;
+    font-size: 1rem;
+  }
+
+  article p,
+  article ul,
+  article ol {
+    margin: 0.7em 0;
+  }
+
+  article ul,
+  article ol {
+    padding-inline-start: 1.4em;
+  }
+
+  article li + li {
+    margin-top: 0.3em;
+  }
+
+  /* 表格在窄屏上横向滚动，不撑破页面 */
+  article table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    margin: 1em 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  article th,
+  article td {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    text-align: start;
+    vertical-align: top;
+    min-width: 7em;
+  }
+
+  article th {
+    background: var(--raise);
+    font-weight: 600;
+  }
+</style>
