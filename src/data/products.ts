@@ -61,6 +61,17 @@ export interface Product {
   featured?: boolean;
   /** 有了独立产品页才填 */
   page?: ProductPage;
+  /** 填了才会出现在各 App 的「更多芽豆产品」里，见 `seriesProducts` */
+  series?: SeriesListing;
+}
+
+/**
+ * 产品在各 App「更多芽豆产品」页里的展示信息，随 `/api/series.json` 下发（见 `pages/api/series.json.ts`）。
+ * 图标不在这里填：放一张 `public/series/<slug>.png`（正方形，建议 360×360，不带圆角）就会自动带上。
+ */
+export interface SeriesListing {
+  /** App Store 的数字 ID（链接里 `id` 后面那串）；上架后填，App 才显示「获取」 */
+  appStoreId?: string;
 }
 
 /**
@@ -79,6 +90,7 @@ export const PRODUCTS: Product[] = [
     platform: 'iOS 18+',
     year: 2026,
     featured: true,
+    series: {},
     logline: {
       en: "A ledger that listens. Say it once, and it's written down.",
       zh: '会听话的账本。说一句话，账就记好了。',
@@ -169,5 +181,14 @@ export function productPath(product: Product): string {
 
 /** 还没公开的作品：海报墙不公开时只计数 */
 export const unannounced = PRODUCTS.filter((p) => !p.featured && p.status !== 'now-showing');
+
+/**
+ * 各 App「更多芽豆产品」里能看到的产品：打了 `series` 且已经对外（即将上映或已上映）。
+ * 还在开发的产品即使打了 `series` 也不下发，和 `SLATE_PUBLIC` 不露片名是同一个意思。
+ */
+export const seriesProducts = PRODUCTS.filter(
+  (p): p is Product & { series: SeriesListing } =>
+    !!p.series && (p.status === 'coming-soon' || p.status === 'now-showing'),
+);
 
 export const productsWithPage = PRODUCTS.filter((p): p is Product & { page: ProductPage } => !!p.page);
