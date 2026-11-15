@@ -15,7 +15,7 @@ import InkBox from '@/components/ink/InkBox.astro';
 import InkRule from '@/components/ink/InkRule.astro';
 import { blobPath } from '@/components/ink/handDrawn';
 import { productPath, type Product, type ProductPage } from '@/data/products';
-import { href, strings, type Lang } from '@/i18n';
+import { href, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
@@ -25,7 +25,7 @@ interface Props {
 const { lang, product } = Astro.props;
 const { page } = product;
 const t = strings[lang];
-const other: Lang = lang === 'en' ? 'zh' : 'en';
+const other = otherLang(lang);
 const pad = (n: number) => String(n).padStart(2, '0');
 const { theme } = page;
 /** 有自己的世界就用手绘笔迹，否则是片框里的直线 */

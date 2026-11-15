@@ -15,7 +15,7 @@ import { productMarks } from '@/components/productMarks';
 import { hobbies, profile } from '@/data/about';
 import { chapterNo, chapterPath, getChapter } from '@/data/chapters';
 import { productPath, type Product, type ProductPage } from '@/data/products';
-import { href, strings, type Lang } from '@/i18n';
+import { href, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
@@ -26,7 +26,7 @@ interface Props {
 const { lang, product } = Astro.props;
 const { theme } = product.page;
 const t = strings[lang];
-const other: Lang = lang === 'en' ? 'zh' : 'en';
+const other = otherLang(lang);
 const about = getChapter('about');
 const works = getChapter('works');
 

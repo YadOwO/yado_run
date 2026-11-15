@@ -7,7 +7,7 @@ import Cta from '@/components/Cta.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import { productPath, type Product } from '@/data/products';
-import { href, strings, type Lang } from '@/i18n';
+import { href, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
@@ -16,7 +16,7 @@ interface Props {
 
 const { lang, product } = Astro.props;
 const t = strings[lang];
-const other: Lang = lang === 'en' ? 'zh' : 'en';
+const other = otherLang(lang);
 const link = product.page ? href(lang, productPath(product)) : undefined;
 ---
 

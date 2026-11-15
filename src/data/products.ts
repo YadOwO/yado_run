@@ -5,8 +5,9 @@ import type { L10n } from '@/i18n';
  * 加一个产品 = 在 PRODUCTS 里加一条；状态一改，全站的标签、按钮、排序跟着变。
  */
 
-/** 产品阶段，对应影片的制作状态 */
-export type Status = 'development' | 'production' | 'coming-soon' | 'now-showing';
+/** 产品阶段，对应影片的制作状态；数组顺序就是作品章概况里的显示顺序 */
+export const STATUSES = ['now-showing', 'coming-soon', 'production', 'development'] as const;
+export type Status = (typeof STATUSES)[number];
 
 export interface Highlight {
   title: L10n;

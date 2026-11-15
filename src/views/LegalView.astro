@@ -7,7 +7,7 @@
  */
 import { render } from 'astro:content';
 import { LEGAL_DOCS, legalEntries, legalPath, type LegalEntry, type LegalRef } from '@/data/legal';
-import { href, htmlLang, strings, type Lang } from '@/i18n';
+import { href, htmlLang, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
   entry: LegalEntry;
@@ -24,7 +24,7 @@ const docs = new Set((await legalEntries(lang)).filter(({ ref: other }) => other
 
 const site = Astro.site ?? new URL('https://my.yado1225.top');
 const path = legalPath(app, doc);
-const otherLang: Lang = lang === 'en' ? 'zh' : 'en';
+const alt = otherLang(lang);
 const pageTitle = lang === 'en' ? `${data.title} — ${data.app}` : `${data.app}${data.title}`;
 
 /** 日期按页面语言写，例如 2026年11月9日 / November 9, 2026 */
@@ -62,7 +62,7 @@ const formatDate = (value: Date | string) =>
             ),
           )
         }
-        <a class="lang" href={href(otherLang, path)} hreflang={htmlLang[otherLang]} lang={htmlLang[otherLang]}>
+        <a class="lang" href={href(alt, path)} hreflang={htmlLang[alt]} lang={htmlLang[alt]}>
           {t.language}
         </a>
       </nav>

@@ -1,5 +1,5 @@
 import { strings, type L10n } from '@/i18n';
-import { PRODUCTS, type Status } from './products';
+import { PRODUCTS, STATUSES } from './products';
 
 /**
  * 章节：整站按章节组织，每一章是一个独立的部分（人物、作品……），首页是正片，每章在里面有一个镜头。
@@ -19,11 +19,9 @@ export interface Chapter {
 /** 目录末尾是否留一行「下一章 · 筹备中」 */
 export const RESERVE_NEXT_CHAPTER = true;
 
-const STATUS_ORDER: Status[] = ['now-showing', 'coming-soon', 'production', 'development'];
-
 /** 作品章的概况跟着产品数据走，例如「1 部即将上映 · 3 部拍摄中」 */
 function worksSummary(): L10n[] {
-  return STATUS_ORDER.map((status) => [status, PRODUCTS.filter((p) => p.status === status).length] as const)
+  return STATUSES.map((status) => [status, PRODUCTS.filter((p) => p.status === status).length] as const)
     .filter(([, n]) => n > 0)
     .map(([status, n]) => ({
       en: strings.en.statusCount(n, strings.en.status[status]),

@@ -20,6 +20,11 @@ export function href(lang: Lang, path = '/'): string {
   return lang === 'en' ? path : `/zh${path}`;
 }
 
+/** The other language: the original title, the language switch */
+export function otherLang(lang: Lang): Lang {
+  return lang === 'en' ? 'zh' : 'en';
+}
+
 const en = {
   site: {
     title: 'Yado — A Yado Production',
@@ -43,7 +48,6 @@ const en = {
     contents: 'Contents',
     hobbies: 'Hobbies',
     next: 'Next chapter',
-    comingSoon: 'Coming soon',
     slate: 'The slate',
     credits: 'End credits',
     keyArt: 'Key art',
@@ -60,7 +64,6 @@ const en = {
   chapters: {
     heading: 'Contents',
     chapter: 'CH.',
-    enter: 'Enter',
     reservedTitle: 'Untitled',
     reserved: 'In development',
     reservedNote: 'The next chapter is still being written.',
@@ -100,9 +103,7 @@ const en = {
       year: 'Year',
       account: 'Account',
     },
-    highlights: 'Highlights',
     behind: 'Behind the scenes',
-    release: 'Release',
     releaseHeading: {
       development: 'In development.',
       production: 'In production.',
@@ -114,7 +115,6 @@ const en = {
     atLaunch: 'Available at launch',
     next: 'Next title',
     nextTba: 'In production — to be announced',
-    back: 'Back to the studio',
   },
   credits: {
     heading: 'End credits',
@@ -160,7 +160,6 @@ const zh: typeof en = {
     contents: '目录',
     hobbies: '爱好',
     next: '下一章',
-    comingSoon: '即将上映',
     slate: '片单',
     credits: '片尾',
     keyArt: '主视觉',
@@ -177,7 +176,6 @@ const zh: typeof en = {
   chapters: {
     heading: '目录',
     chapter: 'CH.',
-    enter: '进入',
     reservedTitle: '暂未命名',
     reserved: '筹备中',
     reservedNote: '下一章还在写。',
@@ -217,9 +215,7 @@ const zh: typeof en = {
       year: '年份',
       account: '账号',
     },
-    highlights: '看点',
     behind: '幕后',
-    release: '上映信息',
     releaseHeading: {
       development: '筹备中。',
       production: '拍摄中。',
@@ -231,7 +227,6 @@ const zh: typeof en = {
     atLaunch: '上架时提供',
     next: '下一部',
     nextTba: '拍摄中，片名待公布',
-    back: '回到片场',
   },
   credits: {
     heading: '片尾',
