@@ -42,7 +42,7 @@ export const GET: APIRoute = ({ site }) => {
       code: product.slug,
       name: product.name,
       tagline: product.logline ?? null,
-      status: product.status as SeriesItem['status'],
+      status: product.status,
       accent: product.accent,
       iconURL: hasIcon ? abs(iconPath) : null,
       appStoreId: product.series.appStoreId ?? null,

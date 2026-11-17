@@ -188,7 +188,7 @@ export const unannounced = PRODUCTS.filter((p) => !p.featured && p.status !== 'n
  * 还在开发的产品即使打了 `series` 也不下发，和 `SLATE_PUBLIC` 不露片名是同一个意思。
  */
 export const seriesProducts = PRODUCTS.filter(
-  (p): p is Product & { series: SeriesListing } =>
+  (p): p is Product & { series: SeriesListing; status: 'coming-soon' | 'now-showing' } =>
     !!p.series && (p.status === 'coming-soon' || p.status === 'now-showing'),
 );
 
