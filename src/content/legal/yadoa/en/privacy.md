@@ -1,8 +1,8 @@
 ---
 app: Yado Asset
 title: Privacy Policy
-updated: 2026-11-09
-effective: 2026-11-09
+updated: 2026-11-17
+effective: 2026-11-17
 ---
 
 Yado Asset ("the App") is a bookkeeping app developed and operated by the independent developer **YU JUNJIE** ("we", "us"). Your ledger is private, so this policy explains in plain language what we collect, why, where it is stored, how long we keep it, who we share it with, and how you can control it.
@@ -14,7 +14,7 @@ Yado Asset ("the App") is a bookkeeping app developed and operated by the indepe
 - **You can keep books without signing in, and your ledger stays on your phone by default.**
 - Your ledger is uploaded to our servers only if you turn on **Sync**. Content is sent to an AI model only when you use **AI bookkeeping**.
 - Speech is converted to text on your device. **We never receive or store your voice recordings.**
-- No ads, no third-party analytics or advertising SDKs, no tracking. **We do not sell or share your personal information.**
+- The App currently has no third-party analytics or advertising SDKs. We don't track you. **We do not sell or share your personal information.**
 - You can export or delete your data at any time, and delete your account from within the App.
 
 ## 1. What we collect and why
@@ -92,8 +92,10 @@ The App asks for a permission only when you use the related feature. You can tur
 
 - We don't collect your contacts, location, health data, clipboard (unless you paste) or advertising identifier (IDFA);
 - We don't track you across apps or websites, build profiles or show personalized ads;
-- We don't use any third-party analytics, crash reporting or advertising SDKs;
+- The App currently has no third-party analytics, crash reporting or advertising SDKs;
 - **We don't sell your personal information.**
+
+If we add ads in the future (for example, a launch-screen ad), we will first update this policy and the third-party sharing list to say who is involved and what information they process, and let you know in the App.
 
 ## 2. Sensitive information
 
