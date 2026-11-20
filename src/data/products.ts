@@ -62,6 +62,8 @@ export interface Product {
   featured?: boolean;
   /** 有了独立产品页才填 */
   page?: ProductPage;
+  /** TestFlight 公开测试的邀请链接；填了产品页就给出「加入测试」的入口，上架后删掉 */
+  testFlight?: string;
   /** 填了才会出现在各 App 的「更多芽豆产品」里，见 `seriesProducts` */
   series?: SeriesListing;
 }
@@ -92,6 +94,7 @@ export const PRODUCTS: Product[] = [
     year: 2026,
     featured: true,
     series: {},
+    testFlight: 'https://testflight.apple.com/join/jNjBZY3c',
     logline: {
       en: "A ledger that listens. Say it once, and it's written down.",
       zh: '会听话的账本。说一句话，账就记好了。',
