@@ -38,7 +38,7 @@ const listed = page.highlights.map((h, i) => ({ h, i })).slice(staged ? 1 : 0);
 const specs = [
   { label: t.product.specs.platform, value: product.platform, mono: true },
   { label: t.product.specs.format, value: page.format[lang] },
-  { label: t.product.specs.status, value: t.status[product.status] },
+  { label: t.product.specs.status, value: product.testFlight ? t.product.testFlightStatus : t.status[product.status] },
   { label: t.product.specs.year, value: String(product.year), mono: true },
   { label: t.product.specs.account, value: page.account[lang], small: true },
 ];
@@ -69,7 +69,16 @@ const specs = [
             {t.product.originalTitle} {product.name[other]} · {product.codename}
           </p>
         </div>
-        {product.logline && <p class="logline" data-enter style="--i:3">{product.logline[lang]}</p>}
+        <div class="hero__side">
+          {product.logline && <p class="logline" data-enter style="--i:3">{product.logline[lang]}</p>}
+          {
+            product.testFlight && (
+              <Cta href={product.testFlight} rel="noopener" data-enter style="--i:4">
+                {t.product.testFlight}
+              </Cta>
+            )
+          }
+        </div>
       </div>
     </section>
 
@@ -148,7 +157,17 @@ const specs = [
       <div class="release__main">
         <div data-reveal><StatusChip status={product.status} lang={lang} /></div>
         <h2 class="display release__title" data-reveal style="--i:1">{t.product.releaseHeading[product.status]}</h2>
-        <ul class="release__links" data-reveal style="--i:2">
+        {
+          product.testFlight && (
+            <div class="beta" data-reveal style="--i:2">
+              <Cta href={product.testFlight} rel="noopener">
+                {t.product.testFlight}
+              </Cta>
+              <p class="beta__note">{t.product.testFlightNote}</p>
+            </div>
+          )
+        }
+        <ul class="release__links" data-reveal style="--i:3">
           <li>
             <span>{t.product.privacy}</span><span class="meta">{t.product.atLaunch}</span>
             <InkRule hand={hand} seed={`${product.slug}-privacy`} class="link__rule" />
@@ -160,7 +179,7 @@ const specs = [
         </ul>
       </div>
 
-      <a class="next" href={href(lang, '/works/#slate')} data-reveal style="--i:3">
+      <a class="next" href={href(lang, '/works/#slate')} data-reveal style="--i:4">
         {hand && <InkBox width={360} height={170} radius={22} seed={`${product.slug}-next`} />}
         <span class="meta">{t.product.next}</span>
         <span class="display next__title">{t.product.nextTba}</span>
@@ -222,8 +241,15 @@ const specs = [
     margin-top: -4px;
   }
 
-  .logline {
+  .hero__side {
     grid-column: 8 / span 5;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+  }
+
+  .logline {
     font-family: var(--font-display);
     font-size: clamp(1.375rem, 2vw, 1.875rem);
     line-height: 1.3;
@@ -470,6 +496,20 @@ const specs = [
     font-size: var(--fs-h2);
   }
 
+  .beta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .beta__note {
+    max-width: 30rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
   .release__links li {
     position: relative;
     display: flex;
@@ -532,7 +572,7 @@ const specs = [
   /* ---------- 窄屏 ---------- */
   @media (max-width: 900px) {
     .titles,
-    .logline,
+    .hero__side,
     .act__title,
     .act__body,
     .item__title,
@@ -542,6 +582,29 @@ const specs = [
     .release__main,
     .next {
       grid-column: 1 / -1;
+    }
+
+    .hero__side {
+      gap: 18px;
+    }
+  }
+
+  /*
+   * 手机上首屏多了「加入测试」这一行，文字整体变高，会顶到中间的标志上。
+   * HUD 底部两个角在手机上不显示，底下不用给它们留位置：文字往下放，行距收一点。
+   */
+  @media (max-width: 640px) {
+    .hero__text {
+      bottom: clamp(24px, 4svh, 40px);
+      row-gap: 16px;
+    }
+
+    .titles {
+      gap: 12px;
+    }
+
+    .hero__side {
+      gap: 14px;
     }
 
     .no {
