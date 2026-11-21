@@ -64,7 +64,7 @@ const t = strings[lang];
     animation: hud-in 1.2s var(--ease-film) calc(var(--intro-delay) + 0.6s) both;
   }
 
-  /* 取景器上下两条柔和的暗带：内容从角标下面经过时淡出，不和角标打架 */
+  /* 取景器上下两条柔和的暗带：内容从角标下面经过时淡出，不和角标打架；手机上底部角标隐藏，底部暗带也随之不画 */
   .hud::before,
   .hud::after {
     content: '';
@@ -226,6 +226,10 @@ const t = strings[lang];
   @media (max-width: 640px) {
     .bl,
     .br {
+      display: none;
+    }
+
+    .hud::after {
       display: none;
     }
   }

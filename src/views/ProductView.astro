@@ -587,6 +587,19 @@ const specs = [
     .hero__side {
       gap: 18px;
     }
+
+    .no {
+      grid-column: 1 / -1;
+    }
+
+    .specs dl {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 28px;
+    }
+
+    .spec:last-child {
+      grid-column: 1 / -1;
+    }
   }
 
   /*
@@ -605,19 +618,6 @@ const specs = [
 
     .hero__side {
       gap: 14px;
-    }
-
-    .no {
-      grid-column: 1 / -1;
-    }
-
-    .specs dl {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      row-gap: 28px;
-    }
-
-    .spec:last-child {
-      grid-column: 1 / -1;
     }
   }
 </style>
