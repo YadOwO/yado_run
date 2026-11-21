@@ -48,7 +48,7 @@
 为了体现前端架构的严谨性，本项目构建了完整的自动化流水线：
 
 - [cite_start]**自动化构建**: 接入 GitHub Webhook，每次 Push 自动触发 Vercel 构建。 [cite: 29, 30]
-- [cite_start]**版本化发布**: 采用基于 Git Tag 的部署策略，只有推送 `v*` 标签时才触发生产环境更新。 
+- **自动发布**: main 分支更新后由 Vercel 的 Git 集成直接发布到生产环境，不需要打标签。
 - **网络优化**: 配置自定义域名 `yado1225.top` 与 Anycast IP，实现国内环境免代理 HTTPS 直连秒开。 [cite: 29]
 - **SEO 闭环**: 自动化生成 `sitemap.xml` 与 `robots.txt`，并集成 Google Search Console 实时监控收录状态。 [cite: 31]
 

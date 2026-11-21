@@ -14,7 +14,7 @@ Node version is pinned in `.node-version` (26) and managed with fnm; pnpm is ins
 
 No test runner is configured. `astro check` is not set up: @astrojs/check 0.9 crashes with Astro 7 (and does not support TypeScript 7).
 
-**Deployment:** Production deploys are triggered by pushing `v*` tags (e.g. `git tag v1.0.0 && git push --tags`), which runs the GitHub Actions workflow → Vercel (`vercel.json` declares the Astro framework).
+**Deployment:** Vercel's Git integration deploys every push to `main` to production (other branches get preview deploys). There is no GitHub Actions deploy workflow and no tags are needed (`vercel.json` declares the Astro framework).
 
 ## Architecture
 
