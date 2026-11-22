@@ -9,6 +9,13 @@ import type { L10n } from '@/i18n';
 export const STATUSES = ['now-showing', 'coming-soon', 'production', 'development'] as const;
 export type Status = (typeof STATUSES)[number];
 
+/** 已经对外的阶段（即将上映、已上映）：状态标签的圆点会呼吸，也只有这些会进各 App 的「更多芽豆产品」 */
+export const PUBLIC_STATUSES = ['coming-soon', 'now-showing'] as const satisfies readonly Status[];
+export type PublicStatus = (typeof PUBLIC_STATUSES)[number];
+export function isPublicStatus(status: Status): status is PublicStatus {
+  return (PUBLIC_STATUSES as readonly Status[]).includes(status);
+}
+
 export interface Highlight {
   title: L10n;
   body: L10n;
@@ -48,7 +55,7 @@ export interface ProductPage {
 }
 
 export interface Product {
-  /** URL 与代号：/yadoa/ */
+  /** 代号的小写形式，也是产品页地址的最后一段（见 productPath()：/works/yadoa/） */
   slug: string;
   codename: string;
   name: L10n;
@@ -191,8 +198,7 @@ export const unannounced = PRODUCTS.filter((p) => !p.featured && p.status !== 'n
  * 还在开发的产品即使打了 `series` 也不下发，和 `SLATE_PUBLIC` 不露片名是同一个意思。
  */
 export const seriesProducts = PRODUCTS.filter(
-  (p): p is Product & { series: SeriesListing; status: 'coming-soon' | 'now-showing' } =>
-    !!p.series && (p.status === 'coming-soon' || p.status === 'now-showing'),
+  (p): p is Product & { series: SeriesListing; status: PublicStatus } => !!p.series && isPublicStatus(p.status),
 );
 
 export const productsWithPage = PRODUCTS.filter((p): p is Product & { page: ProductPage } => !!p.page);

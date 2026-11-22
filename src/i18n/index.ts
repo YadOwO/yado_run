@@ -14,7 +14,7 @@ export const htmlLang: Record<Lang, string> = { en: 'en', zh: 'zh-CN' };
 /**
  * 生成带语言前缀的站内路径。
  * @param lang 目标语言
- * @param path 不带语言前缀的路径，以 / 开头和结尾，例如 `/yadoa/`
+ * @param path 不带语言前缀的路径，以 / 开头和结尾，例如 `/works/yadoa/`
  */
 export function href(lang: Lang, path = '/'): string {
   return lang === 'en' ? path : `/zh${path}`;

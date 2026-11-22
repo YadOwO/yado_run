@@ -1,7 +1,7 @@
 ---
 /** 制作状态标签：一个强调色圆点 + 等宽小字；上映中/即将上映的圆点会呼吸 */
 import { strings, type Lang } from '@/i18n';
-import type { Status } from '@/data/products';
+import { isPublicStatus, type Status } from '@/data/products';
 
 interface Props {
   status: Status;
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { status, lang, class: className } = Astro.props;
-const live = status === 'coming-soon' || status === 'now-showing';
+const live = isPublicStatus(status);
 ---
 
 <span class:list={['chip meta', { 'chip--live': live }, className]}>

@@ -9,7 +9,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { APIRoute } from 'astro';
-import { productPath, seriesProducts } from '@/data/products';
+import { productPath, seriesProducts, type PublicStatus } from '@/data/products';
 import { LOCALES, href, type L10n } from '@/i18n';
 
 /** 目录里的一个产品 */
@@ -19,7 +19,7 @@ interface SeriesItem {
   name: L10n;
   /** 一句话介绍 */
   tagline: L10n | null;
-  status: 'coming-soon' | 'now-showing';
+  status: PublicStatus;
   /** 产品强调色，`#RRGGBB`；没有图标时 App 用它画占位 */
   accent: string;
   /** 图标的完整地址；`public/series/<slug>.png` 存在才有 */
