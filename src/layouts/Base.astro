@@ -68,7 +68,7 @@ const themeStyle = theme
     {!theme && <link rel="preload" href={serifWoff2} as="font" type="font/woff2" crossorigin />}
     <link rel="preload" href={monoWoff2} as="font" type="font/woff2" crossorigin />
 
-    <!-- 在首帧之前决定两件事：片头放不放（每个会话一次；带锚点、减少动态效果、非首页都跳过），返回按钮显不显示 -->
+    <!-- 在首帧之前决定三件事：片头放不放（每个会话一次；带锚点、减少动态效果、非首页都跳过），返回按钮显不显示，这一页是不是退回来的 -->
     <script is:inline define:vars={{ opening }}>
       (function () {
         var d = document.documentElement;
@@ -104,6 +104,21 @@ const themeStyle = theme
             d.dataset.back = '';
           }
         } catch (e) {}
+
+        // 这一页是退回来的（页面上的「返回」、浏览器的后退）：标 data-returned，首页的作品镜头据此把入场再演一遍。
+        // 整页从往返缓存里恢复时脚本不会重跑，所以听 pageshow；先摘掉再标上、中间量一次布局，动画才会重新开始。
+        var returned = function () {
+          delete d.dataset.returned;
+          void d.offsetWidth;
+          d.dataset.returned = '';
+        };
+        try {
+          var entry = performance.getEntriesByType('navigation')[0];
+          if (entry && entry.type === 'back_forward') returned();
+        } catch (e) {}
+        addEventListener('pageshow', function (e) {
+          if (e.persisted) returned();
+        });
       })();
     </script>
     <slot name="head" />

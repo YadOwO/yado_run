@@ -476,6 +476,14 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
     }
   }
 
+  /* 手机上 HUD 底部两个角不显示，底下不用给它们留位置；省出来的高度让给标志，文字不往上顶到它 */
+  @media (max-width: 640px) {
+    .shot--person,
+    .shot--works {
+      padding-bottom: clamp(32px, 6svh, 56px);
+    }
+  }
+
   @media (max-width: 480px) {
     .film {
       --sig-w: 232;
@@ -518,6 +526,15 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
 
       .world__bg {
         mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
+      }
+
+      /*
+       * 标志所在的画幅和产品页首屏一样高（100svh），不跟着钉住的画面按 100lvh 算：
+       * 手机上工具栏展开时 lvh 比可见区域高出一截，标志会被带着往下，压到底部的标题上。
+       */
+      .plate .subject {
+        inset: 0 0 auto;
+        height: 100svh;
       }
 
       .sig__pen {
@@ -568,6 +585,35 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
         top: 250svh;
         height: 250svh;
       }
+    }
+  }
+
+  /*
+   * 从别的页面退回首页（页面上的「返回」、浏览器的后退）：作品这个镜头和产品页首屏是同一帧，
+   * 退回来时画面几乎不变，看上去像没反应。所以退回来的那一刻把标志和文字的入场再演一遍，看得出是回来了。
+   * <html> 上的 data-returned 由 Base 里首帧之前的脚本标。动的是没有挂在滚动时间线上的两层，互不干扰。
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root[data-returned]) .mark-link {
+      animation: film-return-mark 1.2s var(--ease-film) both;
+    }
+
+    :global(:root[data-returned]) .shot--works .text {
+      animation: film-return-text 1s var(--ease-film) 0.25s both;
+    }
+  }
+
+  @keyframes film-return-mark {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes film-return-text {
+    from {
+      transform: translate3d(0, 24px, 0);
+      opacity: 0;
     }
   }
 
