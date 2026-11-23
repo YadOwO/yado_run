@@ -14,26 +14,66 @@ export interface Highlight {
   body: L10n;
 }
 
-/** 剧照：在产品页的底色和墨色上，把一个核心动作演一遍；有了真实截图后可换成图片 */
-export interface Still {
+/**
+ * 剧照：在产品页的底色和墨色上，把一个核心动作演一遍；有了真实截图后可换成图片。
+ * 每个产品演的动作不同，用 kind 区分，产品页按它挑组件（components/product/）。
+ */
+export type Still = VoiceStillData | ItemsStillData;
+
+/** 语音记账（芽豆资产）：一句话写出来，记成几笔账 */
+export interface VoiceStillData {
+  kind: 'voice';
   caption: L10n;
   heard: L10n;
   done: L10n;
   rows: { label: L10n; category: L10n; amount: string }[];
 }
 
+/** 示例物品（芽豆有物）：几件东西依次落下，每件算出每天花多少，最后合计还持有的购入总值 */
+export interface ItemsStillData {
+  kind: 'items';
+  caption: L10n;
+  items: StillItem[];
+}
+
+export interface StillItem {
+  name: L10n;
+  /** 图标，图形画在 ItemsStill 里 */
+  icon: 'camera' | 'headphones' | 'gamepad';
+  /** 和 App 的 ItemStatus 一致：使用中、已退役仍算持有（计入合计），已售出不算 */
+  status: 'in-use' | 'retired' | 'sold';
+  price: number;
+  /** 卖出价，只有已售出的才有；每天花多少要先扣掉它 */
+  salePrice?: number;
+  /** 持有天数 */
+  days: number;
+}
+
 /**
- * 产品自己的世界：产品页换成产品 App 深色外观的底色和墨色，线条改成手绘，标题改用系统衬线（与 App 一致）。
+ * 产品自己的世界：产品页换成产品 App 深色外观的底色和墨色，线条照 App 的样子画，标题改用系统衬线（与 App 一致）。
  * 用深色外观而不是浅色，是为了和站点的暗场一路衔接：点进来仍然是暗的，但已经是这个 App 的样子。
  * 片框（HUD、文字、线条）仍然只有一种墨色；强调色仍是 Product.accent（它本来就是 App 深色外观里的那一档）。
  */
 export interface ProductTheme {
-  /** 页面底色（App 的 PaperBackground，深色外观） */
+  /** 页面底色（App 深色外观的画布色） */
   paper: string;
-  /** 比底色略亮的一层，用于卡片（App 的 PaperSurface，深色外观） */
+  /** 比底色略亮的一层，用于卡片（App 深色外观的卡片色） */
   surface: string;
-  /** 墨色：文字、线条、HUD（App 的 AccentColor，深色外观） */
+  /** 墨色：文字、线条、HUD（App 深色外观的正文色） */
   ink: string;
+  /**
+   * 线条：hand 是账簿上随手画的墨线（components/ink/，芽豆资产），
+   * fine 是平整的直细线（芽豆有物的卡片和分隔线就是这样）。照着 App 自己的样子选。
+   */
+  lines: 'hand' | 'fine';
+}
+
+/**
+ * 把产品的世界罩到一块元素上：写在它的 style 里，同时给它 data-theme="app"，其余墨色由 tokens.css 推导。
+ * 产品页是整页（Base 写在 <html> 上），首页正片和片单海报是其中一块。
+ */
+export function themeVars(theme: ProductTheme): string {
+  return `--bg:${theme.paper};--bg-raise:${theme.surface};--ink:${theme.ink}`;
 }
 
 export interface ProductPage {
@@ -79,7 +119,7 @@ export interface SeriesListing {
 
 /**
  * 海报墙是否公开。
- * false：首页第三幕只显示“另有 N 部作品拍摄中”和空白海报位，不露片名。
+ * false：作品章片单只显示“另有 N 部作品拍摄中”，有了产品页的作品露出海报，其余是空白海报位，不露片名。
  */
 export const SLATE_PUBLIC = false;
 
@@ -100,13 +140,14 @@ export const PRODUCTS: Product[] = [
       zh: '会听话的账本。说一句话，账就记好了。',
     },
     page: {
-      theme: { paper: '#101112', surface: '#1B1C1E', ink: '#F2EFE7' },
+      theme: { paper: '#101112', surface: '#1B1C1E', ink: '#F2EFE7', lines: 'hand' },
       format: { en: 'iPhone', zh: 'iPhone' },
       account: {
         en: 'On-device first · one yado account across the series',
         zh: '先在本机用 · 芽豆系列共用一个账号',
       },
       still: {
+        kind: 'voice',
         caption: { en: 'Still 01 — Voice entry', zh: '剧照 01 — 语音记账' },
         heard: { en: '“Lunch 32, taxi 28”', zh: '「午饭 32，打车 28」' },
         done: { en: '2 entries logged', zh: '已记 2 笔' },
@@ -155,6 +196,66 @@ export const PRODUCTS: Product[] = [
     accent: '#B9D9F0',
     platform: 'iOS 18+',
     year: 2026,
+    logline: {
+      en: 'Everything you own, in one place.',
+      zh: '你拥有的，都记在这里。',
+    },
+    page: {
+      // App 的默认皮肤「冰川」（yadoI Core/Theme/ThemeCatalog.swift）；卡片平整、分隔是直细线
+      theme: { paper: '#06090C', surface: '#11171C', ink: '#EAF2F7', lines: 'fine' },
+      format: { en: 'iPhone', zh: 'iPhone' },
+      account: {
+        en: 'On-device first · one yado account across the series',
+        zh: '先在本机用 · 芽豆系列共用一个账号',
+      },
+      // 和 App 首次引导里的三件示例物品一样（yadoI Features/Onboarding/OnboardingDemoSteps.swift）
+      still: {
+        kind: 'items',
+        caption: { en: 'Still 01 — Sample items', zh: '剧照 01 — 示例物品' },
+        items: [
+          { name: { en: 'Camera', zh: '相机' }, icon: 'camera', status: 'in-use', price: 6999, days: 428 },
+          { name: { en: 'Headphones', zh: '耳机' }, icon: 'headphones', status: 'retired', price: 1899, days: 1096 },
+          {
+            name: { en: 'Game controller', zh: '游戏手柄' },
+            icon: 'gamepad',
+            status: 'sold',
+            price: 649,
+            salePrice: 300,
+            days: 512,
+          },
+        ],
+      },
+      highlights: [
+        {
+          title: { en: 'Add it now, fill it in later.', zh: '先记下，以后再补。' },
+          body: {
+            en: 'Snap a photo or pick an icon to add an item. Price and dates can wait. Photos are cut out on the phone and turned into a sticker.',
+            zh: '拍张照或选个图标就能记一件，价格、日期以后再补。照片在手机上抠出主体，做成一张贴纸。',
+          },
+        },
+        {
+          title: { en: 'What it costs per day.', zh: '每天花多少，算给你看。' },
+          body: {
+            en: 'The price divided by the days you have had it. Sold items subtract the sale price. Total spent and how many are still in use, all worked out for you.',
+            zh: '买价除以用了多少天，就是每天花多少；卖掉的扣掉售价。购入总额、还在用的有几件，都替你算好。',
+          },
+        },
+        {
+          title: { en: 'From bought to gone.', zh: '从买来到离开。' },
+          body: {
+            en: 'Every item is in use, retired or sold. The timeline lines them up by purchase date, and a reminder comes before a warranty runs out.',
+            zh: '每件东西有三种状态：使用中、已退役、已售出。时间轴按购入日期排开，保修快到期会提前提醒。',
+          },
+        },
+      ],
+      behind: {
+        title: { en: 'Mystery boxes and skins.', zh: '盲盒和皮肤。' },
+        body: {
+          en: 'Each achievement brings a mystery box. Tear the seal sideways to open it: inside is a skin or a new display for Home. Glacier is the default skin, near-black with ice-blue accents, and it is the one this page is drawn in.',
+          zh: '达成成就会收到一个盲盒，横着撕开封条才能拆开，里面是一套皮肤或首页的新展台。冰川是默认的那一套：近黑的底色，冰蓝的强调色，这一页用的就是它。',
+        },
+      },
+    },
   },
   {
     slug: 'yadol',
@@ -183,8 +284,11 @@ export function productPath(product: Product): string {
   return `/works/${product.slug}/`;
 }
 
-/** 还没公开的作品：海报墙不公开时只计数 */
-export const unannounced = PRODUCTS.filter((p) => !p.featured && p.status !== 'now-showing');
+/**
+ * 片单上的作品：主推之外、还没上映的。
+ * 海报墙不公开时，其中有产品页的露出海报（点进产品页），其余只占一个空白海报位。
+ */
+export const slateProducts = PRODUCTS.filter((p) => !p.featured && p.status !== 'now-showing');
 
 /**
  * 各 App「更多芽豆产品」里能看到的产品：打了 `series` 且已经对外（即将上映或已上映）。
@@ -196,3 +300,12 @@ export const seriesProducts = PRODUCTS.filter(
 );
 
 export const productsWithPage = PRODUCTS.filter((p): p is Product & { page: ProductPage } => !!p.page);
+
+/** 首页正片里的作品：有产品页的一部一个镜头，主推在前，其余按片单顺序跟在后面 */
+export const filmProducts = [...productsWithPage].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+
+/** 产品页底部的「下一部」：片单顺序里排在后面、也有产品页的那一部；没有就是 undefined（链到片单的空白海报位） */
+export function nextWithPage(product: Product): (Product & { page: ProductPage }) | undefined {
+  const at = PRODUCTS.indexOf(product);
+  return productsWithPage.find((p) => PRODUCTS.indexOf(p) > at);
+}

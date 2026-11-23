@@ -5,14 +5,14 @@
  * 卡片边框、行间细线、色块都是 App 里的手绘笔迹。滚动到眼前时只演一次。
  * 传了 scrub（首页正片）就改成跟着滚动演：每一步占滚动时间线上的一段，往回滚会倒着演。
  */
-import type { Still } from '@/data/products';
+import type { VoiceStillData } from '@/data/products';
 import type { Lang } from '@/i18n';
 import InkBox from '@/components/ink/InkBox.astro';
 import InkRule from '@/components/ink/InkRule.astro';
 import { blobPath, tick } from '@/components/ink/handDrawn';
 
 interface Props {
-  still: Still;
+  still: VoiceStillData;
   lang: Lang;
   /** 跟着滚动演：这场戏在滚动时间线上的起止（contain 百分比）；时间线由外面用 --scrub-timeline 指定 */
   scrub?: { from: number; to: number };

@@ -1,14 +1,14 @@
 ---
 /**
- * 首页：正片（签名 → 人物 → 作品，滚动推进）→ 片尾。每一章在正片里有一个镜头，所以不再另列目录。
- * 没有可当门面的主推产品（没有产品页）时，退回原来的标题卡和目录。
+ * 首页：正片（签名 → 人物 → 作品，滚动推进）→ 片尾。每一章在正片里有镜头，所以不再另列目录；
+ * 作品章里有产品页的作品一部一个镜头。一部有产品页的作品都没有时，退回原来的标题卡和目录。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
 import Chapters from '@/components/home/Chapters.astro';
 import Film from '@/components/home/Film.astro';
 import Hero from '@/components/home/Hero.astro';
-import { featuredProduct, productsWithPage } from '@/data/products';
+import { filmProducts } from '@/data/products';
 import { strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -17,13 +17,12 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = strings[lang];
-const lead = productsWithPage.find((p) => p.slug === featuredProduct?.slug);
 ---
 
 {
-  lead ? (
+  filmProducts.length > 0 ? (
     <Base lang={lang} path="/" firstScene={`01 — ${t.hud.prologue}`}>
-      <Film lang={lang} product={lead} />
+      <Film lang={lang} products={filmProducts} />
       <Credits lang={lang} scene="04" slot="footer" />
     </Base>
   ) : (

@@ -12,7 +12,7 @@ import monoWoff2 from '@fontsource/geist-mono/files/geist-mono-latin-400-normal.
 
 import Hud from '@/components/Hud.astro';
 import Opening from '@/components/Opening.astro';
-import type { ProductTheme } from '@/data/products';
+import { themeVars, type ProductTheme } from '@/data/products';
 import { href, htmlLang, strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -38,9 +38,7 @@ const description = Astro.props.description ?? t.site.description;
 const site = Astro.site ?? new URL('https://my.yado1225.top');
 const canonical = new URL(href(lang, path), site).href;
 const ogImage = new URL('/og-image.png', site).href;
-const themeStyle = theme
-  ? `--bg:${theme.paper};--bg-raise:${theme.surface};--ink:${theme.ink}`
-  : undefined;
+const themeStyle = theme ? themeVars(theme) : undefined;
 ---
 
 <!doctype html>
