@@ -121,7 +121,7 @@ const en = {
   },
   /** 产品页剧照「示例物品」（芽豆有物）里的字，和 App 里的说法一致 */
   itemsStill: {
-    days: (n: number) => `${n} days`,
+    days: (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`,
     perDay: '/day',
     total: 'Held purchase total',
     status: { 'in-use': 'In use', retired: 'Retired', sold: 'Sold' },

@@ -1,7 +1,7 @@
 ---
 app: 芽豆资产
 title: 第三方信息共享清单
-updated: 2026-11-09
+updated: 2026-11-22
 effective: 2026-11-09
 ---
 
@@ -34,6 +34,7 @@ AI 记账需要由大模型理解你说的话和发送的图片。我们会根�
 | --- | --- | --- | --- | --- |
 | 通过 Apple 登录 | Apple Inc. | 你选择通过 Apple 登录时 | Apple 账号标识符；你同意提供的姓名、邮箱（可以是 Apple 生成的中转邮箱） | 由 Apple 验证你的身份并把上述信息提供给我们 |
 | Apple 语音识别 | Apple Inc. | 在不支持离线识别的设备或系统版本上语音记账时 | 你的语音 | 由 iOS 系统直接发送给 Apple，我们不参与，也收不到音频 |
+| App 内购买 | Apple Inc. | 你在 App 内购买点数时 | 一个随机生成的购买标识（不包含你的账号信息）；付款信息由 Apple 处理，我们收不到 | 由 Apple 通过 App Store 完成付款，并凭购买标识确认购买属于哪个账号 |
 
 以上服务适用 [Apple 隐私政策](https://www.apple.com.cn/legal/privacy/szh/)。
 

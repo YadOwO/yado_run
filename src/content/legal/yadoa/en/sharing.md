@@ -1,7 +1,7 @@
 ---
 app: Yado Asset
 title: Third-Party Sharing List
-updated: 2026-11-09
+updated: 2026-11-22
 effective: 2026-11-09
 ---
 
@@ -34,6 +34,7 @@ AI bookkeeping needs a large language model to understand what you say and the i
 | --- | --- | --- | --- | --- |
 | Sign in with Apple | Apple Inc. | When you choose to sign in with Apple | Your Apple identifier, and the name and email you choose to share (which may be an Apple relay address) | Apple verifies your identity and provides this information to us |
 | Apple speech recognition | Apple Inc. | Voice bookkeeping on devices or iOS versions without on-device recognition | Your speech | Sent by iOS directly to Apple; we are not involved and never receive the audio |
+| In-app purchases | Apple Inc. | When you buy points in the App | A randomly generated purchase identifier (contains none of your account information); payment details are handled by Apple and never reach us | Apple handles payment through the App Store and uses the identifier to tell which account a purchase belongs to |
 
 These services are covered by [Apple's Privacy Policy](https://www.apple.com/legal/privacy/).
 

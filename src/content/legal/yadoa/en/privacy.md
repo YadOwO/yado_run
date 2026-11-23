@@ -117,6 +117,7 @@ We provide your information to third parties only in the cases below. See the [T
 
 - **AI bookkeeping**: when you use AI bookkeeping, our server sends the related content to large language model providers (currently Alibaba Cloud Model Studio, DeepSeek and Volcano Engine Ark) so they can understand your request and produce entries. **Your account ID is never included. We will ask for your explicit permission before you first use AI bookkeeping.** Providers process the data under their own privacy policies and terms.
 - **Apple**: Apple verifies your identity when you use Sign in with Apple, and on devices without on-device recognition, iOS sends speech to Apple for recognition. iOS handles this directly; we are not involved.
+- **In-app purchases**: when you buy points in the App, Apple handles payment through the App Store, and we never receive your payment details. We give Apple a randomly generated purchase identifier so it can tell which account a purchase belongs to; it contains none of your account information.
 
 **If we add a new recipient, we will update the list and ask for your permission again before you next use the related feature.**
 
