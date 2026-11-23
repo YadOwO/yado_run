@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="760" viewBox="132 132 760 760" fill="none">
+<defs>
+<linearGradient id="yadoi-body" x1="388" y1="152" x2="781.454" y2="267.194" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FFFFFF"/>
+<stop offset="0.42" stop-color="#C3D2DA"/>
+<stop offset="1" stop-color="#7593A5"/>
+</linearGradient>
+<linearGradient id="yadoi-facet" x1="584" y1="152" x2="682.202" y2="175.862" gradientUnits="userSpaceOnUse">
+<stop stop-color="#BAD8E7"/>
+<stop offset="0.5" stop-color="#729DB6"/>
+<stop offset="1" stop-color="#416880"/>
+</linearGradient>
+</defs>
+<path d="M388 152H636V334L450 450V524L636 408V872H388V152Z" fill="url(#yadoi-body)"/>
+<path d="M584 152H636V334L584 366V152Z" fill="url(#yadoi-facet)"/>
+</svg>

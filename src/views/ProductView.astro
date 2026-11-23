@@ -3,18 +3,20 @@
  * 产品页模版：每部作品同一套结构。
  * 主视觉 → 规格 → 剧照与看点 → 幕后 → 上映信息 → 下一部 → 片尾
  * 有剧照时，第一个看点和剧照是一场钉住的戏：画面停住，剧照跟着滚动把这个动作演一遍；其余看点照常列在下面。
- * 产品有自己的世界（page.theme）时，整页换成产品 App 深色外观的样子：App 的底色和墨色、手绘线条、系统衬线。
+ * 产品有自己的世界（page.theme）时，整页换成产品 App 深色外观的样子：App 的底色和墨色、系统衬线，线条照 App 的画法（手绘或直细线）。
+ * 底部的「下一部」指向片单里下一部有产品页的作品，没有就指向片单。
  */
 import Base from '@/layouts/Base.astro';
 import Credits from '@/components/Credits.astro';
 import Cta from '@/components/Cta.astro';
 import KeyArt from '@/components/KeyArt.astro';
 import StatusChip from '@/components/StatusChip.astro';
+import ItemsStill from '@/components/product/ItemsStill.astro';
 import VoiceStill from '@/components/product/VoiceStill.astro';
 import InkBox from '@/components/ink/InkBox.astro';
 import InkRule from '@/components/ink/InkRule.astro';
 import { blobPath } from '@/components/ink/handDrawn';
-import { productPath, type Product, type ProductPage } from '@/data/products';
+import { nextWithPage, productPath, type Product, type ProductPage } from '@/data/products';
 import { href, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
@@ -28,12 +30,17 @@ const t = strings[lang];
 const other = otherLang(lang);
 const pad = (n: number) => String(n).padStart(2, '0');
 const { theme } = page;
-/** 有自己的世界就用手绘笔迹，否则是片框里的直线 */
-const hand = !!theme;
+/** App 是手绘笔迹的才用手绘线条，否则是直细线 */
+const hand = theme?.lines === 'hand';
 
 /** 第一个看点交给那场钉住的戏，列表从第二个开始（编号不变） */
 const staged = page.still ? page.highlights[0] : undefined;
 const listed = page.highlights.map((h, i) => ({ h, i })).slice(staged ? 1 : 0);
+
+/** 片单里的下一部：有产品页就点进去，否则去片单看空白海报位 */
+const next = nextWithPage(product);
+const nextHref = href(lang, next ? productPath(next) : '/works/#slate');
+const nextTitle = next ? next.name[lang] : t.product.nextTba;
 
 const specs = [
   { label: t.product.specs.platform, value: product.platform, mono: true },
@@ -52,7 +59,7 @@ const specs = [
   firstScene={`01 — ${t.scenes.keyArt}`}
   theme={theme}
 >
-  <div class:list={['product', { 'product--hand': hand }]} style={`--accent:${product.accent}`}>
+  <div class:list={['product', { 'product--app': !!theme, 'product--hand': hand }]} style={`--accent:${product.accent}`}>
     <!-- 01 主视觉 -->
     <section class="hero" data-scene="01" data-scene-label={t.scenes.keyArt} data-scene-accent={product.accent}>
       <KeyArt product={product} variant="full" />
@@ -105,7 +112,8 @@ const specs = [
             <div class="act__pin">
               <div class="act__frame">
                 <div class="act__subject">
-                  <VoiceStill still={page.still} lang={lang} scrub={{ from: 6, to: 80 }} compact />
+                  {page.still.kind === 'voice' && <VoiceStill still={page.still} lang={lang} scrub={{ from: 6, to: 80 }} compact />}
+                  {page.still.kind === 'items' && <ItemsStill still={page.still} lang={lang} scrub={{ from: 6, to: 80 }} compact />}
                 </div>
                 <div class="act__text">
                   <h2 class="display act__title" data-reveal>{staged.title[lang]}</h2>
@@ -179,10 +187,10 @@ const specs = [
         </ul>
       </div>
 
-      <a class="next" href={href(lang, '/works/#slate')} data-reveal style="--i:4">
+      <a class="next" href={nextHref} data-reveal style="--i:4">
         {hand && <InkBox width={360} height={170} radius={22} seed={`${product.slug}-next`} />}
         <span class="meta">{t.product.next}</span>
-        <span class="display next__title">{t.product.nextTba}</span>
+        <span class="display next__title">{nextTitle}</span>
         <Cta class="next__go" />
       </a>
     </section>
@@ -545,10 +553,14 @@ const specs = [
     background: color-mix(in srgb, var(--ink) 3%, transparent);
   }
 
+  /* 产品自己的世界里，方框是 App 卡片那样的圆角 */
+  .product--app .next {
+    border-radius: 22px;
+  }
+
   /* 手绘：方框由 InkBox 画，去掉直线边框；悬停时只把纸面压暗一点 */
   .product--hand .next {
     border-color: transparent;
-    border-radius: 22px;
   }
 
   .next__title {

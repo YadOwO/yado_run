@@ -2,46 +2,113 @@
 /**
  * 首页正片：一块钉住的整屏画面，滚动就是播放头。这是个人站，所以讲的是人，作品只是其中一个部分：
  * 01 签名写出（这时左上角的小签名先藏着）→ 02 签名收进左上角、接上小签名，人物：我是谁、在做什么、爱好
- * → 03 镜头推过这段话，作品：主推产品的世界亮起来，标志从深处过来。产品本身不在这里讲，点进去是它自己的页面。
- * 全部是挂在 --film 这条滚动时间线上的 CSS 动画，没有脚本；时间点都是这条时间线 contain 段的百分比
- *（0% = 画面刚钉住，100% = 画面松开）。
- * 浏览器不支持滚动时间线、或者用户要求减少动态效果时，三个镜头就是依次排下来的三屏静态画面。
+ * → 03 镜头推过这段话，作品：第一部作品（主推）的世界亮起来，标志从深处过来；再往下滑，前一部推远淡出，
+ * 下一部的世界亮起来，有产品页的作品一部一个镜头。产品本身不在这里讲，点进去是它自己的页面。
+ * 全部是挂在 --film 这条滚动时间线上的 CSS 动画，没有脚本；时间点都写成离时间线起点（contain 0，画面刚钉住）多少 svh。
+ * 浏览器不支持滚动时间线、或者用户要求减少动态效果时，每个镜头就是依次排下来的一屏静态画面。
  */
 import Cta from '@/components/Cta.astro';
 import Signature from '@/components/Signature.astro';
 import StatusChip from '@/components/StatusChip.astro';
 import InkRule from '@/components/ink/InkRule.astro';
-import { productMarks } from '@/components/productMarks';
+import { markInstance, productMarks } from '@/components/productMarks';
 import { hobbies, profile } from '@/data/about';
 import { chapterNo, chapterPath, getChapter } from '@/data/chapters';
-import { productPath, type Product, type ProductPage } from '@/data/products';
+import { productPath, themeVars, type Product, type ProductPage } from '@/data/products';
 import { href, otherLang, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
-  /** 主推产品：作品那个镜头用它当门面 */
-  product: Product & { page: ProductPage };
+  /** 作品镜头里的产品，一部一个镜头；第一部是门面（主推），后面的接着它演 */
+  products: (Product & { page: ProductPage })[];
 }
 
-const { lang, product } = Astro.props;
-const { theme } = product.page;
+const { lang, products } = Astro.props;
 const t = strings[lang];
 const other = otherLang(lang);
 const about = getChapter('about');
 const works = getChapter('works');
 
-const mark = productMarks[product.slug];
-const maskId = `wipe-${product.slug}-film`;
-const productHref = href(lang, productPath(product));
+/**
+ * 滚动距离（svh）。开头一段（签名 → 人物 → 第一部作品）是 HEAD，和只有一部作品时一样长；
+ * 之后每多一部作品多 STEP：前一部推远淡出，这一部亮起来，再停一会儿。作品再多，开头的节奏也不变。
+ * HEAD 改了要同步改样式里 HUD 小签名的 --film-head。
+ */
+const HEAD = 400;
+const STEP = 240;
+const length = HEAD + STEP * (products.length - 1);
 
-/** 产品的世界只罩住最后一个镜头：底色、墨色写在这一块上，其余墨色由 tokens.css 的 data-theme='app' 推导 */
-const worldStyle = theme ? `--bg:${theme.paper};--bg-raise:${theme.surface};--ink:${theme.ink}` : undefined;
+/** 时间线上的一段，给 animation-range 用（写进变量里，CSS 压缩碰不到） */
+const span = (from: number, to: number) => `contain ${from.toFixed(1)}svh contain ${to.toFixed(1)}svh`;
+/** 同一段，给 data-scrub 用 */
+const scrub = (from: number, to: number) => `--from:contain ${from.toFixed(1)}svh;--to:contain ${to.toFixed(1)}svh`;
+/** 开头一段里的时间点：数字是 HEAD 的百分比 */
+const at = (from: number, to: number) => scrub((from * HEAD) / 100, (to * HEAD) / 100);
 
-/** 时间线上的一段，给 data-scrub 用 */
-const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain ${to}%`;
+/** 作品的世界在入场关键帧里开始亮起来的位置（film-lights 的 44%） */
+const LIGHTS_ON = 0.44;
+/** 下一部亮起来时，前一部推远淡出用多长 */
+const LEAVE = 60;
+
+/**
+ * 每部作品的镜头。入场都用同一套关键帧（film-lights、film-mark、film-tick、文字的 data-scrub），只是挂在时间线的不同段上：
+ * 第一部就是开头那一段；后面的每一部把这套关键帧拉长到 STEP / (1 - LIGHTS_ON)，
+ * 让「开始亮」正好落在它这一段的起点，之后的标志、文字、停留正好占满这一段。
+ */
+const reel = products.map((product, i) => {
+  const len = i === 0 ? HEAD : STEP / (1 - LIGHTS_ON);
+  const from = i === 0 ? 0 : HEAD + STEP * (i - 1) - LIGHTS_ON * len;
+  /** 入场关键帧里的百分比 → 时间线上的 svh */
+  const pos = (pct: number) => from + (pct / 100) * len;
+  /** 下一部开始亮的位置，这一部从这里推远淡出；最后一部不走 */
+  const leave = i < products.length - 1 ? HEAD + STEP * i : undefined;
+  const { theme } = product.page;
+  const mark = productMarks[product.slug];
+  return {
+    product,
+    theme,
+    mark,
+    art: mark && markInstance(mark, `${product.slug}-film`),
+    maskId: `wipe-${product.slug}-film`,
+    link: href(lang, productPath(product)),
+    at: (a: number, b: number) => scrub(pos(a), pos(b)),
+    leaves: leave !== undefined,
+    /** 产品的世界只罩住自己这个镜头：底色、墨色写在这一块上，其余墨色由 tokens.css 的 data-theme='app' 推导 */
+    style: [
+      `--accent:${product.accent}`,
+      theme && themeVars(theme),
+      `--in:${span(from, from + len)}`,
+      leave !== undefined && `--out:${span(leave, leave + LEAVE)}`,
+    ]
+      .filter(Boolean)
+      .join(';'),
+    /** HUD 换到这一部的时刻：世界亮到一半 */
+    sceneAt: pos(50),
+  };
+});
+
+/**
+ * HUD 左下角的场景名：每个镜头一段不占位的标记，视口中线碰到它的顶边就换。
+ * 钉住时标记顶边 = 换场的时间点 + 半屏；静态排版时每个镜头一屏，平分整段。
+ */
+const scenes = [
+  { no: '01', label: t.hud.prologue, at: -50 },
+  { no: '02', label: about.title[lang], at: 50 },
+  ...reel.map((w) => ({ no: '03', label: works.title[lang], accent: w.product.accent, at: w.sceneAt })),
+];
+const filmHeight = length + 100;
+const markers = scenes.map((scene, i) => {
+  const top = scene.at + 50;
+  const end = i < scenes.length - 1 ? scenes[i + 1].at + 50 : filmHeight;
+  const share = 100 / scenes.length;
+  return {
+    ...scene,
+    style: `--top:${(i * share).toFixed(2)}%;--h:${share.toFixed(2)}%;--pin-top:${top.toFixed(1)}svh;--pin-h:${(end - top).toFixed(1)}svh`,
+  };
+});
 ---
 
-<section class="film" style={`--accent:${product.accent}`}>
+<section class="film" style={`--film-length:${length}svh;--in:${span(0, HEAD)}`}>
   <div class="pin">
     <div class="beam" aria-hidden="true"></div>
 
@@ -95,60 +162,76 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
       </div>
     </div>
 
-    <!-- 03 作品 -->
-    <div class="world" data-theme={theme ? 'app' : undefined} style={worldStyle}>
-      <!-- 画面本身（底 + 标志）和产品页首屏是同一帧，共用 view-transition-name，点进去时接得上 -->
-      <div class="plate" style={`view-transition-name: keyart-${product.slug}; view-transition-class: keyart`}>
-        <div class:list={['world__bg', { 'world__bg--app': !!theme }]} aria-hidden="true"></div>
-        <div class="subject">
-          <!-- 标志本身也能点：键盘和读屏走下面的「进入」，这里不重复占一个焦点 -->
-          <a class="mark-link" href={productHref} tabindex="-1" aria-hidden="true">
-            {
-              mark ? (
-                <svg class="mark" viewBox={mark.viewBox} fill="none">
-                  <defs>
-                    <mask id={maskId} maskUnits="userSpaceOnUse">
-                      <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
-                    </mask>
-                  </defs>
-                  {mark.paths.map((p, i) => (
-                    <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${maskId})` : undefined} />
-                  ))}
-                </svg>
-              ) : (
-                <span class="display mark__fallback">{product.codename}</span>
-              )
-            }
-          </a>
-        </div>
-      </div>
+    <!-- 03 作品：一部一个镜头，后一部盖在前一部上面 -->
+    {
+      reel.map((w) => (
+        <div class:list={['world', { 'world--leaves': w.leaves }]} data-theme={w.theme ? 'app' : undefined} style={w.style}>
+          {/* 画面本身（底 + 标志）和产品页首屏是同一帧，共用 view-transition-name，点进去时接得上 */}
+          <div class="plate" style={`view-transition-name: keyart-${w.product.slug}; view-transition-class: keyart`}>
+            <div class:list={['world__bg', { 'world__bg--app': !!w.theme }]} aria-hidden="true" />
+            <div class="subject">
+              {/* 标志本身也能点：键盘和读屏走下面的「进入」，这里不重复占一个焦点 */}
+              <a class="mark-link" href={w.link} tabindex="-1" aria-hidden="true">
+                {w.mark && w.art ? (
+                  <svg class="mark" viewBox={w.mark.viewBox} fill="none">
+                    <defs>
+                      <Fragment set:html={w.art.defs} />
+                      <mask id={w.maskId} maskUnits="userSpaceOnUse">
+                        <rect
+                          class:list={['wipe', `wipe--${w.mark.wipeAxis}`]}
+                          x={w.mark.wipe[0]}
+                          y={w.mark.wipe[1]}
+                          width={w.mark.wipe[2]}
+                          height={w.mark.wipe[3]}
+                          fill="#fff"
+                        />
+                      </mask>
+                    </defs>
+                    {w.art.paths.map((p, i, all) => (
+                      <path d={p.d} fill={p.fill} mask={i === all.length - 1 ? `url(#${w.maskId})` : undefined} />
+                    ))}
+                  </svg>
+                ) : (
+                  <span class="display mark__fallback">{w.product.codename}</span>
+                )}
+              </a>
+            </div>
+          </div>
 
-      <div class="shot shot--works">
-        <div class="text">
-          <div class="titles" data-scrub="rise" style={at(62, 72)}>
-            <StatusChip status={product.status} lang={lang} />
-            <h2 class="display name">{product.name[lang]}</h2>
-            {theme && <InkRule hand heavy seed={`${product.slug}-film`} class="title-rule" scrub={at(66, 78)} />}
-            <p class="meta case">{product.name[other]} · {product.platform}</p>
-          </div>
-          <div class="side" data-scrub="rise" style={at(66, 76)}>
-            {product.logline && <p class="logline">{product.logline[lang]}</p>}
-            <p class="links">
-              <Cta href={productHref}>{t.feature.enter}</Cta>
-              <Cta quiet href={href(lang, chapterPath(works))}>
-                {t.chapters.chapter}{chapterNo('works')} — {works.title[lang]}
-              </Cta>
-            </p>
+          <div class="shot shot--works">
+            <div class="text">
+              <div class="titles" data-scrub="rise" style={w.at(62, 72)}>
+                <StatusChip status={w.product.status} lang={lang} />
+                <h2 class="display name">{w.product.name[lang]}</h2>
+                {w.theme?.lines === 'hand' && (
+                  <InkRule hand heavy seed={`${w.product.slug}-film`} class="title-rule" scrub={w.at(66, 78)} />
+                )}
+                <p class="meta case">
+                  {w.product.name[other]} · {w.product.platform}
+                </p>
+              </div>
+              <div class="side" data-scrub="rise" style={w.at(66, 76)}>
+                {w.product.logline && <p class="logline">{w.product.logline[lang]}</p>}
+                <p class="links">
+                  <Cta href={w.link}>{t.feature.enter}</Cta>
+                  <Cta quiet href={href(lang, chapterPath(works))}>
+                    {t.chapters.chapter}{chapterNo('works')} — {works.title[lang]}
+                  </Cta>
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      ))
+    }
   </div>
 
-  <!-- HUD 左下角的场景名靠这三段换：它们不占位，只标出每个镜头在滚动上的范围 -->
-  <i class="marker marker--1" data-scene="01" data-scene-label={t.hud.prologue}></i>
-  <i class="marker marker--2" data-scene="02" data-scene-label={about.title[lang]}></i>
-  <i class="marker marker--3" data-scene="03" data-scene-label={works.title[lang]} data-scene-accent={product.accent}></i>
+  <!-- HUD 左下角的场景名靠这几段换：它们不占位，只标出每个镜头在滚动上的范围 -->
+  {
+    markers.map((m) => (
+      <i class="marker" data-scene={m.no} data-scene-label={m.label} data-scene-accent={m.accent} style={m.style} />
+    ))
+  }
 </section>
 
 <style>
@@ -381,9 +464,16 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
     font-size: var(--fs-title);
   }
 
+  /* 强调色那一笔：从左往右（对勾）或从上往下（切面）写出，和 KeyArt 一样 */
   .wipe {
+    --wipe-from: scaleX(0);
     transform-box: fill-box;
     transform-origin: left center;
+  }
+
+  .wipe--y {
+    --wipe-from: scaleY(0);
+    transform-origin: center top;
   }
 
   /* 这一层盖在画面上，只有文字那两块接点击，其余让给下面的标志 */
@@ -432,28 +522,15 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
     gap: 16px clamp(24px, 3vw, 40px);
   }
 
-  /* ---------- 场景范围（静态排版时三屏各占三分之一） ---------- */
+  /* ---------- 场景范围（静态排版时每个镜头一屏，平分整段；位置由模板算好写在 style 里） ---------- */
   .marker {
     position: absolute;
     left: 0;
+    top: var(--top);
     width: 1px;
+    height: var(--h);
     visibility: hidden;
     pointer-events: none;
-  }
-
-  .marker--1 {
-    top: 0;
-    height: 33.33%;
-  }
-
-  .marker--2 {
-    top: 33.33%;
-    height: 33.33%;
-  }
-
-  .marker--3 {
-    top: 66.66%;
-    height: 33.34%;
   }
 
   @media (max-width: 900px) {
@@ -476,6 +553,14 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
     }
   }
 
+  /* 手机上 HUD 底部两个角不显示，底下不用给它们留位置；省出来的高度让给标志，文字不往上顶到它 */
+  @media (max-width: 640px) {
+    .shot--person,
+    .shot--works {
+      padding-bottom: clamp(32px, 6svh, 56px);
+    }
+  }
+
   @media (max-width: 480px) {
     .film {
       --sig-w: 232;
@@ -485,9 +570,9 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
   /* ---------- 正片：钉住画面，滚动推进 ---------- */
   @media (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
-      /* 5 屏高，画面钉住 4 屏的滚动距离；时间线上 1% = 0.04 屏 */
+      /* 画面钉住的滚动距离是 --film-length（开头一段 4 屏，每多一部作品多 2.4 屏），再加松开前的一屏 */
       .film {
-        height: 500svh;
+        height: calc(var(--film-length) + 100svh);
         view-timeline: --film block;
       }
 
@@ -520,6 +605,15 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
         mask-image: linear-gradient(to bottom, #000 calc(100% - 16svh), transparent);
       }
 
+      /*
+       * 标志所在的画幅和产品页首屏一样高（100svh），不跟着钉住的画面按 100lvh 算：
+       * 手机上工具栏展开时 lvh 比可见区域高出一截，标志会被带着往下，压到底部的标题上。
+       */
+      .plate .subject {
+        inset: 0 0 auto;
+        height: 100svh;
+      }
+
       .sig__pen {
         animation: film-dock linear both;
       }
@@ -545,29 +639,71 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
         animation: film-works-on linear both;
       }
 
-      /* animation-timeline 必须单独一条规则，而且排在 animation 简写后面（简写会把它重置） */
+      /* 不是最后一部的作品：下一部亮起来时推远淡出，文字关掉；只往后填，之前不碍入场的事 */
+      .world--leaves {
+        animation:
+          film-lights linear both,
+          film-leave linear forwards;
+      }
+
+      .world--leaves .shot--works {
+        animation:
+          film-works-on linear both,
+          film-works-off linear forwards;
+      }
+
+      /*
+       * animation-timeline 必须单独一条规则，而且排在 animation 简写后面（简写会把它重置）。
+       * 每个元素在时间线上占哪一段由 --in 决定：开头一段写在 .film 上，每部作品的写在它自己的 .world 上；退场是 --out。
+       */
       .pin .sig__pen,
       .pin .shot,
       .pin .world,
       .pin .subject,
       .pin .wipe {
         animation-timeline: --film;
-        animation-range: contain;
+        animation-range: var(--in);
       }
 
-      .marker--1 {
-        height: 100svh;
+      .pin .world--leaves,
+      .pin .world--leaves .shot--works {
+        animation-timeline: --film, --film;
+        animation-range: var(--in), var(--out);
       }
 
-      .marker--2 {
-        top: 100svh;
-        height: 150svh;
+      .marker {
+        top: var(--pin-top);
+        height: var(--pin-h);
       }
+    }
+  }
 
-      .marker--3 {
-        top: 250svh;
-        height: 250svh;
-      }
+  /*
+   * 从别的页面退回首页（页面上的「返回」、浏览器的后退）：作品这个镜头和产品页首屏是同一帧，
+   * 退回来时画面几乎不变，看上去像没反应。所以退回来的那一刻把标志和文字的入场再演一遍，看得出是回来了。
+   * <html> 上的 data-returned 由 Base 里首帧之前的脚本标。动的是没有挂在滚动时间线上的两层，互不干扰。
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root[data-returned]) .mark-link {
+      animation: film-return-mark 1.2s var(--ease-film) both;
+    }
+
+    :global(:root[data-returned]) .shot--works .text {
+      animation: film-return-text 1s var(--ease-film) 0.25s both;
+    }
+  }
+
+  @keyframes film-return-mark {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes film-return-text {
+    from {
+      transform: translate3d(0, 24px, 0);
+      opacity: 0;
     }
   }
 
@@ -586,9 +722,11 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
         animation: film-hud-logo linear both;
       }
 
+      /* 只看开头那一段（400svh，和 Film 里的 HEAD 一致）：作品再多，也是在签名收到位的那一刻接上 */
       :global(body:has(.film) .hud .home > svg) {
+        --film-head: contain 0svh contain 400svh;
         animation-timeline: --film;
-        animation-range: contain;
+        animation-range: var(--film-head);
       }
     }
   }
@@ -691,11 +829,11 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
   @keyframes film-tick {
     0%,
     60% {
-      transform: scaleX(0);
+      transform: var(--wipe-from);
     }
     70%,
     100% {
-      transform: scaleX(1);
+      transform: none;
     }
   }
 
@@ -707,6 +845,36 @@ const at = (from: number, to: number) => `--from:contain ${from}%;--to:contain $
     56%,
     100% {
       visibility: visible;
+    }
+  }
+
+  /* 下一部亮起来：这一部的世界往前推、淡出，淡完关掉，不挡下一部的链接 */
+  @keyframes film-leave {
+    0% {
+      transform: none;
+      opacity: 1;
+      visibility: visible;
+    }
+    99% {
+      transform: scale(1.3);
+      opacity: 0;
+      visibility: visible;
+    }
+    100% {
+      transform: scale(1.3);
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* 文字先关：它自己写了 visibility: visible，世界关掉也盖不住它 */
+  @keyframes film-works-off {
+    0% {
+      visibility: visible;
+    }
+    40%,
+    100% {
+      visibility: hidden;
     }
   }
 </style>

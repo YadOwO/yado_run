@@ -1,25 +1,27 @@
 ---
 /**
  * 产品主视觉：暗场 + 产品色的地灯 + 品牌标志。
- * 首页目录里是一帧小缩略（thumb），作品章是一块 2.39:1 的画幅（panel），产品页是整屏（full）；
- * 三处共用同一个 view-transition-name，一路点进去，画面会从缩略放大到画幅、再放大成产品页首屏。
+ * 首页目录里是一帧小缩略（thumb），作品章是一块 2.39:1 的画幅（panel）或片单里一张 2:3 的海报（poster），
+ * 产品页是整屏（full）；几处共用同一个 view-transition-name，一路点进去，画面会放大成产品页首屏。
  * 产品有自己的世界（page.theme）时，整屏那一帧换成 App 深色外观的图标：石墨色的底从左上亮到右下，
  * 标志本来就是 App 深色外观的配色。于是点进来的那一下，暗场里的画幅放大成 App 图标，像打开了这个 App。
+ * 海报也画成 App 图标，它放大成首屏时才是同一帧；海报所在的那一块要自己带上 data-theme 和产品的底色、墨色（见 works/Slate）。
  */
 import type { Product } from '@/data/products';
-import { productMarks } from './productMarks';
+import { markInstance, productMarks } from './productMarks';
 
 interface Props {
   product: Product;
-  variant: 'thumb' | 'panel' | 'full';
+  variant: 'thumb' | 'panel' | 'poster' | 'full';
 }
 
 const { product, variant } = Astro.props;
-const app = variant === 'full' && !!product.page?.theme;
+const app = (variant === 'full' || variant === 'poster') && !!product.page?.theme;
 
 const mark = productMarks[product.slug];
-/** 同一页可能出现两次同一个标志（首页正片和目录缩略），遮罩 id 带上用途才不会串 */
+/** 同一页可能出现两次同一个标志（首页正片和目录缩略），遮罩和渐变的 id 带上用途才不会串 */
 const maskId = `wipe-${product.slug}-${variant}`;
+const art = mark && markInstance(mark, `${product.slug}-${variant}`);
 ---
 
 <div
@@ -32,15 +34,23 @@ const maskId = `wipe-${product.slug}-${variant}`;
 
   <div class="mark">
     {
-      mark ? (
+      mark && art ? (
         <svg viewBox={mark.viewBox} fill="none" role="img" aria-label={product.codename}>
           <defs>
+            <Fragment set:html={art.defs} />
             <mask id={maskId} maskUnits="userSpaceOnUse">
-              <rect class="wipe" x={mark.wipe[0]} y={mark.wipe[1]} width={mark.wipe[2]} height={mark.wipe[3]} fill="#fff" />
+              <rect
+                class:list={['wipe', `wipe--${mark.wipeAxis}`]}
+                x={mark.wipe[0]}
+                y={mark.wipe[1]}
+                width={mark.wipe[2]}
+                height={mark.wipe[3]}
+                fill="#fff"
+              />
             </mask>
           </defs>
-          {mark.paths.map((p, i) => (
-            <path d={p.d} fill={p.fill} mask={i === mark.paths.length - 1 ? `url(#${maskId})` : undefined} />
+          {art.paths.map((p, i) => (
+            <path d={p.d} fill={p.fill} mask={i === art.paths.length - 1 ? `url(#${maskId})` : undefined} />
           ))}
         </svg>
       ) : (
@@ -69,6 +79,10 @@ const maskId = `wipe-${product.slug}-${variant}`;
   .keyart--panel,
   .keyart--thumb {
     aspect-ratio: 2.39 / 1;
+  }
+
+  .keyart--poster {
+    aspect-ratio: 2 / 3;
   }
 
   .keyart--full {
@@ -134,6 +148,12 @@ const maskId = `wipe-${product.slug}-${variant}`;
     translate: 0 -6svh;
   }
 
+  /* 海报底部压着片名，标志往上让一点 */
+  .keyart--poster .mark svg {
+    height: 46%;
+    translate: 0 -9%;
+  }
+
   /* ---------- App 图标（深色外观） ---------- */
   /* 石墨色从左上的亮面过渡到右下的底色，和 App 图标的底色渐变一样；右下正好接上页面底色 */
   .keyart--app {
@@ -150,18 +170,24 @@ const maskId = `wipe-${product.slug}-${variant}`;
     color: var(--ink);
   }
 
-  /* 对勾的书写：遮罩矩形从左往右展开 */
+  /* 强调色那一笔的书写：遮罩矩形从左往右（对勾）或从上往下（切面）展开 */
   .wipe {
+    --wipe-from: scaleX(0);
     transform-box: fill-box;
     transform-origin: left center;
   }
 
+  .wipe--y {
+    --wipe-from: scaleY(0);
+    transform-origin: center top;
+  }
+
   :global(.js) .wipe {
-    transform: scaleX(0);
+    transform: var(--wipe-from);
   }
 
   :global(.js) .keyart.is-in .wipe {
-    transform: scaleX(1);
+    transform: none;
     transition: transform 1s var(--ease-pen) 0.55s;
   }
 
@@ -188,8 +214,11 @@ const maskId = `wipe-${product.slug}-${variant}`;
   .label--tl { top: 40px; left: 40px; }
   .label--br { bottom: 40px; right: 40px; }
 
+  /* 海报上的编号、片名由片单自己写，取景框的裁切线和角标都不要 */
   .keyart--full .crop,
   .keyart--full .label,
+  .keyart--poster .crop,
+  .keyart--poster .label,
   .keyart--thumb .label {
     display: none;
   }

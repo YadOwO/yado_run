@@ -119,6 +119,13 @@ const en = {
     next: 'Next title',
     nextTba: 'In production — to be announced',
   },
+  /** 产品页剧照「示例物品」（芽豆有物）里的字，和 App 里的说法一致 */
+  itemsStill: {
+    days: (n: number) => `${n} days`,
+    perDay: '/day',
+    total: 'Held purchase total',
+    status: { 'in-use': 'In use', retired: 'Retired', sold: 'Sold' },
+  },
   credits: {
     heading: 'End credits',
     roles: [
@@ -233,6 +240,12 @@ const zh: typeof en = {
     testFlightNote: '在 iPhone 上打开链接，需要先从 App Store 装好 TestFlight。',
     next: '下一部',
     nextTba: '拍摄中，片名待公布',
+  },
+  itemsStill: {
+    days: (n: number) => `持有 ${n} 天`,
+    perDay: '/天',
+    total: '持有购入总值',
+    status: { 'in-use': '使用中', retired: '已退役', sold: '已售出' },
   },
   credits: {
     heading: '片尾',

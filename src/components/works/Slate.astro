@@ -1,11 +1,14 @@
 ---
 /**
- * 作品章「片单」：海报墙的预留位。
- * 海报墙未公开（SLATE_PUBLIC = false）时，只露出数量和空白的 2:3 海报位，不露片名与颜色；
- * 公开后，这里的每个空位换成真正的海报，版式不变；作品多了自动换行。
+ * 作品章「片单」：主推之外的作品，一部一张 2:3 的海报。
+ * 海报墙未公开（SLATE_PUBLIC = false）时，有了产品页的作品露出海报：画面是它的 App 图标（KeyArt 的 poster），
+ * 整张可点，点进去画面放大成产品页首屏；其余只是空白海报位，不露片名与颜色。作品多了自动换行。
  */
-import { unannounced } from '@/data/products';
-import { strings, type Lang } from '@/i18n';
+import Cta from '@/components/Cta.astro';
+import KeyArt from '@/components/KeyArt.astro';
+import StatusChip from '@/components/StatusChip.astro';
+import { productPath, slateProducts, themeVars } from '@/data/products';
+import { href, strings, type Lang } from '@/i18n';
 
 interface Props {
   lang: Lang;
@@ -13,7 +16,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = strings[lang];
-const count = unannounced.length;
+const count = slateProducts.length;
 const pad = (n: number) => String(n).padStart(2, '0');
 // 中文在逗号后断行，避免“正 / 在拍摄”这种断法
 const headingLines = t.slate.count(count).split(/(?<=，)/);
@@ -36,13 +39,33 @@ const headingLines = t.slate.count(count).split(/(?<=，)/);
       </div>
 
       <ol class="slots">
-        {unannounced.map((_, i) => (
+        {slateProducts.map((product, i) => (
           <li class="slot" data-reveal style={`--i:${i}`}>
-            <div class="poster">
-              <span class="meta no">No.{pad(i + 2)}</span>
-              <span class="untitled display">{t.slate.untitled}</span>
-              <span class="meta status">{t.slate.slot}</span>
-            </div>
+            {/* 有产品页的露出海报，罩上产品自己的世界：底色、墨色和产品页一样，放大成首屏时才接得上 */}
+            {product.page ? (
+              <a
+                class="poster poster--open"
+                href={href(lang, productPath(product))}
+                data-theme={product.page.theme ? 'app' : undefined}
+                style={`--accent:${product.accent};${product.page.theme ? themeVars(product.page.theme) : ''}`}
+              >
+                <KeyArt product={product} variant="poster" />
+                <span class="meta no">No.{pad(i + 2)}</span>
+                <span class="credit">
+                  <span class="credit__titles">
+                    <StatusChip status={product.status} lang={lang} />
+                    <span class="display name">{product.name[lang]}</span>
+                  </span>
+                  <Cta class="go" />
+                </span>
+              </a>
+            ) : (
+              <div class="poster">
+                <span class="meta no">No.{pad(i + 2)}</span>
+                <span class="untitled display">{t.slate.untitled}</span>
+                <span class="meta status">{t.slate.slot}</span>
+              </div>
+            )}
           </li>
         ))}
       </ol>
@@ -90,8 +113,8 @@ const headingLines = t.slate.count(count).split(/(?<=，)/);
     transition: border-color 1s var(--ease-film);
   }
 
-  /* 悬停时一道很淡的光扫过，像放映机在等片 */
-  .poster::after {
+  /* 空白海报位：悬停时一道很淡的光扫过，像放映机在等片 */
+  .poster:not(.poster--open)::after {
     content: '';
     position: absolute;
     inset: -20% -60%;
@@ -104,8 +127,58 @@ const headingLines = t.slate.count(count).split(/(?<=，)/);
     border-color: var(--ink-4);
   }
 
-  .slot:hover .poster::after {
+  .slot:hover .poster:not(.poster--open)::after {
     transform: translateX(60%);
+  }
+
+  /* 露出的海报：画面铺满，编号、片名压在上面 */
+  .poster--open {
+    display: block;
+    color: var(--ink);
+  }
+
+  .poster--open > :global(.keyart) {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+  }
+
+  .credit {
+    position: absolute;
+    left: 18px;
+    right: 14px;
+    bottom: 16px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .credit__titles {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .name {
+    font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+    line-height: 1.15;
+  }
+
+  :lang(zh) .name {
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+    font-weight: 500;
+  }
+
+  .credit > :global(.go) {
+    --cta-size: 38px;
+    flex: none;
+    transition: transform 0.9s var(--ease-film);
+  }
+
+  .poster--open:hover > .credit > :global(.go) {
+    transform: translateX(4px);
   }
 
   .no {
