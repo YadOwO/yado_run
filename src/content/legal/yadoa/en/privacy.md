@@ -1,7 +1,7 @@
 ---
 app: Yado Asset
 title: Privacy Policy
-updated: 2026-11-17
+updated: 2026-11-22
 effective: 2026-11-17
 ---
 
@@ -62,6 +62,8 @@ You can speak, type or send a picture (from your photo library, the camera or th
 ### AI points and daily check-in
 
 AI bookkeeping uses points. New users receive free points, and you can check in daily for more. We keep your point balance, a record of each grant and use (time, feature, model tier, points), your check-in dates, and an **irreversible fingerprint** of each AI request (used to avoid charging twice for the same request; it cannot be turned back into what you said).
+
+You can also buy points in the App; purchased points never expire. **Payment is handled by Apple through the App Store, and we never receive your card, Apple Account or other payment details.** To add the points to your account and handle refunds, we keep each purchase's transaction number, product, purchase and refund times, points, and a randomly generated purchase identifier (given to Apple so it can tell which account a purchase belongs to; it contains none of your account information).
 
 ### Feedback
 
@@ -143,7 +145,7 @@ We do not disclose your personal information unless you consent separately or th
 | Ledger and AI chat history on your device | On your device, under your control; AI chat history is deleted after 90 days |
 | Sync data | Until you delete cloud data or your account; deleted records are purged from the server within 90 days |
 | Account info, nickname, profile photo | Until you delete your account |
-| AI points and check-ins | Until you delete your account |
+| AI points, check-ins and purchases | Until you delete your account |
 | Feedback | Until you delete your account |
 | Server logs | 6 months |
 
