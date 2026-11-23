@@ -1,8 +1,8 @@
 ---
 app: Yado Asset
 title: Terms of Use
-updated: 2026-11-09
-effective: 2026-11-09
+updated: 2026-11-22
+effective: 2026-11-22
 ---
 
 Welcome to Yado Asset ("the App"). These Terms are an agreement between you and the App's developer and operator, the independent developer **YU JUNJIE** ("we", "us").
@@ -46,12 +46,12 @@ You must not:
 
 ## 5. AI points
 
-1. AI features use AI points. Points are currently **free**, given to new users and through daily check-in. They cannot be bought, topped up or cashed out.
-2. Points expire as shown in the App. Unused points are void after they expire.
+1. AI features use AI points. You can get points for free, as a new user and through daily check-in, or buy them in the App. Points cannot be cashed out.
+2. **Points you buy in the App never expire.** Free points expire as shown in the App, and unused free points are void after they expire.
 3. **Points can be used only for AI features in the App. They have no cash value and cannot be exchanged, transferred or inherited.**
-4. We may change how many points are given, how long they last and how many each feature uses, and will announce changes in the App first. Points already given stay valid until their original expiry.
-5. We may remove points obtained in breach of these Terms.
-6. If we offer paid services in the future, separate terms will apply, and prices and rules will be clear before you buy.
+4. Purchases are paid to Apple through the App Store, at the price shown in the App before you buy. Refunds are requested from Apple under Apple's rules; if Apple refunds a purchase, we will remove the corresponding points from your account.
+5. We may change how many free points are given, how long they last and how many points each feature uses, and will announce changes in the App first. Free points already given stay valid until their original expiry, and points you have bought are not affected by changes to expiry.
+6. We may remove points obtained in breach of these Terms.
 
 ## 6. Your data and backups
 
