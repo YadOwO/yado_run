@@ -203,6 +203,7 @@ export const PRODUCTS: Product[] = [
     accent: '#B9D9F0',
     platform: 'iOS 18+',
     year: 2026,
+    series: {},
     logline: {
       en: 'Everything you own, in one place.',
       zh: '你拥有的，都记在这里。',
