@@ -64,8 +64,8 @@ yado Assets and yado Items are developed and operated by the same developer and 
 
 | Source app | Information read | Used for | How to revoke |
 | --- | --- | --- | --- |
-| yado Items | The total purchase price of in-service items and of retired items, and the number of items (those with a purchase price and those without) | Showing the item value on the Accounts page of yado Assets and, according to your settings, including it in your net worth | Revoke in yado Assets under Me → Data links |
+| yado Items | The total purchase price of in-service items and of retired items, and the number of items (those with a purchase price and those without) | Showing the item value on the Accounts page of yado Assets and, according to your settings, including it in your net worth | Revoke in yado Assets under Profile → Data Linking |
 
-- Only after you **authorize it yourself** in yado Assets under Me → Data links does yado Assets read these totals, through the shared yado services; if you don't authorize, nothing is read;
+- Only after you **authorize it yourself** in yado Assets under Profile → Data Linking does yado Assets read these totals, through the shared yado services; if you don't authorize, nothing is read;
 - Item names, photos, categories and other details are **never read**;
 - You can revoke at any time in the same place, and nothing is read after that.

@@ -73,13 +73,13 @@ If you turn on "Attach recent diagnostics" when sending (off by default, chosen 
 
 ### yado Items item value (requires an account, off by default)
 
-If you also use our other app, yado Items, you can authorize this in Me → Data links so the App shows your item value on the Accounts page. **We read it only after you authorize it, and not by default.** Once you do:
+If you also use our other app, yado Items, you can authorize this in Profile → Data Linking so the App shows your item value on the Accounts page. **We read it only after you authorize it, and not by default.** Once you do:
 
 - Through your yado account, we read the **total purchase price of your items** in yado Items (in-service and retired shown separately) and the **number of items** (those with a purchase price and those without, counted separately);
 - We use these totals only to show the item value on the Accounts page and, according to your settings in the App, to include it in your net worth;
 - **We do not read item names, photos, categories or any other item details**;
 - A record of your authorization (when you granted and revoked it) is kept until you revoke it or delete your account;
-- You can revoke at any time in Me → Data links. After that we stop reading, and the totals cached on your device are cleared.
+- You can revoke at any time in Profile → Data Linking. After that we stop reading, and the totals cached on your device are cleared.
 
 ### Server logs
 
