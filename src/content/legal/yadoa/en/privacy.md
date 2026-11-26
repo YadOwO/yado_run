@@ -78,7 +78,7 @@ If you also use our other app, yado Items, you can authorize this in Profile →
 - Through your yado account, we read the **total purchase price of your items** in yado Items (in-service and retired shown separately) and the **number of items** (those with a purchase price and those without, counted separately);
 - We use these totals only to show the item value on the Accounts page and, according to your settings in the App, to include it in your net worth;
 - **We do not read item names, photos, categories or any other item details**;
-- A record of your authorization (when you granted and revoked it) is kept until you revoke it or delete your account;
+- A record of your authorization (when you granted and, if you did, revoked it) is kept until you delete your account; revoking only records when you revoked it, and we stop reading;
 - You can revoke at any time in Profile → Data Linking. After that we stop reading, and the totals cached on your device are cleared.
 
 ### Server logs
@@ -158,6 +158,7 @@ We do not disclose your personal information unless you consent separately or th
 | Account info, nickname, profile photo | Until you delete your account |
 | AI points, check-ins and purchases | Until you delete your account |
 | Feedback | Until you delete your account |
+| Data Linking authorization records | Until you delete your account |
 | Server logs | 6 months |
 
 After that, we delete or anonymize the information. Database backups are overwritten by newer backups at the end of each backup cycle.
@@ -178,7 +179,7 @@ No system is perfectly secure, and **Sync data is not currently end-to-end encry
 - **Correct**: edit entries, accounts, nickname and profile photo directly in the App.
 - **Delete**: delete any entry, or erase device data or cloud data in Settings. After erasing device data, the App keeps an undo copy on the device for 7 days, then deletes it automatically.
 - **Withdraw consent**: turn off Sync, stop using AI bookkeeping, or revoke permissions in iOS Settings, at any time. This doesn't affect processing done before.
-- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
+- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback, Data Linking authorization records and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
 - **Ask and complain**: contact us for an explanation of this policy or how we handle your data.
 
 For anything you can't do in the App, contact us using the details below. We will respond within **15 business days** after verifying your identity.
@@ -189,7 +190,7 @@ For anything you can't do in the App, contact us using the details below. We wil
 
 ## 8. Additional information for users in the United States
 
-- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI), photos you send to the AI, feedback content, device information and diagnostic reports you choose to attach.
+- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI, and the item purchase-price totals and item counts from yado Items, if you turn on Data Linking), photos you send to the AI, feedback content, device information and diagnostic reports you choose to attach.
 - **We do not sell or "share" personal information** for cross-context behavioral advertising, and we have not done so in the past 12 months. We do not use sensitive personal information to infer characteristics about you.
 - **Your rights**: depending on your state, you may have the right to know, access, correct and delete your personal information, and to obtain a portable copy. You can exercise most of these in the App, or by emailing us. You may use an authorized agent; we may ask you to verify your identity. **We will not discriminate against you for exercising your rights.**
 - **Do Not Track**: the App does not track you across third-party websites or apps, so Do Not Track signals don't change how it works.
