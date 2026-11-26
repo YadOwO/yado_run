@@ -78,7 +78,7 @@ If you also use our other app, yado Items, you can authorize this in Profile →
 - Through your yado account, we read the **total purchase price of your items** in yado Items (in-service and retired shown separately) and the **number of items** (those with a purchase price and those without, counted separately);
 - We use these totals only to show the item value on the Accounts page and, according to your settings in the App, to include it in your net worth;
 - **We do not read item names, photos, categories or any other item details**;
-- A record of your authorization (when you granted and, if you did, revoked it) is kept until you delete your account; revoking only records when you revoked it, and we stop reading;
+- Our servers don't keep these totals; they only fetch them and pass them to the App when it asks. Our servers keep only the authorization record (when you last granted and revoked it), until you delete your account;
 - You can revoke at any time in Profile → Data Linking. After that we stop reading, and the totals cached on your device are cleared.
 
 ### Server logs
@@ -158,7 +158,7 @@ We do not disclose your personal information unless you consent separately or th
 | Account info, nickname, profile photo | Until you delete your account |
 | AI points, check-ins and purchases | Until you delete your account |
 | Feedback | Until you delete your account |
-| Data Linking authorization records | Until you delete your account |
+| Data Linking authorization record (when you last granted and revoked it) | Until you delete your account; after you revoke, only these two times are kept |
 | Server logs | 6 months |
 
 After that, we delete or anonymize the information. Database backups are overwritten by newer backups at the end of each backup cycle.
@@ -179,7 +179,7 @@ No system is perfectly secure, and **Sync data is not currently end-to-end encry
 - **Correct**: edit entries, accounts, nickname and profile photo directly in the App.
 - **Delete**: delete any entry, or erase device data or cloud data in Settings. After erasing device data, the App keeps an undo copy on the device for 7 days, then deletes it automatically.
 - **Withdraw consent**: turn off Sync, stop using AI bookkeeping, or revoke permissions in iOS Settings, at any time. This doesn't affect processing done before.
-- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback, Data Linking authorization records and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
+- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback, Data Linking authorization record and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
 - **Ask and complain**: contact us for an explanation of this policy or how we handle your data.
 
 For anything you can't do in the App, contact us using the details below. We will respond within **15 business days** after verifying your identity.
