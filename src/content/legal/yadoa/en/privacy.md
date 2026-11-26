@@ -1,7 +1,7 @@
 ---
 app: Yado Asset
 title: Privacy Policy
-updated: 2026-11-24
+updated: 2026-11-25
 effective: 2026-11-17
 ---
 
@@ -78,8 +78,8 @@ If you also use our other app, yado Items, you can authorize this in Profile →
 - Through your yado account, we read the **total purchase price of your items** in yado Items (in-service and retired shown separately) and the **number of items** (those with a purchase price and those without, counted separately);
 - We use these totals only to show the item value on the Accounts page and, according to your settings in the App, to include it in your net worth;
 - **We do not read item names, photos, categories or any other item details**;
-- Our servers don't keep these totals; they only fetch them and pass them to the App when it asks. Our servers keep only the authorization record (when you last granted and revoked it), until you delete your account;
-- You can revoke at any time in Profile → Data Linking. After that we stop reading, and the totals cached on your device are cleared.
+- Our servers don't keep these totals; they only fetch them and pass them to the App when it asks. Our servers keep only the authorization record (when you granted it and, if you revoked it, when you revoked it; granting again clears the revocation time), until you delete your account;
+- You can revoke at any time in Profile → Data Linking. After that we stop reading. The totals cached on the device where you revoke are cleared right away; on your other devices they are cleared the next time those devices connect to our services. Signing out also clears the cached totals.
 
 ### Server logs
 
@@ -168,7 +168,7 @@ After that, we delete or anonymize the information. Database backups are overwri
 - All network traffic uses HTTPS (TLS);
 - Sign-in tokens are kept in the iOS Keychain, and passwords are stored only as one-way hashes;
 - Servers expose only the ports they need, the database is not reachable from the internet, and only the developer has administrative access;
-- Each service can access only its own data; the AI service cannot read your synced ledger; the data link between yado Assets and yado Items only transfers totals, never item details;
+- Each service can access only its own data; the AI service cannot read your synced ledger; the data link between Yado Asset and yado Items only transfers totals, never item details;
 - We minimize data: for example, the model provider never receives your account ID, and the AI service does not keep conversation content.
 
 No system is perfectly secure, and **Sync data is not currently end-to-end encrypted**. If a security incident affects your personal information, we will tell you promptly, as required by law, through the App or by email, including what happened, its possible impact, what we have done and what you can do.
