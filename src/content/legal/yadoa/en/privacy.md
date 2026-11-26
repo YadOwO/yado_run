@@ -1,7 +1,7 @@
 ---
 app: Yado Asset
 title: Privacy Policy
-updated: 2026-11-22
+updated: 2026-11-25
 effective: 2026-11-17
 ---
 
@@ -70,6 +70,16 @@ You can also buy points in the App; purchased points never expire. **Payment is 
 When you send feedback in the App, we receive your message plus the App version, OS version, device model and App language, so we can find the problem and reply.
 
 If you turn on "Attach recent diagnostics" when sending (off by default, chosen for each message), the message also includes up to 5 recent crash, hang or disk-write reports recorded on your device: call stacks, OS version and App version, **with no ledger data**. iOS provides these reports and they stay on your device until you turn this on and send them with your feedback.
+
+### yado Items item value (requires an account, off by default)
+
+If you also use our other app, yado Items, you can authorize this in Profile → Data Linking so the App shows your item value on the Accounts page. **We read it only after you authorize it, and not by default.** Once you do:
+
+- Through your yado account, we read the **total purchase price of your items** in yado Items (in-service and retired shown separately) and the **number of items** (those with a purchase price and those without, counted separately);
+- We use these totals only to show the item value on the Accounts page and, according to your settings in the App, to include it in your net worth;
+- **We do not read item names, photos, categories or any other item details**;
+- Our servers don't keep these totals; they only fetch them and pass them to the App when it asks. Our servers keep only the authorization record (when you granted it and, if you revoked it, when you revoked it; granting again clears the revocation time), until you delete your account;
+- You can revoke at any time in Profile → Data Linking. After that we stop reading. The totals cached on the device where you revoke are cleared right away; on your other devices they are cleared the next time those devices connect to our services. Signing out also clears the cached totals.
 
 ### Server logs
 
@@ -148,6 +158,7 @@ We do not disclose your personal information unless you consent separately or th
 | Account info, nickname, profile photo | Until you delete your account |
 | AI points, check-ins and purchases | Until you delete your account |
 | Feedback | Until you delete your account |
+| Data Linking authorization record (when you last granted and revoked it) | Until you delete your account; after you revoke, only these two times are kept |
 | Server logs | 6 months |
 
 After that, we delete or anonymize the information. Database backups are overwritten by newer backups at the end of each backup cycle.
@@ -157,7 +168,7 @@ After that, we delete or anonymize the information. Database backups are overwri
 - All network traffic uses HTTPS (TLS);
 - Sign-in tokens are kept in the iOS Keychain, and passwords are stored only as one-way hashes;
 - Servers expose only the ports they need, the database is not reachable from the internet, and only the developer has administrative access;
-- Each service can access only its own data; the AI service cannot read your synced ledger;
+- Each service can access only its own data; the AI service cannot read your synced ledger; the data link between Yado Asset and yado Items only transfers totals, never item details;
 - We minimize data: for example, the model provider never receives your account ID, and the AI service does not keep conversation content.
 
 No system is perfectly secure, and **Sync data is not currently end-to-end encrypted**. If a security incident affects your personal information, we will tell you promptly, as required by law, through the App or by email, including what happened, its possible impact, what we have done and what you can do.
@@ -168,7 +179,7 @@ No system is perfectly secure, and **Sync data is not currently end-to-end encry
 - **Correct**: edit entries, accounts, nickname and profile photo directly in the App.
 - **Delete**: delete any entry, or erase device data or cloud data in Settings. After erasing device data, the App keeps an undo copy on the device for 7 days, then deletes it automatically.
 - **Withdraw consent**: turn off Sync, stop using AI bookkeeping, or revoke permissions in iOS Settings, at any time. This doesn't affect processing done before.
-- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
+- **Delete your account**: in the App's Settings. We then delete, or anonymize, your account information, sync data, AI points and check-ins, feedback, Data Linking authorization record and profile photo. **This cannot be undone, so export anything you want to keep first.** The ledger on your device is not affected unless you choose to erase it too.
 - **Ask and complain**: contact us for an explanation of this policy or how we handle your data.
 
 For anything you can't do in the App, contact us using the details below. We will respond within **15 business days** after verifying your identity.
@@ -179,7 +190,7 @@ For anything you can't do in the App, contact us using the details below. We wil
 
 ## 8. Additional information for users in the United States
 
-- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI), photos you send to the AI, feedback content, device information and diagnostic reports you choose to attach.
+- **Categories of personal information** we collect are described in section 1: identifiers (account ID, device identifier, IP address), personal information you provide (name, email, username), financial information (your ledger, if you use Sync or AI, and the item purchase-price totals and item counts from yado Items, if you turn on Data Linking), photos you send to the AI, feedback content, device information and diagnostic reports you choose to attach.
 - **We do not sell or "share" personal information** for cross-context behavioral advertising, and we have not done so in the past 12 months. We do not use sensitive personal information to infer characteristics about you.
 - **Your rights**: depending on your state, you may have the right to know, access, correct and delete your personal information, and to obtain a portable copy. You can exercise most of these in the App, or by emailing us. You may use an authorized agent; we may ask you to verify your identity. **We will not discriminate against you for exercising your rights.**
 - **Do Not Track**: the App does not track you across third-party websites or apps, so Do Not Track signals don't change how it works.
