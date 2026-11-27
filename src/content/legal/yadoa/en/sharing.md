@@ -1,7 +1,7 @@
 ---
 app: Yado Asset
 title: Third-Party Sharing List
-updated: 2026-11-24
+updated: 2026-11-26
 effective: 2026-11-09
 ---
 
@@ -42,7 +42,7 @@ These services are covered by [Apple's Privacy Policy](https://www.apple.com/leg
 
 | Service provider | Operated by | Purpose | Information | Location |
 | --- | --- | --- | --- | --- |
-| Alibaba Cloud (servers, database, object storage) | Alibaba Cloud Computing Co., Ltd. | Runs our servers, database and sign-in service, and stores profile photos | Account information, Sync data, AI point records, feedback, profile photos, server logs | Guangzhou, Guangdong, China |
+| Alibaba Cloud (servers, database, object storage) | Alibaba Cloud Computing Co., Ltd. | Runs our servers, database and sign-in service, and stores profile photos | Account information, Sync data, AI point records, feedback, Data Linking authorization records, profile photos, server logs | Guangzhou, Guangdong, China |
 
 Alibaba Cloud provides infrastructure on our instructions and does not use your information for its own purposes.
 
@@ -60,12 +60,12 @@ The App has **no** analytics, crash reporting, advertising or push notification 
 
 ## 5. Between yado apps
 
-yado Assets and yado Items are developed and operated by the same developer and share one yado account, so data moving between them is **not provided to a third party**. We still list it here so you know what flows between the two apps.
+Yado Asset and yado Items are developed and operated by the same developer and share one yado account, so data moving between them is **not provided to a third party**. We still list it here so you know what flows between the two apps.
 
 | Source app | Information read | Used for | How to revoke |
 | --- | --- | --- | --- |
-| yado Items | The total purchase price of in-service items and of retired items, and the number of items (those with a purchase price and those without) | Showing the item value on the Accounts page of yado Assets and, according to your settings, including it in your net worth | Revoke in yado Assets under Profile → Data Linking |
+| yado Items | The total purchase price of in-service items and of retired items, and the number of items (those with a purchase price and those without) | Showing the item value on the Accounts page of Yado Asset and, according to your settings, including it in your net worth | Revoke in Yado Asset under Profile → Data Linking |
 
-- Only after you **authorize it yourself** in yado Assets under Profile → Data Linking does yado Assets read these totals, through the shared yado services; if you don't authorize, nothing is read;
+- Only after you **authorize it yourself** in Yado Asset under Profile → Data Linking does Yado Asset read these totals, through the shared yado services; if you don't authorize, nothing is read;
 - Item names, photos, categories and other details are **never read**;
 - You can revoke at any time in the same place, and nothing is read after that.
