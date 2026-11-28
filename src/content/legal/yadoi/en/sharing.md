@@ -23,9 +23,9 @@ Photo cutout, framing and recognition in the App use the image recognition built
 
 | Provider | Operator | Purpose | Information | Location |
 | --- | --- | --- | --- | --- |
-| Alibaba Cloud (servers, database) | Alibaba Cloud Computing Co., Ltd. | Running our servers, database and sign-in service | Account information, synced items and categories, Data Linking authorization records, server logs | Guangzhou, Guangdong, China |
+| Alibaba Cloud (servers, database, object storage) | Alibaba Cloud Computing Co., Ltd. | Running our servers, database and sign-in service, and storing profile photos | Account information, synced items and categories, Data Linking authorization records, profile photos, server logs | Guangzhou, Guangdong, China |
 
-Alibaba Cloud provides infrastructure on our instructions only and does not use your information for its own purposes. Item photos are not uploaded, so they are not included.
+Alibaba Cloud provides infrastructure on our instructions only and does not use your information for its own purposes. Item photos are not uploaded, so they are not included (profile photos belong to your shared yado account and are not item photos).
 
 ## 3. Third-party libraries (SDKs) in the App
 
@@ -46,8 +46,8 @@ yado Items and Yado Asset are developed and operated by the same developer and s
 
 | Read by | Information read | Purpose | How to stop it |
 | --- | --- | --- | --- |
-| Yado Asset | Total purchase price of in-use items and of retired items, and item counts (with and without a purchase price) | Showing item value on Yado Asset's Accounts screen and, if you choose, counting it in your net worth | Revoke under Me → Data Linking in Yado Asset |
+| Yado Asset | Total purchase price of in-use items and of retired items, and item counts (with and without a purchase price) | Showing item value on Yado Asset's Accounts screen and, if you choose, counting it in your net worth | Revoke under Profile → Data Linking in Yado Asset |
 
-- Yado Asset reads these totals through the yado shared service only after you **authorize it** under Me → Data Linking in Yado Asset; without authorization, nothing is read;
+- Yado Asset reads these totals through the yado shared service only after you **authorize it** under Profile → Data Linking in Yado Asset; without authorization, nothing is read;
 - It **does not read** item names, photos, categories, notes or other details;
 - You can revoke the authorization at any time in the same place, after which nothing more is read.

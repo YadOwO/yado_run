@@ -30,7 +30,7 @@ Signing in lets you sync your items across devices and restore them on a new one
 
 When you sign in, a random account ID is created, which our services use to tell users apart. You can also set a **nickname**. We run our own sign-in service and don't use another company's account system (when you use Sign in with Apple, Apple verifies your identity).
 
-**The App's server stores only your account ID.** Your nickname and email address are kept only in the yado account sign-in service.
+**The App's server stores only your account ID.** Your nickname and email address are kept in the yado account sign-in service. If you set a profile photo in Yado Asset or another yado app, the photo is kept in our profile photo storage, and the App reads it and shows it on the Profile tab. **A profile photo can be viewed by anyone who has its link, so please don't use a photo you want to keep private.**
 
 ### Sync (on automatically when signed in)
 
@@ -55,16 +55,16 @@ If you enter a warranty end date, the App schedules a local notification on your
 
 ### Backup export
 
-You can export a backup file from the Me tab. It contains your items, categories, photos, achievements and theme settings. You save or send it yourself through the iOS share sheet, and **we never receive it**. The backup file is not encrypted, so keep it safe.
+You can export a backup file from the Profile tab. It contains your items, categories, photos, achievements and theme settings. You save or send it yourself through the iOS share sheet, and **we never receive it**. The backup file is not encrypted, so keep it safe.
 
 ### Data Linking with Yado Asset (off by default)
 
-If you also use our app Yado Asset, you can authorize it under Me → Data Linking in Yado Asset to show the value of your items on its Accounts screen. **Nothing is read unless you authorize it in Yado Asset.** Once you do:
+If you also use our app Yado Asset, you can authorize it under Profile → Data Linking in Yado Asset to show the value of your items on its Accounts screen. **Nothing is read unless you authorize it in Yado Asset.** Once you do:
 
 - Yado Asset reads, through your yado account, your **total purchase price of items** (in-use and retired separately) and your **item counts** (with and without a purchase price);
 - **It does not read item names, photos, categories, notes or other details**;
 - Our servers don't store these totals. They keep only the authorization record (when you authorized and revoked) until you delete your account;
-- You can revoke the authorization at any time under Me → Data Linking in Yado Asset, after which nothing more is read.
+- You can revoke the authorization at any time under Profile → Data Linking in Yado Asset, after which nothing more is read.
 
 ### Server logs
 
@@ -108,7 +108,7 @@ We provide your information to third parties only in the cases below. See the [T
 
 ### Service providers
 
-Our servers, database and sign-in service run on **Alibaba Cloud** (servers in Guangzhou, Guangdong, China). Alibaba Cloud provides infrastructure on our instructions only and does not use your information for its own purposes.
+Our servers, database, sign-in service and profile photo storage run on **Alibaba Cloud** (servers in Guangzhou, Guangdong, China). Alibaba Cloud provides infrastructure on our instructions only and does not use your information for its own purposes.
 
 ### Third-party SDKs
 
@@ -130,7 +130,7 @@ We will not disclose your personal information publicly unless you give separate
 | --- | --- |
 | Items, categories, photos, achievements and settings on your device | On your device, under your control; items and categories on the device are cleared when you sign out |
 | Items and categories synced to our servers (including deleted records) | Until you delete your account |
-| Account information and nickname | Until you delete your account |
+| Account information, nickname and profile photo | Until you delete your account |
 | Data Linking authorization record | Until you delete your account |
 | Server logs | 6 months |
 
@@ -148,11 +148,11 @@ No system is perfectly secure, and **sync data is not currently end-to-end encry
 
 ## 6. Your choices and rights
 
-- **Access and copy**: your items are always visible in the App, and you can **export a backup file** from the Me tab for a complete copy.
+- **Access and copy**: your items are always visible in the App, and you can **export a backup file** from the Profile tab for a complete copy.
 - **Correct**: edit items, categories and your nickname directly in the App.
 - **Delete**: delete any item or category in the App.
 - **Withdraw consent**: sign out, revoke Data Linking in Yado Asset, or revoke permissions in iOS Settings, at any time. This doesn't affect processing done before.
-- **Delete your account**: email us at the address below. We then delete, or anonymize, your account information, all items and categories synced to our servers (including deleted records) and your Data Linking authorization record. **Your yado account is shared across the yado series, so deleting it also deletes your account data in Yado Asset and other yado apps. This cannot be undone, so export anything you want to keep first.** The data on your device is not affected; you can delete it yourself.
+- **Delete your account**: email us at the address below. We then delete, or anonymize, your account information, all items and categories synced to our servers (including deleted records), your Data Linking authorization record and profile photo. **Your yado account is shared across the yado series, so deleting it also deletes your account data in Yado Asset and other yado apps. This cannot be undone, so export anything you want to keep first.** The data on your device is not affected; you can delete it yourself.
 - **Ask and complain**: contact us for an explanation of this policy or how we handle your data.
 
 For anything you can't do in the App, contact us using the details below. We will respond within **15 business days** after verifying your identity.
